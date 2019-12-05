@@ -1,6 +1,8 @@
 package record;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
 import connection.MessageType;
@@ -24,7 +26,7 @@ public class StringTrans
 				{
 					MessageType m=MsgQueue.poll();
 //					System.out.println("抽取队列，当前队列剩余量："+MsgQueue.size());
-					FileCode.getFileCode().writeLine(trans(m));
+					FileCode.getFileCode().writeLine(msgTrans(m));
 				}
 				try 
 				{
@@ -57,7 +59,7 @@ public class StringTrans
 			t.setflag(false);
 		System.out.println("消息线程中断");
 	}
-	public static StringTrans geStringTrans() 
+	public static StringTrans getStringTrans() 
 	{
 		if(stringTrans==null)
 		{
@@ -73,7 +75,7 @@ public class StringTrans
 		MsgQueue.add(m);
 //		System.out.println("加入队列");
 	}
-	private String trans(MessageType m)
+	private String msgTrans(MessageType m)
 	{
 //		先行预处理，将\n去除
 		String pastMsg=m.getMsg();
@@ -81,45 +83,66 @@ public class StringTrans
 		
 		StringBuffer sb=new StringBuffer();
 		sb.append("[");
-		sb.append("time=");
+		sb.append(ConstantTable.STRING_TIME+"=");
 		sb.append(m.gettime());
-		sb.append(",MsgType=");
+		sb.append(","+ConstantTable.STRING_MSGTYPE+"=");
 		sb.append(m.getMsgType());
-		sb.append(",SubType=");
+		sb.append(","+ConstantTable.STRING_SUBTYPE+"=");
 		sb.append(m.getsubType());
-		sb.append(",MsgID=");
+		sb.append(","+ConstantTable.STRING_MSGID+"=");
 		sb.append(m.getMsgID());
 		sb.append(",");
 		if(m.getMsgType()==ConstantTable.MSGTYPE_PERSON)
 		{
-			sb.append("fromQQ=");
+			sb.append(ConstantTable.STRING_FROMQQ+"=");
 			sb.append(m.getfromQQ());
 		}
 		else if(m.getMsgType()==ConstantTable.MSGTYPE_GROUP)
 			if(m.getfromQQ()!=ConstantTable.QQ_ANONYMOUS)
 			{
-				sb.append("fromQQ=");
+				sb.append(ConstantTable.STRING_FROMQQ+"=");
 				sb.append(m.getfromQQ());
-				sb.append(",fromGroup=");
+				sb.append(","+ConstantTable.STRING_FROMGROUP+"=");
 				sb.append(m.getfromGroup());
 			}
 			else
 			{
-				sb.append("fromAnonymous=");
+				sb.append(","+ConstantTable.STRING_FROMANONYMOUS+"=");
 				sb.append(m.getfromAnonymous());
-				sb.append(",fromGroup=");
+				sb.append(","+ConstantTable.STRING_FROMGROUP+"=");
 				sb.append(m.getfromGroup());
 			}
 		else
 		{
-			sb.append("fromQQ=");
+			sb.append(ConstantTable.STRING_FROMQQ+"=");
 			sb.append(m.getfromQQ());
-			sb.append(",fromDiscuss=");
+			sb.append(","+ConstantTable.STRING_FROMDISCUSS+"=");
 			sb.append(m.getfromGroup());
 		}
 		sb.append("]");
 		sb.append(afterMsg);
 		sb.append("\n");
 		return sb.toString();
+	}
+	public MessageType stringTrans(String s)
+	{
+		String info=s.substring(1, s.indexOf("]"));
+		String[] infoArr=info.split(",");
+		Map<String,String> infoMap=new HashMap<String, String>();
+		for(int i=0;i<info.length();i++)
+		{
+			String[] value=infoArr[i].split(",");
+			infoMap.put(value[0], value[1]);
+		}
+		int MsgType=infoMap.containsKey(ConstantTable.STRING_MSGTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGTYPE)):null;
+		int SubType=infoMap.containsKey(ConstantTable.STRING_SUBTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_SUBTYPE)):null;
+		int MsgID=infoMap.containsKey(ConstantTable.STRING_MSGID)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGID)):null;
+		long fromQQ=infoMap.containsKey(ConstantTable.STRING_FROMQQ)?Integer.parseInt(infoMap.get(ConstantTable.STRING_FROMQQ)):null;
+		long fromGroup=infoMap.containsKey(ConstantTable.STRING_FROMGROUP)?Integer.parseInt(infoMap.get(ConstantTable.STRING_FROMGROUP)):null;
+		String fromAnonymous=infoMap.containsKey(ConstantTable.STRING_FROMANONYMOUS)?infoMap.get(ConstantTable.STRING_FROMANONYMOUS):null;
+		long time=infoMap.containsKey(ConstantTable.STRING_TIME)?Integer.parseInt(infoMap.get(ConstantTable.STRING_TIME)):null;
+		String Msg=s.substring(s.indexOf("]"));
+		MessageType messageType=new MessageType(MsgType, SubType, MsgID, fromQQ, fromGroup, fromAnonymous, Msg, time);
+		return messageType;
 	}
 }

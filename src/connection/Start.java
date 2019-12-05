@@ -121,7 +121,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     	System.out.println("启动中……");
     	TimeCode.getTimecode();
     	FileCode.getFileCode(appDirectory);
-		StringTrans.geStringTrans();
+		StringTrans.getStringTrans();
 		System.out.println("初始化完毕");
         return 0;
     }
@@ -135,7 +135,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int exit() {
 		FileCode.getFileCode().close();
-		StringTrans.geStringTrans().endThread();
+		StringTrans.getStringTrans().endThread();
         return 0;
     }
 
@@ -149,7 +149,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int enable() {
         enable = true;
-    	StringTrans.geStringTrans().startThread();
+    	StringTrans.getStringTrans().startThread();
         return 0;
     }
 
@@ -163,7 +163,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int disable() {
         enable = false;
-    	StringTrans.geStringTrans().endThread();
+    	StringTrans.getStringTrans().endThread();
         return 0;
     }
 
@@ -184,7 +184,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     public int privateMsg(int subType, int msgId, long fromQQ, String msg, int font) {
         // 这里处理消息
 //        CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
-    	StringTrans.geStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_PERSON
+    	StringTrans.getStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_PERSON
     			, subType, msgId, fromQQ, 0, null, msg,TimeCode.getTimecode().getTime()));
         return MSG_IGNORE;
     }
@@ -208,12 +208,12 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         if (fromQQ == 80000000L && !fromAnonymous.equals("")) {
             // 将匿名用户信息放到 anonymous 变量中
             Anonymous anonymous = CQ.getAnonymous(fromAnonymous);
-            StringTrans.geStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_GROUP
+            StringTrans.getStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_GROUP
         			, subType, msgId, 80000000L, fromGroup, fromAnonymous, msg,TimeCode.getTimecode().getTime()));
         }
         else
         {
-        	StringTrans.geStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_GROUP
+        	StringTrans.getStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_GROUP
         			, subType, msgId, fromQQ, fromGroup, null, msg,TimeCode.getTimecode().getTime()));
         }
 
@@ -248,7 +248,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int discussMsg(int subType, int msgId, long fromDiscuss, long fromQQ, String msg, int font) {
         // 这里处理消息
-    	StringTrans.geStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_DISCUSS
+    	StringTrans.getStringTrans().addMsg(new MessageType(ConstantTable.MSGTYPE_DISCUSS
     			, subType, msgId, fromQQ, fromDiscuss, null, msg,TimeCode.getTimecode().getTime()));
         return MSG_IGNORE;
     }

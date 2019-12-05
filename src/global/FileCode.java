@@ -1,12 +1,19 @@
 package global;
 
+import java.awt.List;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+
+import connection.MessageType;
+import record.StringTrans;
 
 public class FileCode 
 {
@@ -130,4 +137,40 @@ public class FileCode
 		}
 		return true;
 	}
+	
+	private ArrayList<MessageType> getMsgList(String url)
+	{
+		ArrayList<MessageType> MsgList=new ArrayList<MessageType>();
+		if(IfFileExist(url)!=true)
+			return null;
+		FileReader fileReader = null;
+		try {
+			fileReader=new FileReader(new File(url));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+//			其实根本不会走到这里
+			e.printStackTrace();
+		}
+		BufferedReader bufferedReader;
+		bufferedReader=new BufferedReader(fileReader);
+		String line;
+		for(;(line=readLine(bufferedReader))!=null;)
+		{
+			MsgList.add(StringTrans.getStringTrans().stringTrans(line));
+		}
+		return MsgList;
+	}
+	
+	private String readLine(BufferedReader bufferedReader)
+	{
+		String s=null;
+		try {
+			s=bufferedReader.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return s;
+	}
+	
 }

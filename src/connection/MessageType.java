@@ -3,7 +3,7 @@ package connection;
 public class MessageType 
 {
 	int MsgType;
-	int subType;
+	int SubType;
 	int MsgID;
 	long fromQQ;
 	long fromGroup;
@@ -14,7 +14,7 @@ public class MessageType
 	{
 		// TODO Auto-generated constructor stub
 		this.MsgType=MsgType;
-		this.subType=subType;
+		this.SubType=subType;
 		this.MsgID=MsgID;
 		this.fromQQ=fromQQ;
 		this.fromGroup=fromGroup;
@@ -28,7 +28,7 @@ public class MessageType
 	}
 	public int getsubType() 
 	{
-		return subType;
+		return SubType;
 	}
 	public int getMsgID() 
 	{
