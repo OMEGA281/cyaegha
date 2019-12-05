@@ -158,6 +158,12 @@ public class FileCode
 		{
 			MsgList.add(StringTrans.getStringTrans().stringTrans(line));
 		}
+		try {
+			fileReader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return MsgList;
 	}
 	
