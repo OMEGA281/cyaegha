@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 import connection.MessageType;
 import global.ConstantTable;
 import global.FileCode;
@@ -129,19 +131,19 @@ public class StringTrans
 		String info=s.substring(1, s.indexOf("]"));
 		String[] infoArr=info.split(",");
 		Map<String,String> infoMap=new HashMap<String, String>();
-		for(int i=0;i<info.length();i++)
+		for(int i=0;i<infoArr.length;i++)
 		{
-			String[] value=infoArr[i].split(",");
+			String[] value=infoArr[i].split("=");
 			infoMap.put(value[0], value[1]);
 		}
-		int MsgType=infoMap.containsKey(ConstantTable.STRING_MSGTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGTYPE)):null;
-		int SubType=infoMap.containsKey(ConstantTable.STRING_SUBTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_SUBTYPE)):null;
-		int MsgID=infoMap.containsKey(ConstantTable.STRING_MSGID)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGID)):null;
-		long fromQQ=infoMap.containsKey(ConstantTable.STRING_FROMQQ)?Integer.parseInt(infoMap.get(ConstantTable.STRING_FROMQQ)):null;
-		long fromGroup=infoMap.containsKey(ConstantTable.STRING_FROMGROUP)?Integer.parseInt(infoMap.get(ConstantTable.STRING_FROMGROUP)):null;
+		int MsgType=infoMap.containsKey(ConstantTable.STRING_MSGTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGTYPE)):ConstantTable.NUM_NULL;
+		int SubType=infoMap.containsKey(ConstantTable.STRING_SUBTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_SUBTYPE)):ConstantTable.NUM_NULL;
+		int MsgID=infoMap.containsKey(ConstantTable.STRING_MSGID)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGID)):ConstantTable.NUM_NULL;
+		long fromQQ=infoMap.containsKey(ConstantTable.STRING_FROMQQ)?Long.parseLong(infoMap.get(ConstantTable.STRING_FROMQQ)):ConstantTable.NUM_NULL;
+		long fromGroup=infoMap.containsKey(ConstantTable.STRING_FROMGROUP)?Long.parseLong(infoMap.get(ConstantTable.STRING_FROMGROUP)):ConstantTable.NUM_NULL;
 		String fromAnonymous=infoMap.containsKey(ConstantTable.STRING_FROMANONYMOUS)?infoMap.get(ConstantTable.STRING_FROMANONYMOUS):null;
-		long time=infoMap.containsKey(ConstantTable.STRING_TIME)?Integer.parseInt(infoMap.get(ConstantTable.STRING_TIME)):null;
-		String Msg=s.substring(s.indexOf("]"));
+		long time=infoMap.containsKey(ConstantTable.STRING_TIME)?Long.parseLong(infoMap.get(ConstantTable.STRING_TIME)):ConstantTable.NUM_NULL;
+		String Msg=s.substring(s.indexOf("]")+1);
 		MessageType messageType=new MessageType(MsgType, SubType, MsgID, fromQQ, fromGroup, fromAnonymous, Msg, time);
 		return messageType;
 	}

@@ -8,6 +8,7 @@ import global.FileCode;
 import global.TimeCode;
 import record.StringTrans;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.*;

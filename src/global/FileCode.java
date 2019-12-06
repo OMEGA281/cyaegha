@@ -138,7 +138,7 @@ public class FileCode
 		return true;
 	}
 	
-	private ArrayList<MessageType> getMsgList(String url)
+	public ArrayList<MessageType> getMsgList(String url)
 	{
 		ArrayList<MessageType> MsgList=new ArrayList<MessageType>();
 		if(IfFileExist(url)!=true)
@@ -153,6 +153,7 @@ public class FileCode
 		}
 		BufferedReader bufferedReader;
 		bufferedReader=new BufferedReader(fileReader);
+		System.out.println("启动读取文件流");
 		String line;
 		for(;(line=readLine(bufferedReader))!=null;)
 		{
@@ -160,6 +161,7 @@ public class FileCode
 		}
 		try {
 			fileReader.close();
+			System.out.println("关闭读取文件流");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
