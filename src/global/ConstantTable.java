@@ -24,4 +24,5 @@ public class ConstantTable
 	public static final String STRING_FROMANONYMOUS="fromAnonymous";
 	public static final String STRING_FROMDISCUSS="fromDiscuss";
 	
+	public static final String SYMBOL_COMMENT="#";
 }
