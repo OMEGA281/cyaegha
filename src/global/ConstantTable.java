@@ -25,4 +25,9 @@ public class ConstantTable
 	public static final String STRING_FROMDISCUSS="fromDiscuss";
 	
 	public static final String SYMBOL_COMMENT="#";
+	
+	public static final int XMLMODE_DEFAULT=-1;
+	public static final int XMLMODE_READ=0;
+	public static final int XMLMODE_WRITE=1;
+	public static final int XMLMODE_READANDWRITE=2;
 }
