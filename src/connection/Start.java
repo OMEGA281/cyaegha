@@ -1,13 +1,17 @@
 package connection;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
 import global.ConstantTable;
 import global.FileCode;
 import global.TimeCode;
+import global.XMLReader;
 import record.StringTrans;
 
+import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.*;
@@ -86,6 +90,18 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 依次类推，可以根据实际情况修改参数，和方法测试效果
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
+        XMLReader reader=XMLReader.getXMLReader(CQ.getAppDirectory()+"FeedbackString.xml");
+        Document document=reader.getDocument();
+        Element element=document.getRootElement();
+        List<Element> list=element.getChildren();
+        for(int i=0;i<list.size();i++)
+        {
+        	System.out.println(list.get(i).getAttributeValue("ID"));
+        	System.out.println(list.get(i).getChildText("name"));
+        	System.out.println(list.get(i).getChildText("string"));
+        	System.out.println(list.get(i).getChildText("help"));
+        }
+        System.out.println();
         String s=new Scanner(System.in).next();
         demo.exit();// 最后程序运行结束，调用exit方法
     }
