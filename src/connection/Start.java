@@ -7,8 +7,9 @@ import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
 import global.ConstantTable;
 import global.FileCode;
+import global.FindJarResources;
 import global.TimeCode;
-import global.XMLReader;
+import global.xmlProcessor.XMLReader;
 import record.StringTrans;
 
 import java.util.List;
@@ -90,7 +91,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 依次类推，可以根据实际情况修改参数，和方法测试效果
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
-        XMLReader reader=XMLReader.getXMLReader(CQ.getAppDirectory()+"FeedbackString.xml");
+        XMLReader reader=XMLReader.getXMLReader(FindJarResources.getFindJarResources().getJarResources("FeedbackString.xml"));
         Document document=reader.getDocument();
         Element element=document.getRootElement();
         List<Element> list=element.getChildren();
