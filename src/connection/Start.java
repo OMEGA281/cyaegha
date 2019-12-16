@@ -91,26 +91,24 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 依次类推，可以根据实际情况修改参数，和方法测试效果
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
-        XMLReader reader=XMLReader.getXMLReader(FindJarResources.getFindJarResources().getJarResources("FeedbackString.xml"));
-        Document document=reader.getDocument();
-        Element element=document.getRootElement();
-        List<Element> list=element.getChildren();
-        for(int i=0;i<list.size();i++)
-        {
-        	System.out.println(list.get(i).getAttributeValue("ID"));
-        	System.out.println(list.get(i).getChildText("name"));
-        	System.out.println(list.get(i).getChildText("string"));
-        	System.out.println(list.get(i).getChildText("help"));
-        }
+        
+    	
         System.out.println();
         String s=new Scanner(System.in).next();
         demo.exit();// 最后程序运行结束，调用exit方法
     }
-
+    
+//    用于加载后启动的测试方法，打包前需去除
+    private void testmethod() 
+    {
+    	
+	}
+    
+    
     /**
      * 打包后将不会调用 请不要在此事件中写其他代码
      *
-     * @return 返回应用的ApiVer、Appid
+     * @return 返回应用的ApiVer、Appid 
      */
     public String appInfo() {
         // 应用AppID,规则见 http://d.cqp.me/Pro/开发/基础信息#appid

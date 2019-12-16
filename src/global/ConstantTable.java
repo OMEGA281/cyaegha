@@ -31,5 +31,5 @@ public class ConstantTable
 	public static final int XMLMODE_WRITE=1;
 	public static final int XMLMODE_READANDWRITE=2;
 	
-	public static final String PATH_JARRESOURCES="/resources/";
+	public static final String PATH_JARRESOURCES="/";
 }

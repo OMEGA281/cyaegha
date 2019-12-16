@@ -4,16 +4,20 @@ import java.awt.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import connection.MessageType;
 import record.StringTrans;
+import surveillance.Log;
 
 public class FileCode 
 {
@@ -68,12 +72,7 @@ public class FileCode
 			createFolder(dirPath);
 //		检测本日文件是否存在，不存在则创建
 		if(!IfFileExist(txtPath))
-			try {
-				createFile(txtPath);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			createFile(txtPath);
 		try {
 //			开启文件流
 			System.out.println("开启文件流：指向"+txtPath);
@@ -120,10 +119,20 @@ public class FileCode
 		System.out.println("新建文件夹:"+url);
 		return new File(url).mkdir();
 	}
-	private boolean createFile(String url) throws IOException
+	private boolean createFile(String url)
 	{
 		System.out.println("新建文件:"+url);
-		return new File(url).createNewFile();
+		try 
+		{
+			return new File(url).createNewFile();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("创建文件失败：",url);
+		}
+		return false;
 	}
 	public boolean writeLine(String s)
 	{
@@ -181,4 +190,91 @@ public class FileCode
 		return s;
 	}
 	
+	protected boolean copyFile(String fromURL,String toURL)
+	{
+		if(!IfFileExist(fromURL))
+		{
+			Log.e("未查询到源文件");
+			return false;
+		}
+		if(!IfFileExist(toURL))
+		{
+			createFile(toURL);
+			Log.e("未查询到目标文件","已新建文件");
+		}
+		File fromFile=new File(fromURL);
+		File toFile=new File(toURL);
+		return copyFile(fromFile, toFile);
+	}
+	
+	protected boolean copyFile(File from,File to)
+	{
+		if(from==null)
+		{
+			Log.e("未查询到源文件");
+			return false;
+		}
+		if(to==null)
+		{
+			try 
+			{
+				to.createNewFile();
+			}
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Log.e("未查询到目标文件","已新建文件");
+		}
+		InputStream i;
+		OutputStream o;
+		try
+		{
+		i=new FileInputStream(from);
+		o=new FileOutputStream(to);
+		}
+		catch(FileNotFoundException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return $copyFile(i, o);
+	}
+	
+	protected boolean copyFile(InputStream from,OutputStream to)
+	{
+		return $copyFile(from, to);
+	}
+	private boolean $copyFile(InputStream from,OutputStream to)
+	{
+		byte[] buf = new byte[8 * 1024];
+		int len = 0;
+		try 
+		{
+			while ((len = from.read(buf)) != -1)
+			{
+				to.write(buf, 0, len);
+				to.flush();
+			}
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			// TODO: handle finally clause
+			try 
+			{
+				from.close();
+				to.close();
+			} catch (Exception e2) 
+			{
+				// TODO: handle exception
+				e2.printStackTrace();
+			}
+		}
+		return true;
+	}
 }

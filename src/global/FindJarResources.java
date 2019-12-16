@@ -23,7 +23,8 @@ public class FindJarResources
 	}
 	public XMLInputStream getJarResources(String FileName)
 	{
-		InputStream inputStream=this.getClass().getResourceAsStream(resourcesPath+FileName);
+		String path=resourcesPath+FileName;
+		InputStream inputStream=FindJarResources.class.getResourceAsStream(path);
 		return new XMLInputStream(FileName,inputStream);
 	}
 }
