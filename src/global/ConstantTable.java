@@ -23,6 +23,11 @@ public class ConstantTable
 	public static final String STRING_FROMGROUP="fromGroup";
 	public static final String STRING_FROMANONYMOUS="fromAnonymous";
 	public static final String STRING_FROMDISCUSS="fromDiscuss";
+	public static final String STRING_MSG="Msg";
+	
+	public static final String STRING_SENDTYPE="SendType";
+	public static final String STRING_SENDCLIENT="SendClient";
+	public static final String STRING_SENDMSG="SendMsg";
 	
 	public static final String SYMBOL_COMMENT="#";
 	

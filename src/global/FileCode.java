@@ -15,9 +15,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-import connection.MessageType;
-import record.StringTrans;
+import connection.ReceiveMessageType;
 import surveillance.Log;
+import transceiver.Receiver;
+import transceiver.Translator;
 
 public class FileCode 
 {
@@ -147,9 +148,9 @@ public class FileCode
 		return true;
 	}
 	
-	public ArrayList<MessageType> getMsgList(String url)
+	public ArrayList<ReceiveMessageType> getMsgList(String url)
 	{
-		ArrayList<MessageType> MsgList=new ArrayList<MessageType>();
+		ArrayList<ReceiveMessageType> MsgList=new ArrayList<ReceiveMessageType>();
 		if(IfFileExist(url)!=true)
 			return null;
 		FileReader fileReader = null;
@@ -166,7 +167,7 @@ public class FileCode
 		String line;
 		for(;(line=readLine(bufferedReader))!=null;)
 		{
-			MsgList.add(StringTrans.getStringTrans().stringTrans(line));
+			MsgList.add(Translator.stringTrans(line));
 		}
 		try {
 			fileReader.close();
