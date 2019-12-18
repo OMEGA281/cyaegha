@@ -87,53 +87,37 @@ public class Matcher
 	}
 	/**用于检测是否存在该命令
 	 * @param root 所处的父级命令 若为null则为根
-	 * @param s 待检测语句*/
-	private boolean ifCommandExist(String root,String s)
+	 * @param s 待检测语句
+	 * @return 返回搜寻到的命令集，如果没有则返回空*/
+	private CommandPackage ifCommandExist(String root,String s)
 	{
-		boolean result=false;
+		String[] commandString=s.toLowerCase().split(" ");
 		for (CommandPackage commandPackage : commandList) 
 		{
-			if(s.toLowerCase().startsWith(commandPackage.name))
+			if(commandString[0].toLowerCase().startsWith(commandPackage.name))
 			{
-				result=true;
-				break;
+				return commandPackage;
 			}
 		}
-		return result;
+		return null;
 	}
 	/**处理命令用的集成方法
 	 * @param CommandMsg 源信息，不需要进行任何的处理*/
-	public void CommandProcesser(ReceiveMessageType commandPackage)
+	public void CommandProcesser(ReceiveMessageType messagePackage)
 	{
-		StringBuilder stringBuilder=new StringBuilder(commandPackage.getMsg());
+		StringBuilder stringBuilder=new StringBuilder(messagePackage.getMsg());
 		stringBuilder.deleteCharAt(0);
-		if(!ifCommandExist(null, stringBuilder.toString()))
+		CommandPackage commandPackage=ifCommandExist(null, stringBuilder.toString());
+		if(commandPackage==null)
 		{
 			Log.i("无效命令：",stringBuilder.toString());
-			long toClient;
-			switch (commandPackage.getMsgType()) 
-			{
-			case ConstantTable.MSGTYPE_PERSON:
-				toClient=commandPackage.getfromQQ();
-				break;
-			case ConstantTable.MSGTYPE_GROUP:
-				toClient=commandPackage.getfromGroup();
-				break;
-			case ConstantTable.MSGTYPE_DISCUSS:
-				toClient=commandPackage.getfromGroup();
-				break;
-			default:
-				Log.e("未发现相应的发送类型");
-				toClient=-1;
-				break;
-			}
-			
-			Transmitter.getTransmitter().addMsg(
-					new SendMessageType(commandPackage.getMsgType(), toClient, "无效命令"));
+			Transmitter.getTransmitter().addMsg(new SendMessageType(messagePackage.getMsgType()
+					, messagePackage.getfromQQ(),messagePackage.getfromGroup(), "无效命令"));
 		}
 		else
 		{
-			
+			Reflector.getReflector(Formatter.getClassName(commandPackage.method))
+				.startMethod(Formatter.getMethodName(commandPackage.method),messagePackage);
 		}
 	}
 }

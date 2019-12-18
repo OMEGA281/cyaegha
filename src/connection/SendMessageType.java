@@ -16,7 +16,7 @@ public class SendMessageType
 	 * @param toClient 目标的号码
 	 * @param Msg 信息
 	 * */
-	public SendMessageType(int type,long toClient,String Msg) 
+	public SendMessageType(int type,long toQQ,long toGroup,String Msg) 
 	{
 		// TODO Auto-generated constructor stub
 		this.type=type;
