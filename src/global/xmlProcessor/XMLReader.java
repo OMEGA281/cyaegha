@@ -46,10 +46,16 @@ public class XMLReader
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * 获得Document，用于读写
+	 * */
 	public Document getDocument()
 	{
 		return document;
 	}
+	/**用于获得读取XML的reader<br>
+	 * 读取包内xml的方法
+	 * */
 	public static XMLReader getXMLReader(XMLInputStream xmlInputStream)
 	{
 		if(!mapper.containsKey(xmlInputStream.mark))
@@ -58,12 +64,15 @@ public class XMLReader
 		}
 		return mapper.get(xmlInputStream.mark);
 	}
-	public static XMLReader getXMLReader(String url)
+	/**用于获得读取XML的reader<br>
+	 * 读取包外xml的方法
+	 * */
+	public static XMLReader getXMLReader(String path)
 	{
-		if(!mapper.containsKey(url))
+		if(!mapper.containsKey(path))
 		{
-			mapper.put(url, new XMLReader(url));
+			mapper.put(path, new XMLReader(path));
 		}
-		return mapper.get(url);
+		return mapper.get(path);
 	}
 }

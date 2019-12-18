@@ -1,7 +1,9 @@
 package global.xmlProcessor;
 
 import java.io.InputStream;
-
+/**
+ * 将inputstream进行标记，用于指示
+ * */
 public class XMLInputStream
 {
 	protected String mark;

@@ -1,6 +1,5 @@
 package global;
 
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,13 +11,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import connection.ReceiveMessageType;
+import connection.SendMessageType;
 import surveillance.Log;
-import transceiver.Receiver;
 import transceiver.Translator;
+import transceiver.Transmitter;
 
 public class FileCode 
 {

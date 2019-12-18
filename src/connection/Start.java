@@ -4,13 +4,16 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
+import org.meowy.cqp.jcq.message.PrivateMsg;
 
+import commandPointer.Matcher;
 import global.ConstantTable;
 import global.FileCode;
 import global.FindJarResources;
 import global.TimeCode;
 import global.xmlProcessor.XMLReader;
 import transceiver.Receiver;
+import transceiver.Transmitter;
 
 import java.util.List;
 import java.util.Scanner;
@@ -92,7 +95,8 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
         
-    	
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".wcd", 0);
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);
         System.out.println();
         String s=new Scanner(System.in).next();
         demo.exit();// 最后程序运行结束，调用exit方法
@@ -136,7 +140,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     	System.out.println("启动中……");
     	TimeCode.getTimecode();
     	FileCode.getFileCode(appDirectory);
-		Receiver.getStringTrans();
+		Receiver.getReceiver();
+		Transmitter.getTransmitter();
+		Matcher.getMatcher();
+		new Output(CQ);
 		System.out.println("初始化完毕");
         return 0;
     }
@@ -150,7 +157,8 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int exit() {
 		FileCode.getFileCode().close();
-		Receiver.getStringTrans().endThread();
+		Receiver.getReceiver().endThread();
+		Transmitter.getTransmitter().endThread();
         return 0;
     }
 
@@ -164,7 +172,8 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int enable() {
         enable = true;
-    	Receiver.getStringTrans().startThread();
+    	Receiver.getReceiver().startThread();
+    	Transmitter.getTransmitter().startThread();
         return 0;
     }
 
@@ -178,7 +187,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int disable() {
         enable = false;
-    	Receiver.getStringTrans().endThread();
+    	Receiver.getReceiver().endThread();
         return 0;
     }
 
@@ -199,7 +208,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     public int privateMsg(int subType, int msgId, long fromQQ, String msg, int font) {
         // 这里处理消息
 //        CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
-    	Receiver.getStringTrans().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_PERSON
+    	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_PERSON
     			, subType, msgId, fromQQ, 0, null, msg,TimeCode.getTimecode().getTime()));
         return MSG_IGNORE;
     }
@@ -223,12 +232,12 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         if (fromQQ == 80000000L && !fromAnonymous.equals("")) {
             // 将匿名用户信息放到 anonymous 变量中
             Anonymous anonymous = CQ.getAnonymous(fromAnonymous);
-            Receiver.getStringTrans().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
+            Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
         			, subType, msgId, 80000000L, fromGroup, fromAnonymous, msg,TimeCode.getTimecode().getTime()));
         }
         else
         {
-        	Receiver.getStringTrans().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
+        	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
         			, subType, msgId, fromQQ, fromGroup, null, msg,TimeCode.getTimecode().getTime()));
         }
 
@@ -263,7 +272,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int discussMsg(int subType, int msgId, long fromDiscuss, long fromQQ, String msg, int font) {
         // 这里处理消息
-    	Receiver.getStringTrans().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_DISCUSS
+    	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_DISCUSS
     			, subType, msgId, fromQQ, fromDiscuss, null, msg,TimeCode.getTimecode().getTime()));
         return MSG_IGNORE;
     }

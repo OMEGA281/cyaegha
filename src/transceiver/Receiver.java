@@ -1,21 +1,18 @@
 package transceiver;
 
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Queue;
 
-import javax.swing.text.html.HTMLDocument.Iterator;
-
+import commandPointer.Matcher;
 import connection.ReceiveMessageType;
-import global.ConstantTable;
 import global.FileCode;
+import surveillance.Log;
 
 public class Receiver 
 {
 	static Receiver stringTrans;
 	Queue<ReceiveMessageType> MsgQueue;
-	MsgThread t;
+	MsgThread MsgThread;
 	class MsgThread implements Runnable
 	{
 		private boolean flag=true;
@@ -26,9 +23,13 @@ public class Receiver
 			{
 				for(;!MsgQueue.isEmpty();)
 				{
-					ReceiveMessageType m=MsgQueue.poll();
+					ReceiveMessageType receiveMessageType=MsgQueue.poll();
 //					System.out.println("抽取队列，当前队列剩余量："+MsgQueue.size());
-					FileCode.getFileCode().writeLine(Translator.msgTrans(m));
+					if(Matcher.ifCommand(receiveMessageType.getMsg()))
+					{
+						Matcher.getMatcher().CommandProcesser(receiveMessageType);
+					}
+					FileCode.getFileCode().writeLine(Translator.msgTrans(receiveMessageType));
 				}
 				try 
 				{
@@ -51,17 +52,17 @@ public class Receiver
 	}
 	public void startThread()
 	{
-		t=new MsgThread();
-		new Thread(t).start();
+		MsgThread=new MsgThread();
+		new Thread(MsgThread).start();
 		System.out.println("消息处理线程启动");
 	}
 	public void endThread()
 	{
-		if(t!=null)
-			t.setflag(false);
+		if(MsgThread!=null)
+			MsgThread.setflag(false);
 		System.out.println("消息线程中断");
 	}
-	public static Receiver getStringTrans() 
+	public static Receiver getReceiver() 
 	{
 		if(stringTrans==null)
 		{

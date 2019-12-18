@@ -14,7 +14,7 @@ import javax.swing.border.EmptyBorder;
 public class FloatWindow extends JFrame {
 
 	private JPanel contentPane;
-	static int pointX,pointY;
+	static int pointX, pointY;
 
 	/**
 	 * Launch the application.
@@ -40,24 +40,20 @@ public class FloatWindow extends JFrame {
 		setBounds(100, 100, 450, 300);
 		setUndecorated(true);
 		setAlwaysOnTop(true);
-		setBackground(new Color(0,0,0,0));
-		addMouseListener(new MouseAdapter() 
-		{
-			public void mousePressed(MouseEvent e) 
-            {                 
-               pointX = e.getPoint().x;
-               pointY= e.getPoint().y;
-            }
-         });
-		addMouseMotionListener(new MouseMotionAdapter()
-          {
-              public void mouseDragged(MouseEvent e) 
-              {
-                  setLocation((e.getXOnScreen()-pointX),(e.getYOnScreen()-pointY));//设置拖拽后，窗口的位置
-              }
+		setBackground(new Color(0, 0, 0, 0));
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				pointX = e.getPoint().x;
+				pointY = e.getPoint().y;
+			}
+		});
+		addMouseMotionListener(new MouseMotionAdapter() {
+			public void mouseDragged(MouseEvent e) {
+				setLocation((e.getXOnScreen() - pointX), (e.getYOnScreen() - pointY));// 设置拖拽后，窗口的位置
+			}
 		});
 		contentPane = new JPanel();
-		contentPane.setBackground(new Color(0,0,0,0));
+		contentPane.setBackground(new Color(0, 0, 0, 0));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
