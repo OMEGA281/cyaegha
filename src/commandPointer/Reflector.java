@@ -15,6 +15,7 @@ public class Reflector
 	public Reflector(String className) 
 	{
 		// TODO Auto-generated constructor stub
+//		System.out.println(className);
 		reflect= Reflect.on(className).create();
 	}
 	public static Reflector getReflector(String className)

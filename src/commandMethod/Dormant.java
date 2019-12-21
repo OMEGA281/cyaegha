@@ -3,6 +3,8 @@ package commandMethod;
 import commandMethod.register.EventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import connection.ReceiveMessageType;
+import connection.SendMessageType;
+import transceiver.Transmitter;
 
 public class Dormant extends Father
 {
@@ -16,9 +18,13 @@ public class Dormant extends Father
 			@Override
 			public int run(ReceiveMessageType messageType) {
 				// TODO Auto-generated method stub
+				receiveMessageType=messageType;
 				if((!accessible)&messageType.getMsg().equals(".dormant"))
 				{
 					accessible=true;
+					Transmitter.getTransmitter().addMsg(new SendMessageType(
+							receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
+							, receiveMessageType.getfromGroup(), "退出休眠状态"));
 					return RETURN_STOP;
 				}
 				if(accessible)
@@ -40,6 +46,9 @@ public class Dormant extends Father
 		if(accessible)
 		{
 			accessible=false;
+			Transmitter.getTransmitter().addMsg(new SendMessageType(
+					receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
+					, receiveMessageType.getfromGroup(), "进入休眠状态"));
 		}
 	}
 }

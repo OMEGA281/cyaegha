@@ -93,6 +93,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         
     	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, "wcd", 0);
     	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".help", 0);
     	
     	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".dormant", 0);
     	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);

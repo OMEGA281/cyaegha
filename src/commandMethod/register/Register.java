@@ -33,10 +33,12 @@ public class Register
 	{
 		Log.d("重新加载所有类中……");
 		Set<String> className=ClassUtils.getClassName("commandMethod", false);
+		System.out.println(className.size());
 		for (String classpath : className) 
 		{
 			if(!Info.ifIgnore(classpath))
 			{
+				System.out.println(classpath);
 				Reflector.getReflector(classpath).startMethod();
 				Log.d("加载类：",classpath);
 			}

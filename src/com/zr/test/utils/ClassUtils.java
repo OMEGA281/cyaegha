@@ -50,19 +50,20 @@ public class ClassUtils {
                 }
 
                 if (jarFile != null) {
-                    getClassNameFromJar(jarFile.entries(), packageName, isRecursion);
+//                	System.out.println("?");
+                    classNames=getClassNameFromJar(jarFile.entries(), packageName, isRecursion);
                 }
             }
         } else {
             /*从所有的jar包中查找包名*/
             classNames = getClassNameFromJars(((URLClassLoader) loader).getURLs(), packageName, isRecursion);
         }
-
+        System.out.println(classNames.size());
         return classNames;
     }
 
     /**
-     * 从项目文件获取某包下�?有类
+     * 从项目文件获取某包下�?有类
      *
      * @param filePath    文件路径
      * @param className   类名集合
@@ -74,14 +75,14 @@ public class ClassUtils {
         File file = new File(filePath);
         File[] files = file.listFiles();
         for (File childFile : files) {
-            //�?查一个对象是否是文件�?
+            //�?查一个对象是否是文件�?
             if (childFile.isDirectory()) {
                 if (isRecursion) {
                     className.addAll(getClassNameFromDir(childFile.getPath(), packageName + "." + childFile.getName(), isRecursion));
                 }
             } else {
                 String fileName = childFile.getName();
-                //endsWith() 方法用于测试字符串是否以指定的后�?结束�?  !fileName.contains("$") 文件名中不包�? '$'
+                //endsWith() 方法用于测试字符串是否以指定的后�?结束�?  !fileName.contains("$") 文件名中不包�? '$'
                 if (fileName.endsWith(".class") && !fileName.contains("$")) {
                     className.add(packageName + "." + fileName.replace(".class", ""));
                 }
@@ -100,34 +101,42 @@ public class ClassUtils {
      */
     private static Set<String> getClassNameFromJar(Enumeration<JarEntry> jarEntries, String packageName, boolean isRecursion) {
         Set<String> classNames = new HashSet<String>();
-
-        while (jarEntries.hasMoreElements()) {
+        
+        while (jarEntries.hasMoreElements()) 
+        {
             JarEntry jarEntry = jarEntries.nextElement();
-            if (!jarEntry.isDirectory()) {
+//            System.out.println("!");
+            if (!jarEntry.isDirectory()) 
+            {
                 /*
-                 * 这里是为了方便，先把"/" 转成 "." 再判�? ".class" 的做法可能会有bug
-                 * (FIXME: 先把"/" 转成 "." 再判�? ".class" 的做法可能会有bug)
+                 * 这里是为了方便，先把"/" 转成 "." 再判�? ".class" 的做法可能会有bug
+                 * (FIXME: 先把"/" 转成 "." 再判�? ".class" 的做法可能会有bug)
                  */
                 String entryName = jarEntry.getName().replace("/", ".");
-                if (entryName.endsWith(".class") && !entryName.contains("$") && entryName.startsWith(packageName)) {
+//                System.out.println(entryName);
+                if (entryName.endsWith(".class") && !entryName.contains("$") && entryName.startsWith(packageName)) 
+                {
                     entryName = entryName.replace(".class", "");
-                    if (isRecursion) {
+//                    System.out.println(entryName);
+                    if (isRecursion) 
+                    {
                         classNames.add(entryName);
-                    } else if (!entryName.replace(packageName + ".", "").contains(".")) {
+                    } 
+                    else if (!entryName.replace(packageName + ".", "").contains(".")) 
+                    {
                         classNames.add(entryName);
                     }
                 }
             }
         }
-
         return classNames;
     }
 
     /**
-     * 从所有jar中搜索该包，并获取该包下�?有类
+     * 从所有jar中搜索该包，并获取该包下�?有类
      *
      * @param urls        URL集合
-     * @param packageName 包路�?
+     * @param packageName 包路�?
      * @param isRecursion 是否遍历子包
      * @return 类的完整名称
      */
@@ -137,7 +146,7 @@ public class ClassUtils {
         for (int i = 0; i < urls.length; i++) {
             String classPath = urls[i].getPath();
 
-            //不必搜索classes文件�?
+            //不必搜索classes文件�?
             if (classPath.endsWith("classes/")) {
                 continue;
             }
