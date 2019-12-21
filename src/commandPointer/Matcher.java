@@ -109,9 +109,9 @@ public class Matcher
 		CommandPackage commandPackage=ifCommandExist(null, stringBuilder.toString());
 		if(commandPackage==null)
 		{
-			Log.i("无效命令：",stringBuilder.toString(),"\n","您可以使用.help来显示所有命令");
+			Log.i("无效命令：",stringBuilder.toString());
 			Transmitter.getTransmitter().addMsg(new SendMessageType(messagePackage.getMsgType()
-					, messagePackage.getfromQQ(),messagePackage.getfromGroup(), "无效命令"));
+					, messagePackage.getfromQQ(),messagePackage.getfromGroup(), "无效命令\n您可以使用.help来显示所有命令"));
 		}
 		else
 		{
