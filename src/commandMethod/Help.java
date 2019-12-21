@@ -21,7 +21,7 @@ public class Help extends Father
 	
 	public void showHelp()
 	{
-		StringBuilder stringBuilder=new StringBuilder("命令如下");
+		StringBuilder stringBuilder=new StringBuilder("命令如下：\n");
 		Document document=XMLReader.getXMLReader(FindJarResources.getFindJarResources()
 				.getJarResources("CommandList.xml")).getDocument();
 		List<Element> elements=document.getRootElement().getChildren();
