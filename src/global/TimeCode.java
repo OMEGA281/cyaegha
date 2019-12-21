@@ -3,12 +3,15 @@ package global;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import surveillance.Log;
+
 public class TimeCode 
 {
 	static TimeCode timeCode;
 	public static TimeCode getTimecode()
 	{
 		if(timeCode==null)
+			Log.d("初始化时间控制");
 			timeCode=new TimeCode();
 		return timeCode;
 	}

@@ -1,21 +1,17 @@
 package connection;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
-import org.meowy.cqp.jcq.message.PrivateMsg;
 
+import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.ConstantTable;
 import global.FileCode;
-import global.FindJarResources;
 import global.TimeCode;
-import global.xmlProcessor.XMLReader;
+import surveillance.Log;
 import transceiver.Receiver;
 import transceiver.Transmitter;
 
-import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.*;
@@ -95,8 +91,16 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
         
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".wcd", 0);
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, "wcd", 0);
     	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);
+    	
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".dormant", 0);
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, "...", 0);
+    	
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".dormant", 0);
+    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, "...", 0);
+    	
         System.out.println();
         String s=new Scanner(System.in).next();
         demo.exit();// 最后程序运行结束，调用exit方法
@@ -138,13 +142,18 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
     	System.out.println("启动中……");
+//    	启动时间控件
     	TimeCode.getTimecode();
+//    	启动文件读写控件
     	FileCode.getFileCode(appDirectory);
+//    	启动注册器
+    	new Register();
+    	
 		Receiver.getReceiver();
 		Transmitter.getTransmitter();
 		Matcher.getMatcher();
 		new Output(CQ);
-		System.out.println("初始化完毕");
+		Log.d("初始化完毕");
         return 0;
     }
 
@@ -172,6 +181,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int enable() {
         enable = true;
+        Register.getRegister().reloadAllClass();
     	Receiver.getReceiver().startThread();
     	Transmitter.getTransmitter().startThread();
         return 0;

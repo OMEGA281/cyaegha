@@ -15,9 +15,14 @@ import transceiver.Transmitter;
 
 public class Draw extends Father
 {
+
+	@Override
+	public void initialize() {
+		// TODO Auto-generated method stub
+		
+	}
 	public void drawDefault()
 	{
-		Log.d("成功");
 		Document document=XMLReader.getXMLReader(FindJarResources.getFindJarResources()
 				.getJarResources("Touhou.xml")).getDocument();
 		List<Element> element=document.getRootElement().getChildren("character");

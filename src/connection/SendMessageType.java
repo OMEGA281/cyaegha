@@ -5,7 +5,8 @@ import global.ConstantTable;
 public class SendMessageType 
 {
 	int type;
-	long toClient;
+	long toQQ;
+	long toGroup;
 	String Msg;
 	public SendMessageType() 
 	{
@@ -20,7 +21,8 @@ public class SendMessageType
 	{
 		// TODO Auto-generated constructor stub
 		this.type=type;
-		this.toClient=toClient;
+		this.toQQ=toQQ;
+		this.toGroup=toGroup;
 		this.Msg=Msg;
 	}
 	@Override
@@ -28,8 +30,9 @@ public class SendMessageType
 	{
 		// TODO Auto-generated method stub
 		StringBuilder sb=new StringBuilder();
-		sb.append(ConstantTable.STRING_SENDTYPE+"="+type!=null?type:"null"+",");
-		sb.append(ConstantTable.STRING_SENDCLIENT+"="+toClient!=null?toClient:"null"+",");
+		sb.append((ConstantTable.STRING_SENDTYPE+"="+type!=null?type:"null")+",");
+		sb.append((ConstantTable.STRING_SENDCLIENT+"="+toQQ!=null?toQQ:"null")+",");
+		sb.append((ConstantTable.STRING_SENDCLIENT+"="+toGroup!=null?toGroup:"null")+",");
 		sb.append(ConstantTable.STRING_MSG+"="+Msg!=null?Msg:"null");
 		return sb.toString();
 	}
@@ -39,11 +42,19 @@ public class SendMessageType
 	public int getType() {
 		return type;
 	}
-	public void setToClient(long toClient) {
-		this.toClient = toClient;
+	public void setToQQ(long toClient) {
+		this.toQQ = toClient;
 	}
-	public long getToClient() {
-		return toClient;
+	public long getToQQ() {
+		return toQQ;
+	}
+	public void setToGroup(long toGroup) 
+	{
+		this.toGroup = toGroup;
+	}
+	public long getToGroup() 
+	{
+		return toGroup;
 	}
 	public void setMsg(String msg) {
 		Msg = msg;

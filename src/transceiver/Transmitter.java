@@ -5,6 +5,7 @@ import java.util.Queue;
 
 import connection.Output;
 import connection.SendMessageType;
+import surveillance.Log;
 
 public class Transmitter 
 {
@@ -32,7 +33,7 @@ public class Transmitter
 				}
 				try 
 				{
-					Thread.sleep(3000);
+					Thread.sleep(100);
 				}
 				catch (InterruptedException e)
 				{
@@ -49,7 +50,7 @@ public class Transmitter
 	public void startThread()
 	{
 		new Thread(sendThread).start();
-		System.out.println("消息处理线程启动");
+		System.out.println("消息发送线程启动");
 	}
 	public void endThread()
 	{
@@ -66,6 +67,7 @@ public class Transmitter
 		if(transmitter==null)
 		{
 			transmitter=new Transmitter();
+			Log.d("初始化消息发送");
 		}
 		return transmitter;
 	}

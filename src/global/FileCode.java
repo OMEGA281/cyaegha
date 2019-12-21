@@ -38,7 +38,7 @@ public class FileCode
 		if(fileCode==null)
 		{
 			fileCode=new FileCode(dirPath);
-			System.out.println("文件处理初始化");
+			Log.d("初始化文件处理");
 		}
 		if(!TimeCode.getTimecode().getDate().equals(fileCode.nowDate))
 		{
@@ -61,7 +61,7 @@ public class FileCode
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("文件流关闭");
+//		System.out.println("文件流关闭");
 		return true;
 	}
 //	打开写出文件流
@@ -75,7 +75,7 @@ public class FileCode
 			createFile(txtPath);
 		try {
 //			开启文件流
-			System.out.println("开启文件流：指向"+txtPath);
+//			System.out.println("开启文件流：指向"+txtPath);
 			fileWriter=new FileWriter(new File(txtPath),true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -83,13 +83,13 @@ public class FileCode
 		}
 //		开启写入器
 		bufferedWriter=new BufferedWriter(fileWriter);
-		System.out.println("文件流已打开");
+//		System.out.println("文件流已打开");
 		return true;
 	}
 //	重载打开文件流
 	private boolean flashStream()
 	{
-		System.out.println("重载文件流");
+//		System.out.println("重载文件流");
 		try 
 		{
 			if(fileWriter!=null)
@@ -111,17 +111,17 @@ public class FileCode
 	}
 	private boolean IfFileExist(String url)
 	{
-		System.out.println("检测文件（夹）存在？："+url);
+//		System.out.println("检测文件（夹）存在？："+url);
 		return new File(url).exists();
 	}
 	private boolean createFolder(String url)
 	{
-		System.out.println("新建文件夹:"+url);
+//		System.out.println("新建文件夹:"+url);
 		return new File(url).mkdir();
 	}
 	private boolean createFile(String url)
 	{
-		System.out.println("新建文件:"+url);
+//		System.out.println("新建文件:"+url);
 		try 
 		{
 			return new File(url).createNewFile();
@@ -139,7 +139,7 @@ public class FileCode
 		try {
 			bufferedWriter.write(s);
 			bufferedWriter.flush();
-			System.out.println("写了"+s);
+//			System.out.println("写了"+s);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -162,7 +162,7 @@ public class FileCode
 		}
 		BufferedReader bufferedReader;
 		bufferedReader=new BufferedReader(fileReader);
-		System.out.println("启动读取文件流");
+//		System.out.println("启动读取文件流");
 		String line;
 		for(;(line=readLine(bufferedReader))!=null;)
 		{
@@ -170,7 +170,7 @@ public class FileCode
 		}
 		try {
 			fileReader.close();
-			System.out.println("关闭读取文件流");
+//			System.out.println("关闭读取文件流");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

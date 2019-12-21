@@ -44,4 +44,9 @@ public class Reflector
 		reflect.call("setReceiveMessageType",receiveMessageType);
 		reflect.call(methodName);
 	}
+	/**专门启动自定类的初始化方法(无参)*/
+	public void startMethod()
+	{
+		reflect.call("initialize");
+	}
 }

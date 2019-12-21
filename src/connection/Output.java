@@ -16,6 +16,7 @@ public class Output
 		{
 			this.CQ=CQ;
 			output=this;
+			Log.d("初始化发信器");
 		}
 	}
 	public static Output getOutput()
@@ -32,13 +33,13 @@ public class Output
 		switch (sendMessageType.getType()) 
 		{
 		case ConstantTable.MSGTYPE_PERSON:
-			CQ.sendPrivateMsg(sendMessageType.toClient, sendMessageType.Msg);
+			CQ.sendPrivateMsg(sendMessageType.toQQ, sendMessageType.Msg);
 			break;
 		case ConstantTable.MSGTYPE_GROUP:
-			CQ.sendGroupMsg(sendMessageType.toClient, sendMessageType.Msg);
+			CQ.sendGroupMsg(sendMessageType.toGroup, sendMessageType.Msg);
 			break;
 		case ConstantTable.MSGTYPE_DISCUSS:
-			CQ.sendDiscussMsg(sendMessageType.toClient, sendMessageType.Msg);
+			CQ.sendDiscussMsg(sendMessageType.toGroup, sendMessageType.Msg);
 			break;
 		default:
 			Log.e("未发现发送信息的类型");

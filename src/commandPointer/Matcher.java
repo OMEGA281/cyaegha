@@ -59,15 +59,14 @@ public class Matcher
 			commandPackage.method=element.getChild("method").getText();
 			commandList.add(commandPackage);
 		}
-		for (CommandPackage commandPackage : commandList) 
-		{
-			Log.i(commandPackage.toString());
-		}
 	} 
 	public static Matcher getMatcher()
 	{
 		if(matcher==null)
+		{
 			matcher=new Matcher();
+			Log.d("初始化命令匹配器");
+		}
 		return matcher;
 	}
 	/**用于验证是否传递来的文字是否可能是命令*/
@@ -94,7 +93,7 @@ public class Matcher
 		String[] commandString=s.toLowerCase().split(" ");
 		for (CommandPackage commandPackage : commandList) 
 		{
-			if(commandString[0].toLowerCase().startsWith(commandPackage.name))
+			if(commandString[0].equals(commandPackage.name))
 			{
 				return commandPackage;
 			}
