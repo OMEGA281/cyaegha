@@ -9,12 +9,17 @@ import connection.ReceiveMessageType;
 public abstract class Father 
 {
 	ReceiveMessageType receiveMessageType;
+	String help;
 	
 	public void setReceiveMessageType(ReceiveMessageType receiveMessageType) 
 	{
 		this.receiveMessageType = receiveMessageType;
 	}
 	public abstract void initialize();
+	public void setHelp(String help)
+	{
+		this.help=help;
+	}
 	public void addMessageReceiveListener(OnMessageReceiveListener messageReceiveListener)
 	{
 		Register.getRegister().messageReceiveListeners.add(messageReceiveListener);

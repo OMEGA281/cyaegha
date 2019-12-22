@@ -34,7 +34,10 @@ public class Reflector
 	public void startMethod(String methodName, ReceiveMessageType receiveMessageType, ArrayList<String> params)
 	{
 		reflect.call("setReceiveMessageType",receiveMessageType);
-		reflect.call(methodName, params);
+		if(params.size()==0)
+			reflect.call(methodName);
+		else
+			reflect.call(methodName, params);
 	}
 	/**启动本反射器的对应方法(无参)
 	 * @param methodName 方法名字

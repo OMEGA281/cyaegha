@@ -33,6 +33,7 @@ public class FindJarResources
 		if(inputStream==null)
 		{
 			Log.e("指向",path,"的文件不存在");
+			return null;
 		}
 		return new XMLInputStream(FileName,inputStream);
 	}

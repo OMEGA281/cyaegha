@@ -22,14 +22,12 @@ public class Matcher
 	{
 		String name;
 		String help;
-		String format;
 		String method;
-		public CommandPackage(String name,String help,String format,String method) 
+		public CommandPackage(String name,String help,String method) 
 		{
 			// TODO Auto-generated constructor stub
 			this.name=name;
 			this.help=help;
-			this.format=format;
 			this.method=method;
 		}
 		CommandPackage()
@@ -40,7 +38,7 @@ public class Matcher
 		public String toString() 
 		{
 			// TODO Auto-generated method stub
-			return name+" "+help+" "+format+" "+method;
+			return name+" "+help+" "+" "+method;
 		}
 	}
 	/**根据方向将XML内的指令储存在List中*/
@@ -49,13 +47,12 @@ public class Matcher
 		// TODO Auto-generated constructor stub
 		Document document= XMLReader.getXMLReader(FindJarResources.getFindJarResources()
 				.getJarResources("CommandList.xml")).getDocument();
-		List<Element> elements=document.getRootElement().getChildren("first");
+		List<Element> elements=document.getRootElement().getChildren("bag");
 		for (Element element : elements) 
 		{
 			CommandPackage commandPackage=new CommandPackage();
 			commandPackage.name=element.getChild("string").getText();
 			commandPackage.help=element.getChild("help").getText();
-			commandPackage.format=element.getChild("format").getText();
 			commandPackage.method=element.getChild("method").getText();
 			commandList.add(commandPackage);
 		}
@@ -88,7 +85,7 @@ public class Matcher
 	 * @param root 所处的父级命令 若为null则为根
 	 * @param s 待检测语句
 	 * @return 返回搜寻到的命令集，如果没有则返回空*/
-	private CommandPackage ifCommandExist(String root,String s)
+	private CommandPackage ifCommandExist(String s)
 	{
 		String[] commandString=s.toLowerCase().split(" ");
 		for (CommandPackage commandPackage : commandList) 
@@ -106,7 +103,17 @@ public class Matcher
 	{
 		StringBuilder stringBuilder=new StringBuilder(messagePackage.getMsg());
 		stringBuilder.deleteCharAt(0);
-		CommandPackage commandPackage=ifCommandExist(null, stringBuilder.toString());
+		CommandPackage commandPackage=ifCommandExist(stringBuilder.toString());
+		
+		
+		String[] commandparts=stringBuilder.toString().split(" ");
+		ArrayList<String> params=new ArrayList<String>();
+		for(int i=1;i<commandparts.length;i++)
+		{
+			params.add(commandparts[i]);
+		}
+		
+		
 		if(commandPackage==null)
 		{
 			Log.i("无效命令：",stringBuilder.toString());
@@ -116,7 +123,7 @@ public class Matcher
 		else
 		{
 			Reflector.getReflector(Formatter.getClassName(commandPackage.method))
-				.startMethod(Formatter.getMethodName(commandPackage.method),messagePackage);
+			.startMethod(Formatter.getMethodName(commandPackage.method), messagePackage, params);
 		}
 	}
 }
