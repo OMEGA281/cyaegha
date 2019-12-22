@@ -89,7 +89,7 @@ public class Ignorer extends Father {
 				{
 					stringBuilder.append(listpart+"\n");
 				}
-				sendBackMsg(stringBuilder.toString());
+				sendBackMsg(stringBuilder.deleteCharAt(stringBuilder.length()-1).toString());
 				break;
 				
 			case "discuss":
@@ -98,7 +98,7 @@ public class Ignorer extends Father {
 				{
 					stringBuilder.append(listpart+"\n");
 				}
-				sendBackMsg(stringBuilder.toString());
+				sendBackMsg(stringBuilder.deleteCharAt(stringBuilder.length()-1).toString());
 				break;
 				
 			case "person":
@@ -107,7 +107,7 @@ public class Ignorer extends Father {
 				{
 					stringBuilder.append(listpart+"\n");
 				}
-				sendBackMsg(stringBuilder.toString());
+				sendBackMsg(stringBuilder.deleteCharAt(stringBuilder.length()-1).toString());
 				break;
 
 			default:
@@ -115,6 +115,7 @@ public class Ignorer extends Father {
 				sendBackHelp("未知的参数类型：",arrayList.get(1).toLowerCase());
 				return;
 			}
+			return;
 		case "reverse":
 			if(arrayList.size()<2)
 			{
@@ -145,6 +146,7 @@ public class Ignorer extends Father {
 				sendBackHelp("未知的参数类型：",type);
 				return;
 			}
+			return;
 		default:
 			Log.i("未知的子命令：",arrayList.get(0).toLowerCase());
 			sendBackHelp("未知的子命令：",arrayList.get(0).toLowerCase());
