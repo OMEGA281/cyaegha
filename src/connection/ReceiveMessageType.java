@@ -12,6 +12,15 @@ public class ReceiveMessageType
 	String fromAnonymous;
 	String Msg;
 	long time;
+	/**收到消息时的通用包形式
+	 * @param MsgType 消息类型，常量池中有
+	 * @param subType 子类型，常量池中有
+	 * @param MsgID 消息的ID
+	 * @param fromQQ 来源QQ
+	 * @param fromGroup 来源群号或讨论组号
+	 * @param fromAnonymous 来源匿名者
+	 * @param Msg 消息内容
+	 * @param time 时间戳*/
 	public ReceiveMessageType(int MsgType,int subType,int MsgID,long fromQQ,long fromGroup,String fromAnonymous,String Msg,long time) 
 	{
 		// TODO Auto-generated constructor stub

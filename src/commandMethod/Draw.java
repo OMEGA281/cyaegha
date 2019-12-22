@@ -26,13 +26,13 @@ public class Draw extends Father
 	public void drawDefault()
 	{
 		if(defaultCardPool==null)
-			sendMsgBack("您尚未定义默认牌库，您可以使用\\.draw set …来设置默认牌库");
+			sendBackMsg("您尚未定义默认牌库，您可以使用.draw set …来设置默认牌库");
 		else
 		{
 			String s=drawCard(defaultCardPool);
 			if(s!=null)
 			{
-				sendMsgBack(drawCard(defaultCardPool));
+				sendBackMsg(drawCard(defaultCardPool));
 			}
 		}
 	}
@@ -47,11 +47,11 @@ public class Draw extends Father
 			if(!cardPool.endsWith("\\.xml"))
 				cardPool=cardPool+".xml";
 			if(FindJarResources.getFindJarResources().getJarResources(cardPool)==null)
-				sendMsgBack("未查询到牌库："+cardPool.substring(0, cardPool.length()-4));
+				sendBackMsg("未查询到牌库："+cardPool.substring(0, cardPool.length()-4));
 			else
 			{
 				defaultCardPool=cardPool;
-				sendMsgBack("设置默认牌库成功");
+				sendBackMsg("设置默认牌库成功");
 			}
 			break;
 
@@ -73,18 +73,12 @@ public class Draw extends Father
 		}catch(NullPointerException exception)
 		{
 			Log.e("未查询到牌库：",cardPoolFile);
-			sendMsgBack("未查询到牌库:"+cardPoolFile);
+			sendBackMsg("未查询到牌库:"+cardPoolFile);
 			return null;
 		}
 		List<Element> element=document.getRootElement().getChildren();
 		Random random=new Random();
 		int x=random.nextInt(element.size()-1);
 		return element.get(x).getText();
-	}
-	private void sendMsgBack(String s) 
-	{
-		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
-				, receiveMessageType.getfromGroup(), s));
 	}
 }

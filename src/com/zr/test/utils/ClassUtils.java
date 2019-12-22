@@ -58,7 +58,7 @@ public class ClassUtils {
             /*从所有的jar包中查找包名*/
             classNames = getClassNameFromJars(((URLClassLoader) loader).getURLs(), packageName, isRecursion);
         }
-        System.out.println(classNames.size());
+//        System.out.println(classNames.size());
         return classNames;
     }
 

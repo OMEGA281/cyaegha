@@ -91,15 +91,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
         
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw Tch", 0);
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw set", 0);
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw set dcf", 0);
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw set Touhou", 0);
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw set SpellCard", 0);
-    	demo.privateMsg(ConstantTable.MSGTYPE_PERSON, 34, 1304554598, ".draw", 0);
-    		
+    	demo.groupMsg(1, 45, 987654321, 1234567890, null, ".draw", 0);
+    	demo.privateMsg(1, 98, 1304554598, ".monitor add group 987654321", 0);
+    	demo.groupMsg(1, 45, 987654321, 1234567890, null, ".draw", 0);
+    	
         System.out.println();
         String s=new Scanner(System.in).next();
         demo.exit();// 最后程序运行结束，调用exit方法

@@ -5,9 +5,12 @@ import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.OnMessageSendListener;
 import commandMethod.register.Register;
 import connection.ReceiveMessageType;
+import connection.SendMessageType;
+import transceiver.Transmitter;
 
 public abstract class Father 
 {
+	/**若是由命令调用，则一定会更新本变量，若是以listener调用，则需手动更新*/
 	ReceiveMessageType receiveMessageType;
 	String help;
 	
@@ -31,5 +34,12 @@ public abstract class Father
 	public void addMessageSendListener(OnMessageSendListener messageSendListener)
 	{
 		Register.getRegister().messageSendListeners.add(messageSendListener);
+	}
+	/**若是由命令调用，则一定会正常，若是以listener调用，则需手动更新receiveMessageType*/
+	public void sendBackMsg(String string)
+	{
+		Transmitter.getTransmitter().addMsg(new SendMessageType(
+				receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
+				, receiveMessageType.getfromGroup(), string));
 	}
 }
