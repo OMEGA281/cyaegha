@@ -8,8 +8,8 @@ import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import connection.ReceiveMessageType;
-import global.FileCode;
 import surveillance.Log;
+import tools.FileSimpleIO;
 
 public class Receiver 
 {
@@ -75,7 +75,6 @@ public class Receiver
 						Matcher.getMatcher().CommandProcesser(receiveMessageType);
 					}
 					
-					FileCode.getFileCode().writeLine(Translator.msgTrans(receiveMessageType));
 				}
 				try 
 				{

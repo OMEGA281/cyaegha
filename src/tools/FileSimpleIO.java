@@ -1,26 +1,16 @@
-package global;
+package tools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 
-import connection.ReceiveMessageType;
-import connection.SendMessageType;
-import surveillance.Log;
-import transceiver.Translator;
-import transceiver.Transmitter;
 /**一个简单文件读取类，所有的流都存在在本类之中
  * 所有的反馈类型都存在于本类中的{@link returnType}中*/
-public class FileCode 
+public class FileSimpleIO 
 {
 	/**反馈的类型，部分方法会反馈回其Name值*/
 	public enum returnType{
@@ -42,7 +32,7 @@ public class FileCode
 	
 	/**初始化一个文件操作类
 	 * @param aimFile 目标文件的位置*/
-	FileCode(String aimFile)
+	FileSimpleIO(String aimFile)
 	{
 		// TODO Auto-generated constructor stub
 		this.aimFile=aimFile;
@@ -60,7 +50,6 @@ public class FileCode
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
-			Log.e("无法关闭写出流");
 			return returnType.FAILED_CLOSE_OUTSTREAM;
 		}
 		bufferedReader=null;

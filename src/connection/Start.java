@@ -6,9 +6,9 @@ import org.meowy.cqp.jcq.event.JcqAppAbstract;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.ConstantTable;
-import global.FileCode;
-import global.TimeCode;
 import surveillance.Log;
+import tools.FileSimpleIO;
+import tools.TimeSimpleTool;
 import transceiver.Receiver;
 import transceiver.Transmitter;
 
@@ -139,10 +139,6 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
     	System.out.println("启动中……");
     	ConstantTable.ROOTPATH=appDirectory;
-//    	启动时间控件
-    	TimeCode.getTimecode();
-//    	启动文件读写控件
-    	FileCode.getFileCode(appDirectory);
 //    	启动注册器
     	new Register();
     	
@@ -162,7 +158,6 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @return 请固定返回0，返回后酷Q将很快关闭，请不要再通过线程等方式执行其他代码。
      */
     public int exit() {
-		FileCode.getFileCode().close();
 		Receiver.getReceiver().endThread();
 		Transmitter.getTransmitter().endThread();
         return 0;
@@ -216,7 +211,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 这里处理消息
 //        CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
     	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_PERSON
-    			, subType, msgId, fromQQ, 0, null, msg,TimeCode.getTimecode().getTime()));
+    			, subType, msgId, fromQQ, 0, null, msg,TimeSimpleTool.getNowTimeStamp()));
         return MSG_IGNORE;
     }
 
@@ -240,12 +235,12 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
             // 将匿名用户信息放到 anonymous 变量中
             Anonymous anonymous = CQ.getAnonymous(fromAnonymous);
             Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
-        			, subType, msgId, 80000000L, fromGroup, fromAnonymous, msg,TimeCode.getTimecode().getTime()));
+        			, subType, msgId, 80000000L, fromGroup, fromAnonymous, msg,TimeSimpleTool.getNowTimeStamp()));
         }
         else
         {
         	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
-        			, subType, msgId, fromQQ, fromGroup, null, msg,TimeCode.getTimecode().getTime()));
+        			, subType, msgId, fromQQ, fromGroup, null, msg,TimeSimpleTool.getNowTimeStamp()));
         }
 
         // 解析CQ码案例 如：[CQ:at,qq=100000]
@@ -280,7 +275,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     public int discussMsg(int subType, int msgId, long fromDiscuss, long fromQQ, String msg, int font) {
         // 这里处理消息
     	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_DISCUSS
-    			, subType, msgId, fromQQ, fromDiscuss, null, msg,TimeCode.getTimecode().getTime()));
+    			, subType, msgId, fromQQ, fromDiscuss, null, msg,TimeSimpleTool.getNowTimeStamp()));
         return MSG_IGNORE;
     }
 
