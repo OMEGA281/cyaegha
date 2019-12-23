@@ -94,6 +94,8 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     	demo.groupMsg(1, 45, 987654321, 1234567890, null, ".draw", 0);
     	demo.privateMsg(1, 98, 1304554598, ".monitor add group 987654321", 0);
     	demo.groupMsg(1, 45, 987654321, 1234567890, null, ".draw", 0);
+    	demo.privateMsg(1, 98, 1304554598, ".help", 0);
+    	demo.privateMsg(1, 98, 1304554598, ".draw set Touhou", 0);
     	
         System.out.println();
         String s=new Scanner(System.in).next();
@@ -136,6 +138,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
     	System.out.println("启动中……");
+    	ConstantTable.ROOTPATH=appDirectory;
 //    	启动时间控件
     	TimeCode.getTimecode();
 //    	启动文件读写控件

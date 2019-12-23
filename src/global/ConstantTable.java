@@ -2,6 +2,8 @@ package global;
 
 public class ConstantTable
 {
+	public static String ROOTPATH;
+	
 	public static final int NUM_NULL=-1;
 	
 	public static final int MSGTYPE_PERSON=0;
