@@ -3,10 +3,13 @@ package tools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 /**一个简单文件读取类，所有的流都存在在本类之中
  * 所有的反馈类型都存在于本类中的{@link returnType}中*/
@@ -16,7 +19,7 @@ public class FileSimpleIO
 	public enum returnType{
 		SUCCESS
 		,FAILED_CLOSE_OUTSTREAM,FAILED_OPEN_OUTSTREAM,FAILED_CLOSE_INSTREAM,FAILED_OPEN_INSTREAM
-		,FAILED_CRAETFILE
+		,FAILED_CRAETFILE,FAILED_COPYFILE
 		,FAILED_WRITELINE,FAILED_READLINE
 		,FAILED_FLUSH_OUTSTREAM,FAILED_FLUSH_INSTREAM
 		,FAILED_NULL_WRITESTREAM,FAILED_NULL_READSTREAM,FAILED_NULL_FILE};
@@ -136,36 +139,18 @@ public class FileSimpleIO
 	 * 如果文件已经存在，则不会创建*/
 	public static returnType createFile(String aim)
 	{
-		if(new File(aim).exists())
+		File file=new File(aim);
+		if(file.exists())
 			return returnType.SUCCESS;
-		String format=aim.replace('/', '\\');
-		if(!format.contains("\\"))
-		{
-			try 
-			{
-				new File(format).createNewFile();
-			} 
-			catch (IOException e) 
-			{
-				// TODO Auto-generated catch block
-				return returnType.FAILED_CRAETFILE;
-			}
-		}
-		else
-		{
-			int index=format.lastIndexOf('\\');
-			String path=format.substring(0, index);
-			String name=format.substring(index+1, format.length());
-			createFolder(path);
-			try 
-			{
-				new File(name).createNewFile();
-			} 
-			catch (IOException e) 
-			{
-				// TODO Auto-generated catch block
-				return returnType.FAILED_CRAETFILE;
-			}
+		String path=file.getParent();
+		String name=file.getName();
+		if(path!=null)
+			new File(path).mkdirs();
+		try {
+			new File(name).createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return returnType.FAILED_CRAETFILE;
 		}
 		return returnType.SUCCESS;
 	}
@@ -235,5 +220,53 @@ public class FileSimpleIO
 		}
 		return stringBuilder.toString();
 	}
-	
+	/**
+	 * 复制本实例中的文件到另一处
+	 * @param path 路径
+	 * @param name 文件名称，如果为null则与源文件名称相同
+	 */
+	public returnType copyFile(String path,String name)
+	{
+		if(!file.exists())
+			return returnType.FAILED_NULL_FILE;
+		if(name==null)
+			name=file.getName();
+		if(!new File(path,name).exists())
+			createFile(path+name);
+		FileChannel inChannel=null;
+		FileChannel outChannel=null;
+		try 
+		{
+			inChannel=new FileInputStream(file).getChannel();
+			outChannel=new FileOutputStream(new File(path,name)).getChannel();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			// TODO Auto-generated catch block
+//			理论上不可能这样
+			e.printStackTrace();
+		}
+		
+		try 
+		{
+			outChannel.transferFrom(inChannel, 0, inChannel.size());
+		} 
+		catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			return returnType.FAILED_COPYFILE;
+		}
+		
+		try 
+		{
+			inChannel.close();
+			outChannel.close();
+		} 
+		catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			return returnType.FAILED_COPYFILE;
+		}
+		return returnType.SUCCESS;
+	}
 }

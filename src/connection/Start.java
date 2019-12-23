@@ -7,7 +7,6 @@ import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.ConstantTable;
 import surveillance.Log;
-import tools.FileSimpleIO;
 import tools.TimeSimpleTool;
 import transceiver.Receiver;
 import transceiver.Transmitter;
