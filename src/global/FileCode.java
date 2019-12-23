@@ -18,38 +18,39 @@ import connection.SendMessageType;
 import surveillance.Log;
 import transceiver.Translator;
 import transceiver.Transmitter;
-
+/**一个简单文件读取类，所有的流都存在在本类之中
+ * 所有的反馈类型都存在于本类中的{@link returnType}中*/
 public class FileCode 
 {
-	static FileCode fileCode;
-	String dirPath;
-	String nowDate;
-	String txtPath;
-	FileWriter fileWriter;
-	BufferedWriter bufferedWriter;
-//	无参启动，获得指针
-	public static FileCode getFileCode()
+	/**反馈的类型，部分方法会反馈回其Name值*/
+	public enum returnType{
+		SUCCESS
+		,FAILED_CLOSE_OUTSTREAM,FAILED_OPEN_OUTSTREAM,FAILED_CLOSE_INSTREAM,FAILED_OPEN_INSTREAM
+		,FAILED_CRAETFILE
+		,FAILED_WRITELINE,FAILED_READLINE
+		,FAILED_FLUSH_OUTSTREAM,FAILED_FLUSH_INSTREAM
+		,FAILED_NULL_WRITESTREAM,FAILED_NULL_READSTREAM,FAILED_NULL_FILE};
+	
+	private String aimFile;
+	private File file;
+	
+	private FileWriter fileWriter;
+	private BufferedWriter bufferedWriter;
+	
+	private FileReader fileReader;
+	private BufferedReader bufferedReader;
+	
+	/**初始化一个文件操作类
+	 * @param aimFile 目标文件的位置*/
+	FileCode(String aimFile)
 	{
-		return getFileCode(null);
+		// TODO Auto-generated constructor stub
+		this.aimFile=aimFile;
+		file=new File(this.aimFile);
 	}
-//	启动时初始化使用，带有参数，用于确定目录位置
-	public static FileCode getFileCode(String dirPath) 
-	{
-		if(fileCode==null)
-		{
-			fileCode=new FileCode(dirPath);
-			Log.d("初始化文件处理");
-		}
-		if(!TimeCode.getTimecode().getDate().equals(fileCode.nowDate))
-		{
-			fileCode.nowDate=TimeCode.getTimecode().getDate();
-			fileCode.txtPath=fileCode.dirPath+"\\"+fileCode.nowDate+".txt";
-			fileCode.flashStream();
-		}
-		return fileCode;
-	}
-//	关闭写出文件流
-	public boolean close()
+	/**关闭写出文件流
+	 * @return 是否成功*/
+	public returnType closeOutStream()
 	{
 		try 
 		{
@@ -59,222 +60,191 @@ public class FileCode
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e("无法关闭写出流");
+			return returnType.FAILED_CLOSE_OUTSTREAM;
 		}
+		bufferedReader=null;
 //		System.out.println("文件流关闭");
-		return true;
+		return returnType.SUCCESS;
 	}
-//	打开写出文件流
-	private boolean openOutStream()
+	/**产生一个写出流,如果文件不存在,则会自动创建<br>
+	 * 如果已经存在写出流则关闭上一写出流并产生新的<br>
+	 * @param append 是的话则会在末尾添加
+	 * @return 是否成功*/
+	public returnType openOutStream(boolean append)
 	{
-//		检测文件夹是否存在，不存在则创建
-		if(!IfFileExist(dirPath))
-			createFolder(dirPath);
-//		检测本日文件是否存在，不存在则创建
-		if(!IfFileExist(txtPath))
-			createFile(txtPath);
-		try {
-//			开启文件流
-//			System.out.println("开启文件流：指向"+txtPath);
-			fileWriter=new FileWriter(new File(txtPath),true);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(bufferedWriter!=null)
+			if(closeOutStream()!=returnType.SUCCESS)
+				return returnType.FAILED_CLOSE_OUTSTREAM;
+		try 
+		{
+			fileWriter = new FileWriter(file,append);
+		} 
+		catch(FileNotFoundException e)
+		{
+			createFile(aimFile);
+			return openOutStream(append);
 		}
-//		开启写入器
+		catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			return returnType.FAILED_OPEN_OUTSTREAM;
+		}
+		
 		bufferedWriter=new BufferedWriter(fileWriter);
-//		System.out.println("文件流已打开");
-		return true;
+		return returnType.SUCCESS;
 	}
-//	重载打开文件流
-	private boolean flashStream()
+	/**关闭读取文件流
+	 * @return 是否成功*/
+	public returnType closeInStream()
 	{
-//		System.out.println("重载文件流");
 		try 
 		{
-			if(fileWriter!=null)
-				fileWriter.close();
-		} catch (IOException e) {
+			if(fileReader!=null)
+				fileReader.close();
+		} 
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return returnType.FAILED_CLOSE_INSTREAM;
 		}
-		return openOutStream();
+		bufferedReader=null;
+		return returnType.SUCCESS;
 	}
-//	构造方法，确定了路径
-	FileCode(String dirPath)
+	/**产生一个读取流,如果文件不存在,则会报错<br>
+	 * 如果已经存在读取流则关闭上一读取流并产生新的<br>
+	 * @return 是否成功*/
+	public returnType openInStream()
 	{
-		// TODO Auto-generated constructor stub
-		this.dirPath=dirPath;
-		nowDate=TimeCode.getTimecode().getDate();
-		txtPath=dirPath+"\\"+nowDate+".txt";
-		openOutStream();
-	}
-	private boolean IfFileExist(String url)
-	{
-//		System.out.println("检测文件（夹）存在？："+url);
-		return new File(url).exists();
-	}
-	private boolean createFolder(String url)
-	{
-//		System.out.println("新建文件夹:"+url);
-		return new File(url).mkdir();
-	}
-	private boolean createFile(String url)
-	{
-//		System.out.println("新建文件:"+url);
+		if(bufferedWriter!=null)
+			if(closeOutStream()!=returnType.SUCCESS)
+				return returnType.FAILED_CLOSE_INSTREAM;
 		try 
 		{
-			return new File(url).createNewFile();
+			fileWriter = new FileWriter(file);
+		} 
+		catch(FileNotFoundException e)
+		{
+			return returnType.FAILED_NULL_FILE;
+		}
+		catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			return returnType.FAILED_OPEN_INSTREAM;
+		}
+		
+		bufferedWriter=new BufferedWriter(fileWriter);
+		return returnType.SUCCESS;
+	}
+	/**创建文件夹，可以直接输入整体的路径*/
+	public static returnType createFolder(String aim)
+	{
+		new File(aim).mkdirs();
+		return returnType.SUCCESS;
+	}
+	/**创建文件，可以直接输入整体的路径<br>
+	 * 而且会创建相应的目录<br>
+	 * 如果文件已经存在，则不会创建*/
+	public static returnType createFile(String aim)
+	{
+		if(new File(aim).exists())
+			return returnType.SUCCESS;
+		String format=aim.replace('/', '\\');
+		if(!format.contains("\\"))
+		{
+			try 
+			{
+				new File(format).createNewFile();
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				return returnType.FAILED_CRAETFILE;
+			}
+		}
+		else
+		{
+			int index=format.lastIndexOf('\\');
+			String path=format.substring(0, index);
+			String name=format.substring(index+1, format.length());
+			createFolder(path);
+			try 
+			{
+				new File(name).createNewFile();
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				return returnType.FAILED_CRAETFILE;
+			}
+		}
+		return returnType.SUCCESS;
+	}
+	/**向流中写入一句话<br>
+	 * 写入的类型由{@link #openOutStream}的参数决定<br>
+	 * 写完之后会刷新缓存
+	 * @param s 写入数据
+	 */
+	public returnType writeLine(String s)
+	{
+		if(bufferedWriter==null)
+			return returnType.FAILED_NULL_WRITESTREAM;
+		try 
+		{
+			bufferedWriter.write(s);
 		}
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e("创建文件失败：",url);
+			return returnType.FAILED_WRITELINE;
 		}
-		return false;
+		return flushStream();
 	}
-	public boolean writeLine(String s)
+	/**
+	 * 刷新本类里的写出流<br>
+	 * 如果流为空，则直接返回成功
+	 * @param ifWrite 是否为写出流
+	 */
+	public returnType flushStream()
 	{
-		try {
-			bufferedWriter.write(s);
-			bufferedWriter.flush();
-//			System.out.println("写了"+s);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return true;
-	}
-	
-	public ArrayList<ReceiveMessageType> getMsgList(String url)
-	{
-		ArrayList<ReceiveMessageType> MsgList=new ArrayList<ReceiveMessageType>();
-		if(IfFileExist(url)!=true)
-			return null;
-		FileReader fileReader = null;
-		try {
-			fileReader=new FileReader(new File(url));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-//			其实根本不会走到这里
-			e.printStackTrace();
-		}
-		BufferedReader bufferedReader;
-		bufferedReader=new BufferedReader(fileReader);
-//		System.out.println("启动读取文件流");
-		String line;
-		for(;(line=readLine(bufferedReader))!=null;)
-		{
-			MsgList.add(Translator.stringTrans(line));
-		}
-		try {
-			fileReader.close();
-//			System.out.println("关闭读取文件流");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return MsgList;
-	}
-	
-	private String readLine(BufferedReader bufferedReader)
-	{
-		String s=null;
-		try {
-			s=bufferedReader.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return s;
-	}
-	
-	protected boolean copyFile(String fromURL,String toURL)
-	{
-		if(!IfFileExist(fromURL))
-		{
-			Log.e("未查询到源文件");
-			return false;
-		}
-		if(!IfFileExist(toURL))
-		{
-			createFile(toURL);
-			Log.e("未查询到目标文件","已新建文件");
-		}
-		File fromFile=new File(fromURL);
-		File toFile=new File(toURL);
-		return copyFile(fromFile, toFile);
-	}
-	
-	protected boolean copyFile(File from,File to)
-	{
-		if(from==null)
-		{
-			Log.e("未查询到源文件");
-			return false;
-		}
-		if(to==null)
-		{
-			try 
-			{
-				to.createNewFile();
-			}
-			catch (IOException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Log.e("未查询到目标文件","已新建文件");
-		}
-		InputStream i;
-		OutputStream o;
-		try
-		{
-		i=new FileInputStream(from);
-		o=new FileOutputStream(to);
-		}
-		catch(FileNotFoundException e)
-		{
-			e.printStackTrace();
-			return false;
-		}
-		return $copyFile(i, o);
-	}
-	
-	protected boolean copyFile(InputStream from,OutputStream to)
-	{
-		return $copyFile(from, to);
-	}
-	private boolean $copyFile(InputStream from,OutputStream to)
-	{
-		byte[] buf = new byte[8 * 1024];
-		int len = 0;
+		if(bufferedWriter==null)
+			return returnType.SUCCESS;
 		try 
 		{
-			while ((len = from.read(buf)) != -1)
-			{
-				to.write(buf, 0, len);
-				to.flush();
-			}
+			bufferedWriter.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return returnType.FAILED_FLUSH_OUTSTREAM;
 		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally 
-		{
-			// TODO: handle finally clause
-			try 
-			{
-				from.close();
-				to.close();
-			} catch (Exception e2) 
-			{
-				// TODO: handle exception
-				e2.printStackTrace();
-			}
-		}
-		return true;
+		return returnType.SUCCESS;
 	}
+	/**从流中读取一句话
+	 * */
+	public String readLine()
+	{
+		if(bufferedReader==null)
+			return returnType.FAILED_NULL_READSTREAM.name();
+		try {
+			return bufferedReader.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return returnType.FAILED_READLINE.name();
+		}
+	}
+	/**读取文件中的全部数据*/
+	public String readAll()
+	{
+		if(bufferedReader==null)
+			return returnType.FAILED_NULL_READSTREAM.name();
+		StringBuilder stringBuilder=new StringBuilder();
+		for(String s=readLine();s!=null;s=readLine())
+		{
+			if(s.equals(returnType.FAILED_READLINE.name()))
+				return s;
+			stringBuilder.append(s);
+			stringBuilder.append('\n');
+		}
+		return stringBuilder.toString();
+	}
+	
 }
