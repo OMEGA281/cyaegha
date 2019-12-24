@@ -9,9 +9,9 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import connection.SendMessageType;
-import global.FindJarResources;
 import global.xmlProcessor.XMLReader;
 import surveillance.Log;
+import tools.GetJarResources;
 import transceiver.Transmitter;
 
 public class Draw extends Father
@@ -46,7 +46,7 @@ public class Draw extends Father
 			String cardPool=arrayList.get(1);
 			if(!cardPool.endsWith("\\.xml"))
 				cardPool=cardPool+".xml";
-			if(FindJarResources.getFindJarResources().getJarResources(cardPool)==null)
+			if(GetJarResources.getJarResources(cardPool)==null)
 				sendBackMsg("未查询到牌库："+cardPool.substring(0, cardPool.length()-4));
 			else
 			{
@@ -68,8 +68,7 @@ public class Draw extends Father
 		Document document;
 		try
 		{
-			document=XMLReader.getXMLReader(FindJarResources.getFindJarResources()
-					.getJarResources(cardPoolFile)).getDocument();
+			document=XMLReader.getXMLReader(GetJarResources.getJarResources(cardPoolFile)).getDocument();
 		}catch(NullPointerException exception)
 		{
 			Log.e("未查询到牌库：",cardPoolFile);

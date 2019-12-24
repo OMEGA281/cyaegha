@@ -6,8 +6,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import connection.SendMessageType;
-import global.FindJarResources;
 import global.xmlProcessor.XMLReader;
+import tools.GetJarResources;
 import transceiver.Transmitter;
 
 public class Help extends Father
@@ -22,8 +22,7 @@ public class Help extends Father
 	public void showHelp()
 	{
 		StringBuilder stringBuilder=new StringBuilder("命令如下：\n");
-		Document document=XMLReader.getXMLReader(FindJarResources.getFindJarResources()
-				.getJarResources("CommandList.xml")).getDocument();
+		Document document=XMLReader.getXMLReader(GetJarResources.getJarResources("CommandList.xml")).getDocument();
 		List<Element> elements=document.getRootElement().getChildren();
 		for (Element element : elements) {
 			stringBuilder.append(".");

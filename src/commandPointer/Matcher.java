@@ -9,9 +9,9 @@ import org.jdom2.Element;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
 import global.ConstantTable;
-import global.FindJarResources;
 import global.xmlProcessor.XMLReader;
 import surveillance.Log;
+import tools.GetJarResources;
 import transceiver.Transmitter;
 
 public class Matcher 
@@ -45,7 +45,7 @@ public class Matcher
 	public Matcher() 
 	{
 		// TODO Auto-generated constructor stub
-		Document document= XMLReader.getXMLReader(FindJarResources.getFindJarResources()
+		Document document= XMLReader.getXMLReader(GetJarResources
 				.getJarResources("CommandList.xml")).getDocument();
 		List<Element> elements=document.getRootElement().getChildren("bag");
 		for (Element element : elements) 

@@ -1,11 +1,15 @@
 package commandMethod;
 
+import java.io.File;
+
 import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.OnMessageSendListener;
 import commandMethod.register.Register;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
+import global.ConstantTable;
+import tools.FileSimpleIO;
 import transceiver.Transmitter;
 
 public abstract class Father 
@@ -22,6 +26,20 @@ public abstract class Father
 	public void setHelp(String help)
 	{
 		this.help=help;
+	}
+	public String getPluginDataFloder()
+	{
+		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getName();
+		if(!new File(path).exists())
+			FileSimpleIO.createFolder(path);
+		return path;
+	}
+	public String getPluginSettingFloder()
+	{
+		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getName();
+		if(!new File(path).exists())
+			FileSimpleIO.createFolder(path);
+		return path;
 	}
 	public void addMessageReceiveListener(OnMessageReceiveListener messageReceiveListener)
 	{
