@@ -29,14 +29,14 @@ public abstract class Father
 	}
 	public String getPluginDataFloder()
 	{
-		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getName();
+		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getSimpleName();
 		if(!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;
 	}
 	public String getPluginSettingFloder()
 	{
-		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getName();
+		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName();
 		if(!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;

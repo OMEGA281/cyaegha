@@ -1,11 +1,13 @@
 package connection;
 
+import org.jdom2.Element;
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.ConstantTable;
+import global.xmlProcessor.XMLReader;
 import surveillance.Log;
 import tools.TimeSimpleTool;
 import transceiver.Receiver;
