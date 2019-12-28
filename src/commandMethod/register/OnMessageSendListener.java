@@ -3,10 +3,12 @@ package commandMethod.register;
 import connection.SendMessageType;
 
 /**当消息发出的时候会启动该方法*/
-public class OnMessageSendListener extends OnEventListener
+public class OnMessageSendListener implements OnEventListener
 {
+	/**优先级，0~100*/
+	public int priority;
 	public int run(SendMessageType messageType)
 	{
-		return RESPONSE_PASS;
+		return RETURN_PASS;
 	}
 }

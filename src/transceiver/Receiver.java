@@ -3,7 +3,7 @@ package transceiver;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import commandMethod.register.EventListener;
+import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
@@ -28,49 +28,24 @@ public class Receiver
 				{
 					ReceiveMessageType receiveMessageType=MsgQueue.poll();
 //					System.out.println("抽取队列，当前队列剩余量："+MsgQueue.size());
-					boolean commandStop=true;
+					int response=OnEventListener.RETURN_PASS;
 					
 					code_0:for (OnMessageReceiveListener messageReceiveListener : Register.getRegister().messageReceiveListeners) 
 					{
-						switch (messageReceiveListener.response) 
+						response=messageReceiveListener.run(receiveMessageType);
+						switch(response)
 						{
-						case EventListener.RESPONSE_DORMANT:
-							continue code_0;
-						case EventListener.RESPONSE_PASS:
-							switch (messageReceiveListener.run(receiveMessageType)) 
-							{
-							case EventListener.RETURN_STOP:
-								commandStop=false;
-								break code_0;
-							case EventListener.RETURN_PASS:
-								continue code_0;
-							default:
-								Log.e("发现未知返回类型");
-								break;
-							}
-							continue code_0;
-						case EventListener.RESPONSE_STOP:
-							commandStop=false;
-							switch (messageReceiveListener.run(receiveMessageType)) 
-							{
-							case EventListener.RETURN_STOP:
-								break code_0;
-							case EventListener.RETURN_PASS:
-								continue code_0;
-							default:
-								Log.e("发现未知返回类型");
-								break;
-							}
+						case OnEventListener.RETURN_PASS:
+							continue;
+						case OnEventListener.RETURN_STOP:
 							break code_0;
-
 						default:
-							Log.e("发现未知回应类型");
-							break;
+							Log.e("出现未知的返回类型");
+							continue;
 						}
-						
 					}
 					
-					if(commandStop&Matcher.ifCommand(receiveMessageType.getMsg()))
+					if(response==OnEventListener.RETURN_PASS&Matcher.ifCommand(receiveMessageType.getMsg()))
 					{
 						Matcher.getMatcher().CommandProcesser(receiveMessageType);
 					}

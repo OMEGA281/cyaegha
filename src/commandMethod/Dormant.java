@@ -1,6 +1,6 @@
 package commandMethod;
 
-import commandMethod.register.EventListener;
+import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
@@ -37,8 +37,7 @@ public class Dormant extends Father
 				}
 			}
 		};
-		listener.response=accessible?EventListener.RESPONSE_PASS:EventListener.RESPONSE_STOP;
-		listener.priority=EventListener.PRIORITY_HIGH;
+		listener.priority=OnEventListener.PRIORITY_HIGH;
 		addMessageReceiveListener(listener);
 	}
 	public void changeDormant()

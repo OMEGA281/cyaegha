@@ -35,7 +35,7 @@ public class FileSimpleIO
 	
 	/**初始化一个文件操作类
 	 * @param aimFile 目标文件的位置*/
-	FileSimpleIO(String aimFile)
+	public FileSimpleIO(String aimFile)
 	{
 		// TODO Auto-generated constructor stub
 		this.aimFile=aimFile;

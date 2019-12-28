@@ -3,7 +3,7 @@ package commandMethod;
 import java.util.ArrayList;
 import java.util.List;
 
-import commandMethod.register.EventListener;
+import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
@@ -55,7 +55,7 @@ public class Ignorer extends Father {
 				}
 			}
 			};
-		listener.priority=EventListener.PRIORITY_MAX;
+		listener.priority=OnEventListener.PRIORITY_MAX;
 		addMessageReceiveListener(listener);
 	}
 	public void commandPointer()

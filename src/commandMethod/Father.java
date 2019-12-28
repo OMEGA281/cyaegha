@@ -22,11 +22,13 @@ public abstract class Father
 	{
 		this.receiveMessageType = receiveMessageType;
 	}
+	/**初始化时启动的方法，所有的监听器全放在此处*/
 	public abstract void initialize();
 	public void setHelp(String help)
 	{
 		this.help=help;
 	}
+	/**获取本方法数据储存文件夹*/
 	public String getPluginDataFloder()
 	{
 		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getSimpleName();
@@ -34,6 +36,7 @@ public abstract class Father
 			FileSimpleIO.createFolder(path);
 		return path;
 	}
+	/**获取本方法方法储存文件夹*/
 	public String getPluginSettingFloder()
 	{
 		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName();

@@ -1,11 +1,22 @@
 package commandMethod.register;
 
-import java.util.Comparator;
-
-public abstract class OnEventListener implements EventListener
+public abstract interface OnEventListener
 {
-	/**回应类型，接口内含常量*/
-	public int response=RESPONSE_PASS;
-	/**优先级，0~100*/
-	public int priority=PRIORITY_NORMAL;
+	
+	/**极高优先度*/
+	public final int PRIORITY_MAX=100;
+	/**较高优先度*/
+	public final int PRIORITY_HIGH=75;
+	/**中优先度*/
+	public final int PRIORITY_NORMAL=50;
+	/**较低优先度*/
+	public final int PRIORITY_LOW=25;
+	/**极低优先度*/
+	public final int PRIORITY_MIN=0;
+	
+	/**继续将信息传递给下一个*/
+	public final int RETURN_PASS=0;
+	/**停止信息的传递*/
+	public final int RETURN_STOP=1;
+	
 }

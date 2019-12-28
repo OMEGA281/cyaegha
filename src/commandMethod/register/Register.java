@@ -28,6 +28,7 @@ public class Register
 	{
 		return register;
 	}
+	/**重载所有的类，会重新按照优先度排序*/
 	public void reloadAllClass()
 	{
 		Log.d("重新加载所有类中……");
@@ -42,30 +43,30 @@ public class Register
 				Log.d("加载类：",classpath);
 			}
 		}
-		Collections.sort(messageReceiveListeners, new Comparator<OnEventListener>() {
+		Collections.sort(messageReceiveListeners, new Comparator<OnMessageReceiveListener>() {
 
 			@Override
-			public int compare(OnEventListener o1, OnEventListener o2) {
+			public int compare(OnMessageReceiveListener o1, OnMessageReceiveListener o2) {
 				// TODO Auto-generated method stub
-				return o2.priority-o1.priority;
+				return o1.priority-o2.priority;
 			}
 			
 		});
-		Collections.sort(groupMemberChangeListeners, new Comparator<OnEventListener>() {
+		Collections.sort(groupMemberChangeListeners, new Comparator<OnGroupMemberChangeListener>() {
 
 			@Override
-			public int compare(OnEventListener o1, OnEventListener o2) {
+			public int compare(OnGroupMemberChangeListener o1, OnGroupMemberChangeListener o2) {
 				// TODO Auto-generated method stub
-				return o2.priority-o1.priority;
+				return o1.priority-o2.priority;
 			}
 			
 		});
-		Collections.sort(messageSendListeners, new Comparator<OnEventListener>() {
+		Collections.sort(messageSendListeners, new Comparator<OnMessageSendListener>() {
 
 			@Override
-			public int compare(OnEventListener o1, OnEventListener o2) {
+			public int compare(OnMessageSendListener o1, OnMessageSendListener o2) {
 				// TODO Auto-generated method stub
-				return o2.priority-o1.priority;
+				return o1.priority-o2.priority;
 			}
 			
 		});
