@@ -177,7 +177,6 @@ public class FileSimpleIO
 	/**
 	 * 刷新本类里的写出流<br>
 	 * 如果流为空，则直接返回成功
-	 * @param ifWrite 是否为写出流
 	 */
 	public returnType flushStream()
 	{
@@ -268,5 +267,17 @@ public class FileSimpleIO
 			return returnType.FAILED_COPYFILE;
 		}
 		return returnType.SUCCESS;
+	}
+	public boolean exists()
+	{
+		return file.exists();
+	}
+	public boolean isDirectory()
+	{
+		return file.isDirectory();
+	}
+	public boolean isFile()
+	{
+		return file.isFile();
 	}
 }

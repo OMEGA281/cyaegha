@@ -31,7 +31,7 @@ public abstract class Father
 	/**获取本方法数据储存文件夹*/
 	public String getPluginDataFloder()
 	{
-		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getSimpleName();
+		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+"\\";
 		if(!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;
@@ -39,7 +39,7 @@ public abstract class Father
 	/**获取本方法方法储存文件夹*/
 	public String getPluginSettingFloder()
 	{
-		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName();
+		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+"\\";
 		if(!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;
@@ -56,7 +56,7 @@ public abstract class Father
 	{
 		Register.getRegister().messageSendListeners.add(messageSendListener);
 	}
-	/**若是由命令调用，则一定会正常，若是以listener调用，则需手动更新receiveMessageType*/
+	/**若是由命令调用，则一定会更新，若是以listener调用，则需手动更新receiveMessageType*/
 	public void sendBackMsg(String string)
 	{
 		Transmitter.getTransmitter().addMsg(new SendMessageType(
