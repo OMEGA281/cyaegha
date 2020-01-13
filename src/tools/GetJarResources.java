@@ -1,25 +1,58 @@
 package tools;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import global.ConstantTable;
-import global.xmlProcessor.XMLInputStream;
 import surveillance.Log;
-
+import tools.XMLReader.XMLInputStream;
+/**获取包内的文件<br>
+ * */
 public class GetJarResources 
 {
-	/**获取包内的文件<br>
-	 * @param FileName 资源文件下的文件名称
-	 * @return 返回的是一个XMLInputStream，内含标记及流
+	
+	private String FileName;
+	/**
+	 * @param FileName 资源文件名称
 	 * */
-	public static XMLInputStream getJarResources(String FileName)
+	public GetJarResources(String FileName) 
 	{
-		InputStream inputStream=GetJarResources.class.getResourceAsStream(ConstantTable.PATH_JARRESOURCES+FileName);
+		// TODO Auto-generated constructor stub
+		this.FileName=FileName;
+	}
+	/**获取包内的文件<br>
+	 * @return 返回{@link XMLInputStream}
+	 * */
+	public XMLInputStream getJarResources()
+	{
+		InputStream inputStream=GetJarResources.class
+				.getResourceAsStream(ConstantTable.PATH_JARRESOURCES+FileName);
 		if(inputStream==null)
 		{
 			Log.e(FileName,"不存在");
 			return null;
 		}
 		return new XMLInputStream(FileName,inputStream);
+	}
+	/**
+	 * 检测包内是否存在该文件
+	 */
+	public boolean exist()
+	{
+		InputStream inputStream= GetJarResources.class.getResourceAsStream(FileName);
+		if (inputStream==null) 
+		{
+			return false;
+		}
+		try 
+		{
+			inputStream.close();
+		} 
+		catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
 	}
 }

@@ -1,13 +1,11 @@
 package connection;
 
-import org.jdom2.Element;
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.ConstantTable;
-import global.xmlProcessor.XMLReader;
 import surveillance.Log;
 import tools.TimeSimpleTool;
 import transceiver.Receiver;
@@ -92,12 +90,8 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
         
-        demo.privateMsg(1, 98, 1304554598, ".draw set 东方人物", 0);
-        demo.privateMsg(1, 98, 1304554598, ".draw 2", 0);
-        demo.privateMsg(1, 98, 1304554598, ".draw SpellCard", 0);
-        demo.privateMsg(1, 98, 1304554598, ".draw SpellCard 2", 0);
-        demo.privateMsg(1, 98, 1304554598, ".draw 2", 0);
-        demo.privateMsg(1, 98, 1304554598, ".draw set SpellCard", 0);
+        demo.privateMsg(1, 98, 1304554598, ".draw adw", 0);
+        demo.privateMsg(1, 98, 1304554598, ".draw FGO礼装 10", 0);
     	
         System.out.println();
         String s=new Scanner(System.in).next();
@@ -140,7 +134,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
     	System.out.println("启动中……");
-    	ConstantTable.ROOTPATH=appDirectory;
+    	ConstantTable.ROOTPATH=appDirectory+"\\";
 //    	启动注册器
     	new Register();
     	

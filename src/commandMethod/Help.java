@@ -1,13 +1,16 @@
 package commandMethod;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 import connection.SendMessageType;
-import global.xmlProcessor.XMLReader;
+import surveillance.Log;
 import tools.GetJarResources;
+import tools.XMLReader;
 import transceiver.Transmitter;
 
 public class Help extends Father
@@ -22,7 +25,22 @@ public class Help extends Father
 	public void showHelp()
 	{
 		StringBuilder stringBuilder=new StringBuilder("命令如下：\n");
-		Document document=XMLReader.getXMLReader(GetJarResources.getJarResources("CommandList.xml")).getDocument();
+		Document document = null;
+		try {
+			document = XMLReader.getXMLReader(
+					new GetJarResources("CommandList.xml").getJarResources()).getDocument();
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(document==null)
+		{
+			Log.e("未检测到命令列表");
+			return;
+		}
 		List<Element> elements=document.getRootElement().getChildren();
 		for (Element element : elements) {
 			stringBuilder.append(".");

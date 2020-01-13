@@ -1,17 +1,19 @@
 package commandPointer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
 import global.ConstantTable;
-import global.xmlProcessor.XMLReader;
 import surveillance.Log;
 import tools.GetJarResources;
+import tools.XMLReader;
 import transceiver.Transmitter;
 
 public class Matcher 
@@ -45,9 +47,23 @@ public class Matcher
 	public Matcher() 
 	{
 		// TODO Auto-generated constructor stub
-		Document document= XMLReader.getXMLReader(GetJarResources
-				.getJarResources("CommandList.xml")).getDocument();
-		List<Element> elements=document.getRootElement().getChildren("bag");
+		Document document = null;
+		try {
+			document = XMLReader.getXMLReader(new GetJarResources("CommandList.xml")
+					.getJarResources()).getDocument();
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(document==null)
+		{
+			Log.f("未发现命令列表！");
+			return;
+		}
+		List<Element> elements=document.getRootElement().getChildren();
 		for (Element element : elements) 
 		{
 			CommandPackage commandPackage=new CommandPackage();

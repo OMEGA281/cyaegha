@@ -1,6 +1,7 @@
 package commandMethod;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,11 +9,12 @@ import java.util.regex.Pattern;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
-import global.xmlProcessor.XMLReader;
 import surveillance.Log;
 import tools.FileSimpleIO;
 import tools.GetJarResources;
+import tools.XMLReader;
 
 public class Draw extends Father
 {
@@ -104,7 +106,7 @@ public class Draw extends Father
 	{
 		if(time==0)
 			return null;
-		if(time>20)
+		if(time>10)
 		{
 			sendBackMsg("抽取次数过多");
 			return null;
@@ -140,11 +142,11 @@ public class Draw extends Father
 		else
 		{
 			int time=1;
-			if(arrayList.size()>=2)
+			if(arrayList.size()>=1)
 			{
 				time=0;
-				if(Pattern.compile("[0-9]*").matcher(arrayList.get(1)).matches())
-					time=Integer.parseInt(arrayList.get(1));
+				if(Pattern.compile("[0-9]*").matcher(arrayList.get(0)).matches())
+					time=Integer.parseInt(arrayList.get(0));
 			}
 			sendBackMsg(drawCard(prama, time));
 			return;
@@ -162,28 +164,41 @@ public class Draw extends Father
 	{
 		if(!cardPoolFile.endsWith(".xml"))
 			cardPoolFile=cardPoolFile+".xml";
-		Document document;
-		try
+		Document document=null;
+		if(new FileSimpleIO(CARDPOOL_PATH+cardPoolFile).exists())
 		{
-			document=XMLReader.getXMLReader(CARDPOOL_PATH+cardPoolFile).getDocument();
+			try {
+				document=XMLReader.getXMLReader(CARDPOOL_PATH+cardPoolFile).getDocument();
+			} catch (JDOMException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
-		catch(NullPointerException exception)
+		else if(new GetJarResources(cardPoolFile).exist())
 		{
-			try
-			{
-				document=XMLReader.getXMLReader(GetJarResources.getJarResources(cardPoolFile)).getDocument();
+			try {
+				document=XMLReader.getXMLReader(
+						new GetJarResources(cardPoolFile).getJarResources()).getDocument();
+			} catch (JDOMException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			catch (NullPointerException e) 
-			{
-				// TODO: handle exception
-				Log.e("未查询到牌库：",cardPoolFile);
-				sendBackMsg("未查询到牌库:"+cardPoolFile);
-				return null;
-			}
+		}
+		else
+		{
+			Log.i("未查询到牌库：",cardPoolFile);
+			sendBackMsg("未查询到牌库:"+cardPoolFile);
+			return null;
 		}
 		List<Element> element=document.getRootElement().getChildren();
 		Random random=new Random();
-		int x=random.nextInt(element.size()-1);
+		int x=random.nextInt(element.size());
 		return element.get(x).getText();
 	}
 }
