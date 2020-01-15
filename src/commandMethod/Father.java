@@ -9,6 +9,7 @@ import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.OnMessageSendListener;
 import commandMethod.register.Register;
+import connection.CQSender;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
 import global.ConstantTable;
@@ -29,6 +30,31 @@ public abstract class Father
 		// TODO Auto-generated constructor stub
 		
 	}
+	/**
+	 * @exception 本方法仅在命令调用时可以保持实时信息
+	 * @return 群中群名片或是好友的QQ名
+	 */
+	public String getMessageSenderName()
+	{
+		switch(getMsgType())
+		{
+		case ConstantTable.MSGTYPE_PERSON:
+		case ConstantTable.MSGTYPE_DISCUSS:
+			return CQSender.getSender().getQQInfo(receiveMessageType.getfromQQ()).getNick();
+		case ConstantTable.MSGTYPE_GROUP:
+			return CQSender.getSender().getQQInfoInGroup(receiveMessageType.getfromQQ(), receiveMessageType.getfromGroup()).getNick();
+		}
+		return "";
+	}
+	/**
+	 * 获得消息的类型，来源于群或是好友等等
+	 * 本方法仅在命令调用时可以保持实时信息
+	 * @return 消息的类型
+	 */
+	public int getMsgType()
+	{
+		return receiveMessageType.getMsgType();
+	}
 	public void setReceiveMessageType(ReceiveMessageType receiveMessageType) 
 	{
 		this.receiveMessageType = receiveMessageType;
@@ -47,7 +73,7 @@ public abstract class Father
 			FileSimpleIO.createFolder(path);
 		return path;
 	}
-	/**获取本方法方法储存文件夹*/
+	/**获取本方法设置储存文件夹*/
 	public String getPluginSettingFloder()
 	{
 		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+"\\";
@@ -72,35 +98,39 @@ public abstract class Father
 	{
 		if(string==null)
 			return;
+		if(string.endsWith("\n"))
+			string=string.substring(0, string.length()-1);
+		if(string.isEmpty())
+			return;
 		Transmitter.getTransmitter().addMsg(new SendMessageType(
 				receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
 				, receiveMessageType.getfromGroup(), string));
 	}
 	/**
-	 * 手动加载交换器<br>
-	 * 在读写的时候都会进行检测与加载<br>
-	 * 若数据量过多的话，为避免第一次加载的延迟，可手动加载<br>
+	 * 加载交换器<br>
 	 */
-	public void loadDataExchanger()
+	public DataExchanger getDataExchanger()
 	{
-		this.getClass().getName();
+		if(dataExchanger==null)
+			dataExchanger=new DataExchanger(ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+".xml");
+		return dataExchanger;
 	}
 	/**
-	 * 手动加载交换器<br>
-	 * 在读写的时候都会进行检测与加载<br>
-	 * 若数据量过多的话，为避免第一次加载的延迟，可手动加载<br>
+	 * 加载交换器<br>
 	 */
-	public void loadAuthorityExchanger()
+	public AuthorityExchanger getAuthorityExchanger()
 	{
-		
+		if(authorityExchanger==null)
+			authorityExchanger=new AuthorityExchanger(ConstantTable.ROOTPATH+ConstantTable.PLUGIN_AUTHORITYPATH+this.getClass().getSimpleName()+".xml");
+		return authorityExchanger;
 	}
 	/**
-	 * 手动加载交换器<br>
-	 * 在读写的时候都会进行检测与加载<br>
-	 * 若数据量过多的话，为避免第一次加载的延迟，可手动加载<br>
+	 * 加载交换器<br>
 	 */
-	public void loadSettingExchanger()
+	public SettingExchanger getSettingExchanger()
 	{
-		
+		if(settingExchanger==null)
+			settingExchanger=new SettingExchanger(ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+".xml");
+		return settingExchanger;
 	}
 }

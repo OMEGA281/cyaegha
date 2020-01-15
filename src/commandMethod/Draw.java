@@ -14,7 +14,7 @@ import org.jdom2.JDOMException;
 import surveillance.Log;
 import tools.FileSimpleIO;
 import tools.GetJarResources;
-import tools.XMLReader;
+import tools.XMLDocument;
 
 public class Draw extends Father
 {
@@ -168,7 +168,7 @@ public class Draw extends Father
 		if(new FileSimpleIO(CARDPOOL_PATH+cardPoolFile).exists())
 		{
 			try {
-				document=XMLReader.getXMLReader(CARDPOOL_PATH+cardPoolFile).getDocument();
+				document=XMLDocument.getDocument(CARDPOOL_PATH+cardPoolFile,false);
 			} catch (JDOMException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -180,8 +180,8 @@ public class Draw extends Father
 		else if(new GetJarResources(cardPoolFile).exist())
 		{
 			try {
-				document=XMLReader.getXMLReader(
-						new GetJarResources(cardPoolFile).getJarResources()).getDocument();
+				document=XMLDocument.getDocument(
+						new GetJarResources(cardPoolFile).getJarResources());
 			} catch (JDOMException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import global.ConstantTable;
 import surveillance.Log;
-import tools.XMLReader.XMLInputStream;
 /**获取包内的文件<br>
  * */
 public class GetJarResources 
@@ -23,7 +22,7 @@ public class GetJarResources
 	/**获取包内的文件<br>
 	 * @return 返回{@link XMLInputStream}
 	 * */
-	public XMLInputStream getJarResources()
+	public InputStream getJarResources()
 	{
 		InputStream inputStream=GetJarResources.class
 				.getResourceAsStream(ConstantTable.PATH_JARRESOURCES+FileName);
@@ -32,7 +31,7 @@ public class GetJarResources
 			Log.e(FileName,"不存在");
 			return null;
 		}
-		return new XMLInputStream(FileName,inputStream);
+		return inputStream;
 	}
 	/**
 	 * 检测包内是否存在该文件

@@ -13,7 +13,7 @@ import connection.SendMessageType;
 import global.ConstantTable;
 import surveillance.Log;
 import tools.GetJarResources;
-import tools.XMLReader;
+import tools.XMLDocument;
 import transceiver.Transmitter;
 
 public class Matcher 
@@ -49,8 +49,8 @@ public class Matcher
 		// TODO Auto-generated constructor stub
 		Document document = null;
 		try {
-			document = XMLReader.getXMLReader(new GetJarResources("CommandList.xml")
-					.getJarResources()).getDocument();
+			document = XMLDocument.getDocument(new GetJarResources("CommandList.xml")
+					.getJarResources());
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

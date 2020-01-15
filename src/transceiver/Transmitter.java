@@ -3,7 +3,7 @@ package transceiver;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import connection.Output;
+import connection.CQSender;
 import connection.SendMessageType;
 import surveillance.Log;
 
@@ -29,7 +29,7 @@ public class Transmitter
 			{
 				for(;!SendMsgQueue.isEmpty();)
 				{
-					Output.getOutput().sendMsg(SendMsgQueue.poll());
+					CQSender.getSender().sendMsg(SendMsgQueue.poll());
 				}
 				try 
 				{

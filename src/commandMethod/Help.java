@@ -10,7 +10,7 @@ import org.jdom2.JDOMException;
 import connection.SendMessageType;
 import surveillance.Log;
 import tools.GetJarResources;
-import tools.XMLReader;
+import tools.XMLDocument;
 import transceiver.Transmitter;
 
 public class Help extends Father
@@ -27,8 +27,8 @@ public class Help extends Father
 		StringBuilder stringBuilder=new StringBuilder("命令如下：\n");
 		Document document = null;
 		try {
-			document = XMLReader.getXMLReader(
-					new GetJarResources("CommandList.xml").getJarResources()).getDocument();
+			document = XMLDocument.getDocument(
+					new GetJarResources("CommandList.xml").getJarResources());
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

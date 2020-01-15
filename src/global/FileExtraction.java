@@ -9,7 +9,7 @@ import org.jdom2.JDOMException;
 
 import tools.FileSimpleIO;
 import tools.GetJarResources;
-import tools.XMLReader;
+import tools.XMLDocument;
 
 public class FileExtraction 
 {
@@ -17,8 +17,8 @@ public class FileExtraction
 	{
 		Document document = null;
 		try {
-			document = XMLReader.getXMLReader(
-					new GetJarResources("FileList.xml").getJarResources()).getDocument();
+			document = XMLDocument.getDocument(
+					new GetJarResources("FileList.xml").getJarResources());
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

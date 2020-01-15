@@ -5,6 +5,7 @@ public class ConstantTable
 	public static String ROOTPATH;
 	public static final String PLUGIN_DATAPATH="data\\";
 	public static final String PLUGIN_SETTINGPATH="setting\\";
+	public static final String PLUGIN_AUTHORITYPATH="authority\\";
 	
 	public static final int NUM_NULL=-1;
 	

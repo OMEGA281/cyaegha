@@ -1,29 +1,42 @@
 package connection;
 
 import org.meowy.cqp.jcq.entity.CoolQ;
+import org.meowy.cqp.jcq.entity.Member;
+import org.meowy.cqp.jcq.entity.QQInfo;
 
 import global.ConstantTable;
 import surveillance.Log;
 
-public class Output 
+public class CQSender 
 {
-	static Output output;
+	static CQSender cqSender;
 	CoolQ CQ;
-	public Output(CoolQ CQ) 
+	
+	public QQInfo getQQInfo(long QQ)
+	{
+		return CQ.getStrangerInfo(QQ);
+	}
+	
+	public Member getQQInfoInGroup(long QQ,long GroupNum)
+	{
+		return CQ.getGroupMemberInfo(GroupNum, QQ);
+	}
+	
+	public CQSender(CoolQ CQ) 
 	{
 		// TODO Auto-generated constructor stub
-		if(output==null)
+		if(cqSender==null)
 		{
 			this.CQ=CQ;
-			output=this;
+			cqSender=this;
 			Log.d("初始化发信器");
 		}
 	}
-	public static Output getOutput()
+	public static CQSender getSender()
 	{
-		if (output!=null) 
+		if (cqSender!=null) 
 		{
-			return output;
+			return cqSender;
 		}
 		Log.e("发信部件尚未启动");
 		return null;
