@@ -1,5 +1,7 @@
 package commandMethod.dataExchanger;
 
+import java.util.ArrayList;
+
 public class DataExchanger extends Exchanger
 {
 
@@ -35,9 +37,16 @@ public class DataExchanger extends Exchanger
 		return result;
 	}
 	@Override
-	public boolean deleteListItem(String listName, String name) {
+	public boolean deleteListItem(String listName, int index) {
 		// TODO Auto-generated method stub
-		boolean result=super.deleteListItem(listName, name);
+		boolean result=super.deleteListItem(listName, index);
+		writeDocument();
+		return result;
+	}
+	@Override
+	public boolean deleteListItem(String listName, String name, String text) {
+		// TODO Auto-generated method stub
+		boolean result=super.deleteListItem(listName, name, text);
 		writeDocument();
 		return result;
 	}
@@ -50,5 +59,10 @@ public class DataExchanger extends Exchanger
 	public String getListItem(String listName, String Name) {
 		// TODO Auto-generated method stub
 		return super.getListItem(listName, Name);
+	}
+	@Override
+	public ArrayList<String[]> getList(String listName) {
+		// TODO Auto-generated method stub
+		return super.getList(listName);
 	}
 }

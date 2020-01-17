@@ -106,6 +106,39 @@ public abstract class Father
 				receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
 				, receiveMessageType.getfromGroup(), string));
 	}
+	public void sendPrivateMsg(long QQ,String string)
+	{
+		if(string==null)
+			return;
+		if(string.endsWith("\n"))
+			string=string.substring(0, string.length()-1);
+		if(string.isEmpty())
+			return;
+		Transmitter.getTransmitter().addMsg(new SendMessageType(
+				ConstantTable.MSGTYPE_PERSON, QQ, 0, string));
+	}
+	public void sendGroupMsg(long group,long QQ,String string)
+	{
+		if(string==null)
+			return;
+		if(string.endsWith("\n"))
+			string=string.substring(0, string.length()-1);
+		if(string.isEmpty())
+			return;
+		Transmitter.getTransmitter().addMsg(new SendMessageType(
+				ConstantTable.MSGTYPE_GROUP, QQ, group, string));
+	}
+	public void sendDiscussMsg(long group,long QQ,String string)
+	{
+		if(string==null)
+			return;
+		if(string.endsWith("\n"))
+			string=string.substring(0, string.length()-1);
+		if(string.isEmpty())
+			return;
+		Transmitter.getTransmitter().addMsg(new SendMessageType(
+				ConstantTable.MSGTYPE_DISCUSS, QQ, group, string));
+	}
 	/**
 	 * 加载交换器<br>
 	 */

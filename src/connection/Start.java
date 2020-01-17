@@ -73,7 +73,6 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 开始模拟发送消息
         // 模拟私聊消息
         // 开始模拟QQ用户发送消息，以下QQ全部编造，请勿添加
-        demo.privateMsg(0, 10001, 2234567819L, "???", 0);
 //        demo.privateMsg(0, 10002, 2222222224L, "喵呜喵呜喵呜", 0);
 //        demo.privateMsg(0, 10003, 2111111334L, "可以给我你的微信吗", 0);
 //        demo.privateMsg(0, 10004, 3111111114L, "今天天气真好", 0);
@@ -90,11 +89,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
         
-        demo.privateMsg(1, 98, 1304554598, ".help", 0);
-    	
-        System.out.println();
+        demo.privateMsg(1, 23, 1304554598, "sdf", 0);
         String s=new Scanner(System.in).next();
-        demo.exit();// 最后程序运行结束，调用exit方法
+        demo.privateMsg(1, 23, 1304554598, ".monitor add g b 12345", 0);
+        
     }
     
 //    用于加载后启动的测试方法，打包前需去除

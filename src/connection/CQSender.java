@@ -22,6 +22,11 @@ public class CQSender
 		return CQ.getGroupMemberInfo(GroupNum, QQ);
 	}
 	
+	public String getMyName()
+	{
+		return CQ.getLoginNick();
+	}
+	
 	public CQSender(CoolQ CQ) 
 	{
 		// TODO Auto-generated constructor stub

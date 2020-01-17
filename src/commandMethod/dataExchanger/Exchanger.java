@@ -3,6 +3,8 @@ package commandMethod.dataExchanger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.jdom2.Document;
@@ -109,7 +111,7 @@ class Exchanger
 	}
 	/**
 	 * 在列表储存元素<br>
-	 * 如果表内的元素有重复的，则会修改数值<br>
+	 * 表内的元素允许出现重复<br>
 	 * 若不存在表，则会新建一个表
 	 * @param listName 列表名称
 	 * @param name 表内的名称
@@ -123,16 +125,7 @@ class Exchanger
 			this.listElement.addContent(new Element(listName));
 			listElement=this.listElement.getChild(listName);
 		}
-		Element element=listElement.getChild(name);
-		if(element==null)
-		{
-			element=new Element(name).setText(text);
-			listElement.addContent(element);
-		}
-		else
-		{
-			element.setText(text);
-		}
+		listElement.addContent(new Element(name).setText(text));
 	}
 	/**
 	 * 返回列表中的数值，如果不存在则返回null
@@ -155,17 +148,62 @@ class Exchanger
 		return element.getText();
 	}
 	/**
+	 * 返回列表中的所有数值，如果不存在则返回null
+	 * @param listName 列表名称
+	 * @return 索引的第零个是名称，第一个为内容
+	 */
+	protected ArrayList<String[]> getList(String listName)
+	{
+		Element listElement=this.listElement.getChild(listName);
+		if(listElement==null)
+		{
+			return null;
+		}
+		ArrayList<String[]> result=new ArrayList<>();
+		List<Element> subElement=listElement.getChildren();
+		for (Element element : subElement) {
+			result.add(new String[]{element.getName(),element.getText()});
+		}
+		return result;
+	}
+	/**
 	 * 删除列表中的某个数据
 	 * @param listName 列表名称
 	 * @param name 表内的名称
+	 * @param text 内容
 	 * @return 返回是否删除了数据
 	 */
-	protected boolean deleteListItem(String listName,String name)
+	protected boolean deleteListItem(String listName,String name,String text)
 	{
 		Element listElement=this.listElement.getChild(listName);
 		if(listElement==null)
 			return false;
-		return listElement.removeChild(name);
+		List<Element> arrayList=listElement.getChildren();
+		for(int i=0;i<arrayList.size();i++)
+		{
+			if(arrayList.get(i).getName()==name&&arrayList.get(i).getText()==text)
+			{
+				return deleteListItem(listName, i);
+			}
+		}
+		return false;
+	}
+	/**
+	 * 删除列表中的某个数据
+	 * @param listName 列表名称
+	 * @param index 索引
+	 * @return 返回是否删除了数据
+	 */
+	protected boolean deleteListItem(String listName,int index)
+	{
+		Element listElement=this.listElement.getChild(listName);
+		if(listElement==null)
+			return false;
+		if(listElement.removeContent(index)==null)
+		{
+			return false;
+		}
+		return true;
 	}
 	/**
 	 * 删除整个列表
