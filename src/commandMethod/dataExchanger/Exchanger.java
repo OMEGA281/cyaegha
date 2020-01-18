@@ -71,7 +71,7 @@ class Exchanger
 	 * @param name 数据名称
 	 * @param text 数据内容
 	 */
-	protected void setItem(String name,String text)
+	protected void addItem(String name,String text)
 	{
 		Element element=itemElement.getChild(name);
 		if(element==null)
@@ -117,7 +117,7 @@ class Exchanger
 	 * @param name 表内的名称
 	 * @param text 数据内容
 	 */
-	protected void setListItem(String listName,String name,String text)
+	protected void addListItem(String listName,String name,String text)
 	{
 		Element listElement=this.listElement.getChild(listName);
 		if(listElement==null)
@@ -133,19 +133,27 @@ class Exchanger
 	 * @param Name 项目名称
 	 * @return
 	 */
-	protected String getListItem(String listName,String Name)
+	protected ArrayList<String> getListItem(String listName,String Name)
 	{
 		Element listElement=this.listElement.getChild(listName);
 		if(listElement==null)
 		{
 			return null;
 		}
-		Element element=listElement.getChild(Name);
+		List<Element> element=listElement.getChildren(Name);
+		ArrayList<String> stringList=new ArrayList<>();
 		if(element==null)
 		{
 			return null;
 		}
-		return element.getText();
+		if(element.size()==0)
+		{
+			return null;
+		}
+		for (Element element2 : element) {
+			stringList.add(element2.getText());
+		}
+		return stringList;
 	}
 	/**
 	 * 返回列表中的所有数值，如果不存在则返回null
@@ -204,6 +212,19 @@ class Exchanger
 			return false;
 		}
 		return true;
+	}
+	/**
+	 * 删除列表中的某一种数据
+	 * @param listName 列表名称
+	 * @param itemName 数据名称
+	 * @return 返回是否删除了数据
+	 */
+	protected boolean deleteListItem(String listName,String itemName)
+	{
+		Element listElement=this.listElement.getChild(listName);
+		if(listElement==null)
+			return false;
+		return listElement.removeChildren(itemName);
 	}
 	/**
 	 * 删除整个列表

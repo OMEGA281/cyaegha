@@ -10,15 +10,15 @@ public class SettingExchanger extends Exchanger
 		// TODO Auto-generated constructor stub
 	}
 	@Override
-	public void setItem(String name, String text) {
+	public void addItem(String name, String text) {
 		// TODO Auto-generated method stub
-		super.setItem(name, text);
+		super.addItem(name, text);
 		writeDocument();
 	}
 	@Override
-	public void setListItem(String listName, String name, String text) {
+	public void addListItem(String listName, String name, String text) {
 		// TODO Auto-generated method stub
-		super.setListItem(listName, name, text);
+		super.addListItem(listName, name, text);
 		writeDocument();
 	}
 	@Override
@@ -50,12 +50,17 @@ public class SettingExchanger extends Exchanger
 		return result;
 	}
 	@Override
+	public boolean deleteListItem(String listName, String itemName) {
+		// TODO Auto-generated method stub
+		return super.deleteListItem(listName, itemName);
+	}
+	@Override
 	public String getItem(String name) {
 		// TODO Auto-generated method stub
 		return super.getItem(name);
 	}
 	@Override
-	public String getListItem(String listName, String Name) {
+	public ArrayList<String> getListItem(String listName, String Name) {
 		// TODO Auto-generated method stub
 		return super.getListItem(listName, Name);
 	}

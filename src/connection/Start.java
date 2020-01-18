@@ -3,6 +3,7 @@ package connection;
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
+import commandMethod.ERPG;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.ConstantTable;
@@ -89,9 +90,6 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
         
-        demo.privateMsg(1, 23, 1304554598, "sdf", 0);
-        String s=new Scanner(System.in).next();
-        demo.privateMsg(1, 23, 1304554598, ".monitor add g b 12345", 0);
         
     }
     

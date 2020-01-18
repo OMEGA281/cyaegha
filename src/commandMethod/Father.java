@@ -31,8 +31,8 @@ public abstract class Father
 		
 	}
 	/**
-	 * @exception 本方法仅在命令调用时可以保持实时信息
-	 * @return 群中群名片或是好友的QQ名
+	 * 本方法仅在命令调用时可以保持实时信息
+	 * @return 当前消息发送者的昵称
 	 */
 	public String getMessageSenderName()
 	{

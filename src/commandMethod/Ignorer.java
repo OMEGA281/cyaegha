@@ -54,6 +54,7 @@ public class Ignorer extends Father {
 						final JFrame frame=new JFrame("设置superOP");
 						frame.setBounds(100, 100, 300, 120);
 						frame.setUndecorated(true);
+						frame.setAlwaysOnTop(true);
 						
 						Container container=frame.getContentPane();
 						container.setLayout(null);
@@ -254,6 +255,7 @@ public class Ignorer extends Father {
 			addList(string, num);
 			string=(!ifW?"WL":"BL")+string.substring(2);
 			removeList(string, num);
+			sendBackMsg("将"+num+"加入了名单");
 			break;
 		case "remove":
 			Boolean ifW1;
@@ -325,6 +327,7 @@ public class Ignorer extends Father {
 				break;
 			}
 			removeList(string1, num1);
+			sendBackMsg("将"+num1+"移出了名单");
 			break;
 		case "list":
 			if(arrayList.size()<2)
@@ -442,7 +445,7 @@ public class Ignorer extends Father {
 		{
 			builder.append(long1+",");
 		}
-		getDataExchanger().setItem(type, builder.toString());
+		getDataExchanger().addItem(type, builder.toString());
 		return true;
 	}
 	/**
@@ -464,7 +467,7 @@ public class Ignorer extends Father {
 		{
 			builder.append(long1+",");
 		}
-		getDataExchanger().setItem(type, builder.toString());
+		getDataExchanger().addItem(type, builder.toString());
 		return true;
 	}
 	private boolean changeWBListener(String type)
@@ -481,7 +484,7 @@ public class Ignorer extends Father {
 		case WHITELIST_PERSON:	
 		case WHITELIST_GROUP:
 		case WHITELIST_DISCUSS:
-			getDataExchanger().setItem(type, b+"");
+			getDataExchanger().addItem(type, b+"");
 			
 			default:
 				return false;
