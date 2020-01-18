@@ -90,7 +90,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         // 以下是收尾触发函数
         // demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
         
-        
+        demo.privateMsg(1, 34, 1304554598, "sdf", 0);
+        String string=new Scanner(System.in).next();
+        demo.privateMsg(1, 34, 1304554598, ".sc 1d5/2", 0);
     }
     
 //    用于加载后启动的测试方法，打包前需去除

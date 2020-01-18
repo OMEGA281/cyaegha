@@ -52,7 +52,9 @@ public class SettingExchanger extends Exchanger
 	@Override
 	public boolean deleteListItem(String listName, String itemName) {
 		// TODO Auto-generated method stub
-		return super.deleteListItem(listName, itemName);
+		boolean result=super.deleteListItem(listName, itemName);
+		writeDocument();
+		return result;
 	}
 	@Override
 	public String getItem(String name) {

@@ -15,8 +15,8 @@ public class ERPG extends Father
 	private final String[] ShortCrazy={
 			"昏厥或尖叫",
 			"惊慌失措地逃跑",
-			"歇斯底里或情绪爆发（狂笑、哭泣等等）"
-			,"发出婴儿般的咿呀声，说话无条理、速语症、多语症",
+			"歇斯底里或情绪爆发（狂笑、哭泣等等）",
+			"发出婴儿般的咿呀声，说话无条理、速语症、多语症",
 			"强烈恐惧症，可能会定在当场不能动弹",
 			"杀人犯罪倾向，或是自杀倾向","出现幻觉或妄想症",
 			"不自觉地模仿旁人的动作",
@@ -32,22 +32,24 @@ public class ERPG extends Father
 			"反应性精神障碍(语无伦次、幻觉、妄想症或行为异常)","暂时的偏执狂",
 			"强迫症（不停洗手、祈祷，以特定节奏走路，不愿走在某些路面上，总是检查子弹是否上膛等等）"};
  	private enum LevelStatus{EX_SUCCESS("极难成功"),S_SUCCESS("困难成功"),SUCCESS("成功"),FAILED("失败");
-		private String s;
+		private String string;
 		public String getString()
 		{
-			return s;
+			return string;
 		}
 	LevelStatus(String string) {
 		// TODO Auto-generated constructor stub
+		this.string=string;
 	}}
-	private enum SpecialStatus{BIGSUCCESS("大成功"),BIGFAILED("大失败");
-		private String s;
+	private enum SpecialStatus{BIGSUCCESS("大成功!"),BIGFAILED("大失败!");
+		private String string;
 		public String getString()
 		{
-			return s;
+			return string;
 		}
 	SpecialStatus(String string) {
 		// TODO Auto-generated constructor stub
+		this.string=string;
 	}}
 	/**
 	 * 用于返回检定情况的类，包含{@link LevelStatus}和{@link SpecialStatus}
@@ -63,6 +65,7 @@ public class ERPG extends Father
 			// TODO Auto-generated constructor stub
 			this.levelStatus=levelStatus;
 			this.specialStatus=specialStatus;
+			this.randomNum=randomNum;
 		}
 	}
 	
@@ -89,29 +92,32 @@ public class ERPG extends Father
 			part=100;
 			time=1;
 		}
-		try
-		{
-			part=formatNum(arrayList.get(0), 2, 500);
-		}
-		catch(NumberFormatException exception)
-		{
-			part=100;
-			builder.append("面数错误，设为默认值\n");
-		}
-		if(arrayList.size()>1)
+		else
 		{
 			try
 			{
-				time=formatNum(arrayList.get(0), 2, 500);
+				part=formatNum(arrayList.get(0), 2, 500);
 			}
 			catch(NumberFormatException exception)
 			{
-				time=100;
-				builder.append("次数错误，设为默认值\n");
+				part=100;
+				builder.append("面数错误，设为默认值\n");
 			}
+			if(arrayList.size()>1)
+			{
+				try
+				{
+					time=formatNum(arrayList.get(1), 2, 500);
+				}
+				catch(NumberFormatException exception)
+				{
+					time=100;
+					builder.append("次数错误，设为默认值\n");
+				}
+			}
+			else
+				time=1;
 		}
-		else
-			time=1;
 		int rnum=getRandomNum(part, time);
 		builder.append(getMessageSenderName()+"掷出了"+time+"d"+part+"="+rnum);
 		sendBackMsg(builder.toString());
@@ -128,19 +134,22 @@ public class ERPG extends Father
 		int time;
 		if(arrayList==null)
 			time=1;
-		try
+		else
 		{
-			time=formatNum(arrayList.get(0), 1, 5);
-		}catch (NumberFormatException e) {
-			// TODO: handle exception
-			stringBuilder.append("数量错误，请输入1~5");
-			time=1;
+			try
+			{
+				time=formatNum(arrayList.get(0), 1, 5);
+			}catch (NumberFormatException e) {
+				// TODO: handle exception
+				stringBuilder.append("数量错误，请输入1~5，按照默认数量\n");
+				time=1;
+			}
 		}
 		int[] arr=getRandomNumWithBP(time, true);
 		StringBuilder otherNum=new StringBuilder();
 		for(int i=2;i<arr.length;i++)
 		{
-			otherNum.append(arr[i]+",");
+			otherNum.append(Integer.toString(arr[i])+",");
 		}
 		otherNum.deleteCharAt(otherNum.length()-1);
 		stringBuilder.append(getMessageSenderName()+"掷出了1d100="+arr[1]+"\n");
@@ -159,19 +168,22 @@ public class ERPG extends Father
 		int time;
 		if(arrayList==null)
 			time=1;
-		try
+		else
 		{
-			time=formatNum(arrayList.get(0), 1, 5);
-		}catch (NumberFormatException e) {
-			// TODO: handle exception
-			stringBuilder.append("数量错误，请输入1~5");
-			time=1;
+			try
+			{
+				time=formatNum(arrayList.get(0), 1, 5);
+			}catch (NumberFormatException e) {
+				// TODO: handle exception
+				stringBuilder.append("数量错误，请输入1~5");
+				time=1;
+			}
 		}
 		int[] arr=getRandomNumWithBP(time, false);
 		StringBuilder otherNum=new StringBuilder();
 		for(int i=2;i<arr.length;i++)
 		{
-			otherNum.append(arr[i]+",");
+			otherNum.append(Integer.toString(arr[i])+",");
 		}
 		otherNum.deleteCharAt(otherNum.length()-1);
 		stringBuilder.append(getMessageSenderName()+"掷出了1d100="+arr[1]+"\n");
@@ -204,7 +216,7 @@ public class ERPG extends Father
 			return;
 		}
 		setSkill(arrayList.get(0), num);
-		sendBackMsg(CQSender.getSender().getMyName()+"记下了"+getMessageSenderName()+"的+"+arrayList.get(0)+"数值了");
+		sendBackMsg(CQSender.getSender().getMyName()+"记下了"+getMessageSenderName()+"的"+arrayList.get(0)+"数值了");
 	}
 	
 	public void ra()
@@ -244,6 +256,7 @@ public class ERPG extends Father
 		if(checkStatus.specialStatus!=null)
 			builder.append(","+checkStatus.specialStatus.getString());
 		builder.append("\n");
+		sendBackMsg(builder.toString());
 	}
 	
 	public void rab()
@@ -388,7 +401,12 @@ public class ERPG extends Father
 	}
 	public void sc(ArrayList<String> arrayList)
 	{
-		String help=".san 成功减少值/失败减少值\n";
+		String help=".sc 成功减少值/失败减少值\n";
+		if(arrayList==null)
+		{
+			sendBackMsg(help);
+			return;
+		}
 		int san=getSkill("san");
 		int sanUB=getSkill("克苏鲁神话")==-1?99:99+getSkill("克苏鲁神话");
 		if(san==-1)
@@ -397,6 +415,11 @@ public class ERPG extends Father
 			return;
 		}
 		String[] parts=arrayList.get(0).split("/");
+		if(parts.length<2)
+		{
+			sendBackMsg("设置数据错误");
+			return;
+		}
 		int a,b;
 		try
 		{
@@ -407,7 +430,7 @@ public class ERPG extends Father
 		}
 		try
 		{
-			b=formatNum(parts[1], 0, 100);;
+			b=formatNum(parts[1], 0, 100);
 		}catch (NumberFormatException e) {
 			// TODO: handle exception
 			b=transRandomString(parts[1]);
@@ -424,8 +447,10 @@ public class ERPG extends Father
 		case S_SUCCESS:
 		case SUCCESS:
 			setSkill("san", san-a);
+			break;
 		case FAILED:
 			setSkill("san", san-b);
+			break;
 		}
 		if(getSkill("san")>sanUB)
 		{
@@ -454,6 +479,11 @@ public class ERPG extends Father
 	public void en(ArrayList<String> arrayList)
 	{
 		String help=".san 成功增加值/失败增加值\n";
+		if(arrayList==null)
+		{
+			sendBackMsg(help);
+			return;
+		}
 		int san=getSkill("san");
 		int sanUB=getSkill("克苏鲁神话")==-1?99:99+getSkill("克苏鲁神话");
 		if(san==-1)
@@ -462,6 +492,11 @@ public class ERPG extends Father
 			return;
 		}
 		String[] parts=arrayList.get(0).split("/");
+		if(parts.length<2)
+		{
+			sendBackMsg("设置数据错误");
+			return;
+		}
 		int a,b;
 		try
 		{
@@ -489,8 +524,10 @@ public class ERPG extends Father
 		case S_SUCCESS:
 		case SUCCESS:
 			setSkill("san", san+a);
+			break;
 		case FAILED:
 			setSkill("san", san+b);
+			break;
 		}
 		if(getSkill("san")>sanUB)
 		{
@@ -517,6 +554,7 @@ public class ERPG extends Father
 		stringBuilder.append(getMessageSenderName()+"获得了疯狂症状1d10="+type+"：\n");
 		stringBuilder.append(ShortCrazy[type-1]+"\n");
 		stringBuilder.append("持续1d10="+getRandomNum(10, 1)+"轮");
+		sendBackMsg(stringBuilder.toString());
 	}
 	public void ti(ArrayList<String> arrayList)
 	{
@@ -530,6 +568,7 @@ public class ERPG extends Father
 		stringBuilder.append(getMessageSenderName()+"获得了疯狂症状1d10="+type+"：\n");
 		stringBuilder.append(LongCrazy[type-1]+"\n");
 		stringBuilder.append("持续1d10="+getRandomNum(10, 1)+"小时");
+		sendBackMsg(stringBuilder.toString());
 	}
 	public void li(ArrayList<String> arrayList)
 	{
@@ -569,13 +608,13 @@ public class ERPG extends Father
 	 */
 	private int[] getRandomNumWithBP(int time,boolean isBouse)
 	{
-		int[] arrayList=new int[time+1+2];
+		int[] arrayList=new int[time+1+1];
 		int pnum=getRandomNum(100, 1);
 		arrayList[1]=pnum;
 		int[] otherNum=isBouse?getMinNum(9, time):getMaxNum(9, time);
 		int a=pnum/10;
 		int b=pnum%10;
-		if(isBouse==a<otherNum[0])
+		if(isBouse==a>otherNum[0])
 		{
 			a=otherNum[0];
 		}
@@ -599,9 +638,9 @@ public class ERPG extends Father
 		numArr[0]=random.nextInt(upBound+1);
 		numArr[time]=numArr[0];
 		time--;
-		for(int i=0;i<time;i++)
+		for(;time>0;time--)
 		{
-			int rnum=random.nextInt();
+			int rnum=random.nextInt(upBound+1);
 			numArr[time]=rnum;
 			if(rnum<numArr[0])
 				numArr[0]=rnum;
@@ -621,9 +660,9 @@ public class ERPG extends Father
 		numArr[0]=random.nextInt(upBound+1);
 		numArr[time]=numArr[0];
 		time--;
-		for(int i=0;i<time;i++)
+		for(;time>0;time--)
 		{
-			int rnum=random.nextInt();
+			int rnum=random.nextInt(upBound+1);
 			numArr[time]=rnum;
 			if(rnum>numArr[0])
 				numArr[0]=rnum;
@@ -798,7 +837,7 @@ public class ERPG extends Father
 	private ArrayList<String> findSameString(String aim)
 	{
 		if(SameStringList==null)
-			return null;
+			loadSameString();
 		for (ArrayList<String> arrayList : SameStringList) 
 		{
 			for (String string : arrayList) 
@@ -889,6 +928,7 @@ public class ERPG extends Father
 		default:
 			return;
 		}
+		getDataExchanger().deleteListItem(name, mark);
 		getDataExchanger().addListItem(name, mark, Integer.toString(num));
 	}
 	/**
@@ -916,7 +956,10 @@ public class ERPG extends Father
 		default:
 			return -1;
 		}
-		return Integer.parseInt(getDataExchanger().getListItem(name, mark).get(0));
+		ArrayList<String> arrayList=getDataExchanger().getListItem(name, mark);
+		if(arrayList==null)
+			return -1;
+		return Integer.parseInt(arrayList.get(0));
 	}
 	/**
 	 * 注意本方法的执行需要最新的{@code receiveMsgType},如果是通过listener调用，一定需要更新！

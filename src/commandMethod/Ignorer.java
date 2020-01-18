@@ -391,6 +391,7 @@ public class Ignorer extends Father {
 				sendBackMsg("子命令错误"+HELP);
 				return;
 			}
+			break;
 		case "change":
 			if(arrayList.size()<2)
 			{
