@@ -92,7 +92,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         
         demo.privateMsg(1, 34, 1304554598, "sdf", 0);
         String string=new Scanner(System.in).next();
-        demo.privateMsg(1, 34, 1304554598, ".sc 1d5/2", 0);
+        demo.privateMsg(1, 34, 1304554598, ".rh 3d5", 0);
+        demo.privateMsg(1, 34, 1304554598, ".rh d5", 0);
+        demo.privateMsg(1, 34, 1304554598, ".rh 3d", 0);
+        demo.privateMsg(1, 34, 1304554598, ".rh d", 0);
     }
     
 //    用于加载后启动的测试方法，打包前需去除

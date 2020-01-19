@@ -52,6 +52,52 @@ public class ERPG extends Father
 		this.string=string;
 	}}
 	/**
+	 * 提升技能上限的情况
+	 * @author GuoJiaCheng
+	 *
+	 */
+	private enum SkillUBound{san("克苏鲁神话",1);
+		private String effectSkill;
+		private int effectNum;
+		public String getEffectSkill()
+		{
+			return effectSkill;
+		}
+		public int getEffect()
+		{
+			return effectNum;
+		}
+		SkillUBound(String string, int i) {
+		// TODO Auto-generated constructor stub
+			effectNum=i;
+			effectSkill=string;
+		}
+		
+	}
+	/**
+	 * 提升技能下限的情况
+	 * @author GuoJiaCheng
+	 *
+	 */
+	private enum SkillBBound{;
+		private String effectSkill;
+		private int effectNum;
+		public String getEffectSkill()
+		{
+			return effectSkill;
+		}
+		public int getEffect()
+		{
+			return effectNum;
+		}
+		SkillBBound(String string, int i) {
+		// TODO Auto-generated constructor stub
+			effectNum=i;
+			effectSkill=string;
+		}
+		
+	}
+	/**
 	 * 用于返回检定情况的类，包含{@link LevelStatus}和{@link SpecialStatus}
 	 * @author GuoJiaCheng
 	 *
@@ -79,48 +125,82 @@ public class ERPG extends Father
 		
 	}
 	
-	public void rd()
+	public void r()
 	{
-		rd(null);
+		r(null);
 	}
-	public void rd(ArrayList<String> arrayList)
+	public void r(ArrayList<String> arrayList)
 	{
-		int part,time;
+		String help=".r （次数（1~5），默认为1）[d][面数，默认为100]\n";
+		int part=100,time;
 		StringBuilder builder=new StringBuilder();
 		if(arrayList==null)
 		{
-			part=100;
-			time=1;
+			sendBackMsg(help);
+			return;
 		}
 		else
 		{
 			try
 			{
-				part=formatNum(arrayList.get(0), 2, 500);
+				time=formatNum(arrayList.get(0), 1, 5);
 			}
 			catch(NumberFormatException exception)
 			{
-				part=100;
-				builder.append("面数错误，设为默认值\n");
-			}
-			if(arrayList.size()>1)
-			{
-				try
+				int i=transRandomString(arrayList.get(0));
+				if(i<0)
 				{
-					time=formatNum(arrayList.get(1), 2, 500);
+					sendBackMsg("参数不合要求或溢出");
+					return;
 				}
-				catch(NumberFormatException exception)
-				{
-					time=100;
-					builder.append("次数错误，设为默认值\n");
-				}
+				builder.append(getMessageSenderName()+"掷出了"+arrayList.get(0)+"="+i);
+				sendBackMsg(builder.toString());
+				return;
 			}
-			else
-				time=1;
+			
 		}
 		int rnum=getRandomNum(part, time);
 		builder.append(getMessageSenderName()+"掷出了"+time+"d"+part+"="+rnum);
 		sendBackMsg(builder.toString());
+	}
+	
+	public void rh()
+	{
+		rh(null);
+	}
+	public void rh(ArrayList<String> arrayList)
+	{
+		String help=".rh （次数（1~5），默认为1）[d][面数，默认为100]\n";
+		int part=100,time;
+		StringBuilder builder=new StringBuilder();
+		if(arrayList==null)
+		{
+			sendBackMsg(help);
+			return;
+		}
+		else
+		{
+			try
+			{
+				time=formatNum(arrayList.get(0), 1, 5);
+			}
+			catch(NumberFormatException exception)
+			{
+				int i=transRandomString(arrayList.get(0));
+				if(i<0)
+				{
+					sendBackMsg("参数不合要求或溢出");
+					return;
+				}
+				builder.append("你掷出了"+arrayList.get(0)+"="+i);
+				sendPrivateMsg(receiveMessageType.getfromQQ(), builder.toString());
+				return;
+			}
+			
+		}
+		int rnum=getRandomNum(part, time);
+		builder.append("你掷出了"+time+"d"+part+"="+rnum);
+		sendPrivateMsg(receiveMessageType.getfromQQ(), builder.toString());
 	}
 
 	public void rb()
@@ -408,7 +488,6 @@ public class ERPG extends Father
 			return;
 		}
 		int san=getSkill("san");
-		int sanUB=getSkill("克苏鲁神话")==-1?99:99+getSkill("克苏鲁神话");
 		if(san==-1)
 		{
 			sendBackMsg("您尚未设置理智值");
@@ -441,25 +520,19 @@ public class ERPG extends Father
 			return;
 		}
 		CheckStatus checkStatus=numCheck(san);
+		int changeNum = 0;
 		switch(checkStatus.levelStatus)
 		{
 		case EX_SUCCESS:
 		case S_SUCCESS:
 		case SUCCESS:
-			setSkill("san", san-a);
+			changeNum=a;
 			break;
 		case FAILED:
-			setSkill("san", san-b);
+			changeNum=b;
 			break;
 		}
-		if(getSkill("san")>sanUB)
-		{
-			setSkill("san", sanUB);
-		}
-		if(getSkill("san")<0)
-		{
-			setSkill("san", 0);
-		}
+		formateAndSaveSkill("san", san+changeNum);
 		StringBuilder builder=new StringBuilder();
 		builder.append("对"+getMessageSenderName()+"进行理智检定\n");
 		builder.append("掷出1d100="+checkStatus.randomNum+",检定"+checkStatus.levelStatus.getString());
@@ -478,72 +551,40 @@ public class ERPG extends Father
 	}
 	public void en(ArrayList<String> arrayList)
 	{
-		String help=".san 成功增加值/失败增加值\n";
+		String help=".san 技能名\n";
 		if(arrayList==null)
 		{
 			sendBackMsg(help);
 			return;
 		}
-		int san=getSkill("san");
-		int sanUB=getSkill("克苏鲁神话")==-1?99:99+getSkill("克苏鲁神话");
-		if(san==-1)
+		String string=transToMain(arrayList.get(0));
+		int skillNum=getSkill(string);
+		if(skillNum==-1)
 		{
-			sendBackMsg("您尚未设置理智值");
+			sendBackMsg("您尚未设置该技能值");
 			return;
 		}
-		String[] parts=arrayList.get(0).split("/");
-		if(parts.length<2)
-		{
-			sendBackMsg("设置数据错误");
-			return;
-		}
-		int a,b;
-		try
-		{
-			a=formatNum(parts[0], 0, 100);
-		}catch (NumberFormatException e) {
-			// TODO: handle exception
-			a=transRandomString(parts[0]);
-		}
-		try
-		{
-			b=formatNum(parts[1], 0, 100);;
-		}catch (NumberFormatException e) {
-			// TODO: handle exception
-			b=transRandomString(parts[1]);
-		}
-		if(a<0||b<0)
-		{
-			sendBackMsg("数值错误或溢出");
-			return;
-		}
-		CheckStatus checkStatus=numCheck(san);
+		CheckStatus checkStatus=numCheck(skillNum);
+		int upNum=getRandomNum(10, 1);
 		switch(checkStatus.levelStatus)
 		{
 		case EX_SUCCESS:
 		case S_SUCCESS:
 		case SUCCESS:
-			setSkill("san", san+a);
 			break;
 		case FAILED:
-			setSkill("san", san+b);
+			upNum=0;
 			break;
 		}
-		if(getSkill("san")>sanUB)
-		{
-			setSkill("san", sanUB);
-		}
-		if(getSkill("san")<0)
-		{
-			setSkill("san", 0);
-		}
+		formateAndSaveSkill(string, skillNum+upNum);
 		StringBuilder builder=new StringBuilder();
-		builder.append("对"+getMessageSenderName()+"进行理智恢复检定\n");
+		builder.append("对"+getMessageSenderName()+"进行"+string+"增长检定\n");
 		builder.append("掷出1d100="+checkStatus.randomNum+",检定"+checkStatus.levelStatus.getString());
 		if(checkStatus.specialStatus!=null)
 			builder.append(","+checkStatus.specialStatus.getString());
-		builder.append("\n");
-		builder.append(getMessageSenderName()+"的理智值变为了"+getSkill("san"));
+		builder.append("\n"+getMessageSenderName()+"的"+string);
+		builder.append(checkStatus.levelStatus!=LevelStatus.FAILED?"获得了1d10="+upNum+"点增长":"没有发生变化");
+		builder.append(","+string+"变为了"+getSkill(string));
 		sendBackMsg(builder.toString());
 	}
 	
@@ -724,23 +765,90 @@ public class ERPG extends Father
 	/**
 	 * 将代表随机数的表达式变为随机数
 	 * @param string 字符串
-	 * @return 按要求的随机数<br>如果不符合表达式则返回-1<br>如果数字溢出，则会返回-2
+	 * @return 按要求的随机数<br>如果不符合完整表达式则自动补全默认值，若无法补全则返回-1<br>如果数字溢出，则会返回-2
 	 */
 	private int transRandomString(String string)
 	{
 		String[] strings=string.toLowerCase().split("d");
+		int time=-1,part=-1;
 		if(strings.length<2)
-			return -1;
-		int time,part;
-		try
 		{
-			time=formatNum(strings[0], 1, 5);
-			part=formatNum(strings[1], 2, 500);
-		}catch (NumberFormatException e) {
-			// TODO: handle exception
-			return -2;
+			if(string.toLowerCase().startsWith("d"))
+				time=1;
+			if (string.toLowerCase().endsWith("d")) 
+				part=100;
+			if(time==-1&&part==-1)
+				return -1;
+		}
+		else
+		{
+			if(strings[0].equals(""))
+				strings[0]="1";
+			if(strings[1].equals(""))
+				strings[1]="100";
+		}
+		if(strings.length>1)
+		{
+			try
+			{
+				if(time==-1)
+					time=formatNum(strings[0], 1, 5);
+				else
+					part=formatNum(strings[0], 2, 500);
+				if(part==-1)
+					part=formatNum(strings[1], 2, 500);
+			}catch (NumberFormatException e) {
+				// TODO: handle exception
+				return -2;
+			}
 		}
 		return getRandomNum(part, time);
+	}
+	/**
+	 * 格式化技能数值，将技能数值格式化,并能够储存下
+	 * 技能的数值会受{@link SkillUBound}和{@link SkillBBound}的影响
+	 * @param name 技能名称
+	 * @param num 需要修改的数值
+	 * @return 
+	 * 0 修改成功<br>
+	 * 1 修改成功，且原技能值超出下限<br>
+	 * 2 修改成功，且原技能值超出上限
+	 */
+	private int formateAndSaveSkill(String name,int num)
+	{
+		int UBound=99,BBound=0;
+		for (SkillBBound bBound : SkillBBound.values()) 
+		{
+			if(transToMain(bBound.getEffectSkill()).equals(transToMain(name)))
+			{
+				int effectSkillNum=getSkill(transToMain(bBound.effectSkill));
+				if(effectSkillNum!=-1)
+					BBound=0+bBound.effectNum*effectSkillNum;
+			}
+		}
+		for (SkillUBound uBound : SkillUBound.values()) 
+		{
+			if(transToMain(uBound.getEffectSkill()).equals(transToMain(name)))
+			{
+				int effectSkillNum=getSkill(transToMain(uBound.effectSkill));
+				if(effectSkillNum!=-1)
+					UBound=99+uBound.effectNum*effectSkillNum;
+			}
+		}
+		if(num>UBound)
+		{
+			num=UBound;
+			setSkill(name, num);
+			return 2;
+		}
+		if(num<BBound)
+		{
+			num=BBound;
+			setSkill(name, num);
+			return 1;
+		}
+		setSkill(name, num);
+		return 0;
 	}
 	
 //	------------------------------------------------------------------------------------------------------
@@ -836,8 +944,7 @@ public class ERPG extends Father
 	 */
 	private ArrayList<String> findSameString(String aim)
 	{
-		if(SameStringList==null)
-			loadSameString();
+		loadSameString();
 		for (ArrayList<String> arrayList : SameStringList) 
 		{
 			for (String string : arrayList) 
