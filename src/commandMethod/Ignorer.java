@@ -408,13 +408,13 @@ public class Ignorer extends Father {
 				break;
 			case "discuss":
 			case "d":
-				sendBackMsg(changeWBListener(IFWL_GROUP)?
+				sendBackMsg(changeWBListener(IFWL_DISCUSS)?
 						("逆转了群监听类型，现在为"+(ifWL(IFWL_DISCUSS)?"不监听黑名单":"仅监听白名单"))
 						:"未知错误");
 				break;
 			case "person":
 			case "p":
-				sendBackMsg(changeWBListener(IFWL_GROUP)?
+				sendBackMsg(changeWBListener(IFWL_PERSON)?
 						("逆转了群监听类型，现在为"+(ifWL(IFWL_PERSON)?"不监听黑名单":"仅监听白名单"))
 						:"未知错误");
 				break;
@@ -422,6 +422,7 @@ public class Ignorer extends Father {
 				sendBackMsg("参数错误"+HELP);
 				return;
 			}
+			break;
 		default:
 			sendBackMsg("参数错误"+HELP);
 			return;
@@ -482,10 +483,11 @@ public class Ignorer extends Father {
 	{
 		switch(type)
 		{
-		case WHITELIST_PERSON:	
-		case WHITELIST_GROUP:
-		case WHITELIST_DISCUSS:
+		case IFWL_DISCUSS:	
+		case IFWL_GROUP:
+		case IFWL_PERSON:
 			getDataExchanger().addItem(type, b+"");
+			return true;
 			
 			default:
 				return false;
@@ -495,11 +497,11 @@ public class Ignorer extends Father {
 	{
 		switch(type)
 		{
-		case WHITELIST_PERSON:
+		case IFWL_PERSON:
 			return Boolean.parseBoolean(getDataExchanger().getItem(IFWL_PERSON));
-		case WHITELIST_GROUP:
+		case IFWL_GROUP:
 			return Boolean.parseBoolean(getDataExchanger().getItem(IFWL_GROUP));
-		case WHITELIST_DISCUSS:
+		case IFWL_DISCUSS:
 			return Boolean.parseBoolean(getDataExchanger().getItem(WHITELIST_DISCUSS));
 			
 			default:

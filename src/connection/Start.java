@@ -4,6 +4,7 @@ import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
 import commandMethod.ERPG;
+import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.ConstantTable;
@@ -92,10 +93,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         
         demo.privateMsg(1, 34, 1304554598, "sdf", 0);
         String string=new Scanner(System.in).next();
-        demo.privateMsg(1, 34, 1304554598, ".rh 3d5", 0);
-        demo.privateMsg(1, 34, 1304554598, ".rh d5", 0);
-        demo.privateMsg(1, 34, 1304554598, ".rh 3d", 0);
-        demo.privateMsg(1, 34, 1304554598, ".rh d", 0);
+        demo.groupMsg(1, 12345, 1234567, 1304554598, null, ".welcome 你好", 0);
+        string=new Scanner(System.in).next();
+        demo.groupMemberIncrease(1, 12432349, 1234567, 34566672, 9876543);
     }
     
 //    用于加载后启动的测试方法，打包前需去除
@@ -307,7 +307,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int groupAdmin(int subtype, int sendTime, long fromGroup, long beingOperateQQ) {
         // 这里处理消息
-
+    	
         return MSG_IGNORE;
     }
 
@@ -324,7 +324,13 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int groupMemberDecrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ) {
         // 这里处理消息
-
+    	for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners) 
+    	{
+			if(groupMemberChangeListener.run(
+					new GroupChangeType(GroupChangeType.GROUP_MUMBER_DECREASE
+							, subtype, fromGroup, beingOperateQQ, fromQQ))==OnGroupMemberChangeListener.RETURN_STOP)
+				break;
+		}
         return MSG_IGNORE;
     }
 
@@ -341,9 +347,13 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int groupMemberIncrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ) {
         // 这里处理消息
-        CQ.logInfo("fromGroup", "" + fromGroup);
-        CQ.logInfo("fromQQ", "" + fromQQ);
-        CQ.logInfo("beingOperateQQ", "" + beingOperateQQ);
+    	for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners) 
+    	{
+			if(groupMemberChangeListener.run(
+					new GroupChangeType(GroupChangeType.GROUP_MUMBER_CREASE
+							, subtype, fromGroup, beingOperateQQ, fromQQ))==OnGroupMemberChangeListener.RETURN_STOP)
+				break;
+		}
         return MSG_IGNORE;
     }
 

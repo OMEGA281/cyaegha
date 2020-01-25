@@ -114,6 +114,17 @@ public class ERPG extends Father
 			this.randomNum=randomNum;
 		}
 	}
+	private enum Help{
+		r(".r （次数（1~5），默认为1）[d][面数，默认为100]\\n");
+		
+		
+		String help;
+		Help(String string) {
+			// TODO Auto-generated constructor stub
+			this.help=string;
+		}
+		
+	}
 	
 	private static ArrayList<ArrayList<String>> SameStringList;
 	
@@ -273,30 +284,49 @@ public class ERPG extends Father
 	
 	public void st()
 	{
-		final String help=".st 项目名称 项目数值（1-100）\n"+"如果不包含项目数值，则为清除该条目\n";
+		final String help=".st 项目名称 项目数值（1-100）\n"
+				+ "可以同时录入多个，规则按照：\n"
+				+ ".st 技能 数值 [技能 数值] [技能 数值]…\n"
+				+"如果不包含项目数值，则为清除该条目\n";
 		sendBackMsg("需要输入参数"+help);
 	}
 	public void st(ArrayList<String> arrayList)
 	{
-		final String help=".st 项目名称 项目数值（1-100）\n";
+		final String help=".st 项目名称 项目数值（1-100）\n"
+				+ "可以同时录入多个，规则按照：\n"
+				+ ".st 技能 数值 [技能 数值] [技能 数值]…\n"
+				+"如果不包含项目数值，则为清除该条目\n";
 		if(arrayList.size()<2)
 		{
 			removeSkill(arrayList.get(0));
 			sendBackMsg("已删除"+getMessageSenderName()+"的"+arrayList.get(0));
 			return;
 		}
-		int num;
-		try
+		ArrayList<String> output=new ArrayList<>();
+		for(int i=0;i<arrayList.size();i+=2)
 		{
-			num=formatNum(arrayList.get(1), 1, 100);
+			if(arrayList.size()<=i+1)
+				break;
+			String skill=arrayList.get(i);
+			int skillNum=-1;
+			try
+			{
+				skillNum=formatNum(arrayList.get(i+1), 0, 100);
+			}catch (NumberFormatException e) {
+				// TODO: handle exception
+				skillNum=transRandomString(arrayList.get(i+1));
+			}
+			if(skillNum<0)
+				continue;
+			setSkill(skill, skillNum);
+			output.add(skill+":"+skillNum);
 		}
-		catch(NumberFormatException exception)
-		{
-			sendBackMsg("设置的参数错误或溢出"+help);
-			return;
+		StringBuilder builder=new StringBuilder();
+		builder.append(getMessageSenderName()+"添加了以下属性：\n");
+		for (String string : output) {
+			builder.append(string+"\n");
 		}
-		setSkill(arrayList.get(0), num);
-		sendBackMsg(CQSender.getSender().getMyName()+"记下了"+getMessageSenderName()+"的"+arrayList.get(0)+"数值了");
+		sendBackMsg(builder.toString());
 	}
 	
 	public void ra()
@@ -532,7 +562,7 @@ public class ERPG extends Father
 			changeNum=b;
 			break;
 		}
-		formateAndSaveSkill("san", san+changeNum);
+		formateAndSaveSkill("san", san-changeNum);
 		StringBuilder builder=new StringBuilder();
 		builder.append("对"+getMessageSenderName()+"进行理智检定\n");
 		builder.append("掷出1d100="+checkStatus.randomNum+",检定"+checkStatus.levelStatus.getString());
@@ -551,7 +581,7 @@ public class ERPG extends Father
 	}
 	public void en(ArrayList<String> arrayList)
 	{
-		String help=".san 技能名\n";
+		String help=".en 技能名 [临时数值，若先前未设置技能数值，则必须填写]\n";
 		if(arrayList==null)
 		{
 			sendBackMsg(help);
@@ -559,6 +589,20 @@ public class ERPG extends Father
 		}
 		String string=transToMain(arrayList.get(0));
 		int skillNum=getSkill(string);
+		boolean temporaryNum=false;
+		if(arrayList.size()>1)
+		{
+			try
+			{
+				skillNum=formatNum(arrayList.get(1), 0, 100);
+				temporaryNum=true;
+			}
+			catch (NumberFormatException e) {
+				// TODO: handle exception
+				sendBackMsg("您设置的数值错误或溢出");
+				return;
+			}
+		}
 		if(skillNum==-1)
 		{
 			sendBackMsg("您尚未设置该技能值");
@@ -576,7 +620,13 @@ public class ERPG extends Father
 			upNum=0;
 			break;
 		}
-		formateAndSaveSkill(string, skillNum+upNum);
+		
+		int temporarySkillNum = 0;
+		if(!temporaryNum)
+			formateAndSaveSkill(string, skillNum+upNum);
+		else
+			temporarySkillNum=skillNum+upNum;
+		
 		StringBuilder builder=new StringBuilder();
 		builder.append("对"+getMessageSenderName()+"进行"+string+"增长检定\n");
 		builder.append("掷出1d100="+checkStatus.randomNum+",检定"+checkStatus.levelStatus.getString());
@@ -584,7 +634,7 @@ public class ERPG extends Father
 			builder.append(","+checkStatus.specialStatus.getString());
 		builder.append("\n"+getMessageSenderName()+"的"+string);
 		builder.append(checkStatus.levelStatus!=LevelStatus.FAILED?"获得了1d10="+upNum+"点增长":"没有发生变化");
-		builder.append(","+string+"变为了"+getSkill(string));
+		builder.append(","+string+"现在是"+(temporaryNum?temporarySkillNum:getSkill(string)));
 		sendBackMsg(builder.toString());
 	}
 	
@@ -763,7 +813,7 @@ public class ERPG extends Father
 		return numCheck(point, getRandomNum(100, 1));
 	}
 	/**
-	 * 将代表随机数的表达式变为随机数
+	 * 将包含有随机数的表达式计算出来
 	 * @param string 字符串
 	 * @return 按要求的随机数<br>如果不符合完整表达式则自动补全默认值，若无法补全则返回-1<br>如果数字溢出，则会返回-2
 	 */
