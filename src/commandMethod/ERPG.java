@@ -3,10 +3,12 @@ package commandMethod;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import connection.CQSender;
 import global.ConstantTable;
+import net.sourceforge.jeval.EvaluationException;
+import net.sourceforge.jeval.Evaluator;
 
 public class ERPG extends Father 
 {
@@ -56,7 +58,7 @@ public class ERPG extends Father
 	 * @author GuoJiaCheng
 	 *
 	 */
-	private enum SkillUBound{san("克苏鲁神话",1);
+	private enum SkillUBound{san("克苏鲁神话",-1);
 		private String effectSkill;
 		private int effectNum;
 		public String getEffectSkill()
@@ -380,6 +382,7 @@ public class ERPG extends Father
 		if(arrayList==null)
 		{
 			sendBackMsg(help);
+			return;
 		}
 		int readPoint=0;
 		int time=1;
@@ -448,6 +451,7 @@ public class ERPG extends Father
 		if(arrayList==null)
 		{
 			sendBackMsg(help);
+			return;
 		}
 		int readPoint=0;
 		int time=1;
@@ -795,10 +799,18 @@ public class ERPG extends Father
 			special=SpecialStatus.BIGSUCCESS;
 			return new CheckStatus(level, special,randerNum);
 		}
-		if(!ifSuccess&&(randerNum>=96&&randerNum<=100))
+		if(!ifSuccess)
 		{
-			special=SpecialStatus.BIGFAILED;
-			return new CheckStatus(level, special,randerNum);
+			if(point<=50&&(randerNum>=96&&randerNum<=100))
+			{
+				special=SpecialStatus.BIGFAILED;
+				return new CheckStatus(level, special,randerNum);
+			}
+			if(point>50&&(randerNum==100))
+			{
+				special=SpecialStatus.BIGFAILED;
+				return new CheckStatus(level, special,randerNum);
+			}
 		}
 		return new CheckStatus(level, special,randerNum);
 	}
@@ -819,40 +831,63 @@ public class ERPG extends Father
 	 */
 	private int transRandomString(String string)
 	{
-		String[] strings=string.toLowerCase().split("d");
-		int time=-1,part=-1;
-		if(strings.length<2)
+		Pattern pattern=Pattern.compile("([0-9]*)?d([0-9]*)?");
+		Matcher matcher=pattern.matcher(string.toLowerCase());
+		String resultString=new String(string);
+		while(matcher.find())
 		{
-			if(string.toLowerCase().startsWith("d"))
-				time=1;
-			if (string.toLowerCase().endsWith("d")) 
-				part=100;
-			if(time==-1&&part==-1)
-				return -1;
-		}
-		else
-		{
-			if(strings[0].equals(""))
-				strings[0]="1";
-			if(strings[1].equals(""))
-				strings[1]="100";
-		}
-		if(strings.length>1)
-		{
-			try
+			String subString=string.substring(matcher.start(0), matcher.end(0));
+			String[] ss=subString.split("d");
+			int time=-1,part=-1;
+			if(ss.length<2)
 			{
-				if(time==-1)
-					time=formatNum(strings[0], 1, 5);
-				else
-					part=formatNum(strings[0], 2, 500);
-				if(part==-1)
-					part=formatNum(strings[1], 2, 500);
-			}catch (NumberFormatException e) {
-				// TODO: handle exception
-				return -2;
+				if(string.toLowerCase().startsWith("d"))
+					time=1;
+				if (string.toLowerCase().endsWith("d")) 
+					part=100;
+				if(time==-1&&part==-1)
+					return -1;
 			}
+			else
+			{
+				if(ss[0].equals(""))
+					ss[0]="1";
+				if(ss[1].equals(""))
+					ss[1]="100";
+			}
+			if(ss.length>1)
+			{
+				try
+				{
+					if(time==-1)
+						time=formatNum(ss[0], 1, 10);
+					else
+						part=formatNum(ss[0], 2, 500);
+					if(part==-1)
+						part=formatNum(ss[1], 2, 500);
+				}catch (NumberFormatException e) {
+					// TODO: handle exception
+					return -2;
+				}
+			}
+			StringBuilder builder=new StringBuilder("(");
+			for(int i=1;i<=time;i++)
+			{
+				builder.append(getRandomNum(Integer.parseInt(ss[1]), 1)+"+");
+			}
+			builder.deleteCharAt(builder.length()-1);
+			builder.append(")");
+			resultString=resultString.replace(matcher.group(0), builder.toString());
 		}
-		return getRandomNum(part, time);
+		
+		Evaluator evaluator=new Evaluator();
+		try {
+			return (int)evaluator.getNumberResult(resultString);
+		} catch (EvaluationException e) {
+			// TODO Auto-generated catch block
+			return -1;
+		}
+		
 	}
 	/**
 	 * 格式化技能数值，将技能数值格式化,并能够储存下

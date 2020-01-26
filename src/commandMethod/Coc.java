@@ -42,24 +42,46 @@ public class Coc extends Father
 		stringBuilder.append(getMessageSenderName()+"的人物作成：\n");
 		for(int i=1;i<=time;i++)
 		{
-			int[] num=new int[9];
-			int A1=0,A2=0;
-			for (int m=0;m<num.length;m++) 
-			{
-				num[m]=getRandomNum(6, 3)*5;
-				A2=A2+num[m];
-			}
-			A1=A2-num[8];
-			stringBuilder.append("力量："+num[0]+"\t");
-			stringBuilder.append("体质："+num[1]+"\t");
-			stringBuilder.append("体型："+num[2]+"\n");
-			stringBuilder.append("敏捷："+num[3]+"\t");
-			stringBuilder.append("外貌："+num[4]+"\t");
-			stringBuilder.append("智力："+num[5]+"\n");
-			stringBuilder.append("意志："+num[6]+"\t");
-			stringBuilder.append("教育："+num[7]+"\t");
-			stringBuilder.append("幸运："+num[8]+"\n");
-			stringBuilder.append("合计值："+A1+"/"+A2+"\n");
+			int smallSum = 0,bigSum=0;
+			int x;
+			
+			x=getRandomNum(6, 3)*5;
+			smallSum+=x;
+			stringBuilder.append("力量:"+x+"\t");
+			
+			x=getRandomNum(6, 3)*5;
+			smallSum+=x;
+			stringBuilder.append("体质:"+x+"\t");
+			
+			x=(getRandomNum(6, 2)+6)*5;
+			smallSum+=x;
+			stringBuilder.append("体型:"+x+"\n");
+			
+			x=getRandomNum(6, 3)*5;
+			smallSum+=x;
+			stringBuilder.append("敏捷:"+x+"\t");
+			
+			x=getRandomNum(6, 3)*5;
+			smallSum+=x;
+			stringBuilder.append("外貌:"+x+"\t");
+			
+			x=(getRandomNum(6, 2)+6)*5;
+			smallSum+=x;
+			stringBuilder.append("智力:"+x+"\n");
+			
+			x=getRandomNum(6, 3)*5;
+			smallSum+=x;
+			stringBuilder.append("意志:"+x+"\t");
+			
+			x=(getRandomNum(6, 2)+6)*5;
+			smallSum+=x;
+			stringBuilder.append("教育:"+x+"\t");
+			
+			x=getRandomNum(6, 3)*5;
+			bigSum=smallSum+x;
+			stringBuilder.append("幸运:"+x+"\n");
+			
+			stringBuilder.append("合计值:"+smallSum+"/"+bigSum+"\n");
 		}
 		sendBackMsg(stringBuilder.toString());
 	}
