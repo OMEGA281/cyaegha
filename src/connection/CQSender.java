@@ -12,14 +12,15 @@ public class CQSender
 	static CQSender cqSender;
 	CoolQ CQ;
 	
-	public QQInfo getQQInfo(long QQ)
+	public String getQQInfo(long QQ)
 	{
-		return CQ.getStrangerInfo(QQ);
+		return CQ.getStrangerInfo(QQ).getNick();
 	}
 	
-	public Member getQQInfoInGroup(long QQ,long GroupNum)
+	public String getQQInfoInGroup(long QQ,long GroupNum)
 	{
-		return CQ.getGroupMemberInfo(GroupNum, QQ);
+		Member member=CQ.getGroupMemberInfo(GroupNum, QQ);
+		return member.getCard();
 	}
 	
 	public String getMyName()
