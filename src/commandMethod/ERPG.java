@@ -145,36 +145,21 @@ public class ERPG extends Father
 	public void r(ArrayList<String> arrayList)
 	{
 		String help=".r （次数（1~5），默认为1）[d][面数，默认为100]\n";
-		int part=100,time;
-		StringBuilder builder=new StringBuilder();
-		if(arrayList==null)
+		int i=-1;
+		try
 		{
-			sendBackMsg(help);
+			i=formatNum(arrayList.get(0), 1, 10);
+			sendBackMsg("掷出了"+arrayList.get(0)+"d100="+i);
+			return;
+		}catch (NumberFormatException e) {
+			i=transRandomString(arrayList.get(0));
+		}
+		if(i<0)
+		{
+			sendBackMsg("无法识别的参数");
 			return;
 		}
-		else
-		{
-			try
-			{
-				time=formatNum(arrayList.get(0), 1, 5);
-			}
-			catch(NumberFormatException exception)
-			{
-				int i=transRandomString(arrayList.get(0));
-				if(i<0)
-				{
-					sendBackMsg("参数不合要求或溢出");
-					return;
-				}
-				builder.append(getMessageSenderName()+"掷出了"+arrayList.get(0)+"="+i);
-				sendBackMsg(builder.toString());
-				return;
-			}
-			
-		}
-		int rnum=getRandomNum(part, time);
-		builder.append(getMessageSenderName()+"掷出了"+time+"d"+part+"="+rnum);
-		sendBackMsg(builder.toString());
+		sendBackMsg("掷出了"+arrayList.get(0)+"="+i);
 	}
 	
 	public void rh()
@@ -300,9 +285,61 @@ public class ERPG extends Father
 				+"如果不包含项目数值，则为清除该条目\n";
 		if(arrayList.size()<2)
 		{
-			removeSkill(arrayList.get(0));
-			sendBackMsg("已删除"+getMessageSenderName()+"的"+arrayList.get(0));
-			return;
+//			检测是哪一种类型，可能是连续的输入，也可能是表达式
+			if(Pattern.compile("[+-]").matcher(arrayList.get(0)).find())
+			{
+//				检测到了运算符
+				String[] part=arrayList.get(0).split("[+-]");
+				String skill=null;
+//				检测并获得修改的名称
+				for (String string : part) 
+				{
+					if(!Pattern.compile("[0-9d]*").matcher(string).matches())
+					{
+						if(skill==null||skill.equals(string))
+							skill=string;
+						else
+						{
+							sendBackMsg("算数表达式仅可以含有一种技能名");
+							return;
+						}
+					}
+				}
+				
+				if(skill==null)
+				{
+					sendBackMsg("没有找到技能名称");
+					return;
+				}
+				int last=getSkill(skill);
+				if(last<0)
+				{
+					sendBackMsg("该技能不存在");
+					return;
+				}
+				
+//				替换
+				arrayList.set(0, arrayList.get(0).replaceAll(skill, Integer.toString(getSkill(skill))));
+//				链接
+				setSkill(skill, transRandomString(arrayList.get(0)));
+				StringBuilder stringBuilder=new StringBuilder();
+				stringBuilder.append(getMessageSenderName()+"的"+skill+"从"+last+"变成了"+getSkill(skill));
+				sendBackMsg(stringBuilder.toString());
+				return;
+			}
+			StringBuilder builder=new StringBuilder(arrayList.get(0));
+			char[] cs=builder.toString().toCharArray();
+			arrayList.clear();
+			int lastIndex=0;
+			for(int i=1;i<cs.length;i++)
+			{
+				if(('0'<=cs[i]&&cs[i]<='9'&&!('0'<=cs[i-1]&&cs[i-1]<='9'))||(!('0'<=cs[i]&&cs[i]<='9')&&('0'<=cs[i-1]&&cs[i-1]<='9')))
+				{
+					arrayList.add(builder.substring(lastIndex, i).toString());
+					lastIndex=i;
+				}
+			}
+			arrayList.add(builder.substring(lastIndex,builder.length()));
 		}
 		ArrayList<String> output=new ArrayList<>();
 		for(int i=0;i<arrayList.size();i+=2)
@@ -326,7 +363,7 @@ public class ERPG extends Father
 		StringBuilder builder=new StringBuilder();
 		builder.append(getMessageSenderName()+"添加了以下属性：\n");
 		for (String string : output) {
-			builder.append(string+"\n");
+			builder.append(string+"  ");
 		}
 		sendBackMsg(builder.toString());
 	}
@@ -573,7 +610,7 @@ public class ERPG extends Father
 		if(checkStatus.specialStatus!=null)
 			builder.append(","+checkStatus.specialStatus.getString());
 		builder.append("\n");
-		builder.append(getMessageSenderName()+"的理智值变为了"+getSkill("san"));
+		builder.append(getMessageSenderName()+"的理智值降低了"+changeNum+",变为了"+getSkill("san"));
 		if(getSkill("san")<=0)
 			builder.append("\n你陷入了永久的疯狂！");
 		sendBackMsg(builder.toString());
@@ -873,7 +910,7 @@ public class ERPG extends Father
 			StringBuilder builder=new StringBuilder("(");
 			for(int i=1;i<=time;i++)
 			{
-				builder.append(getRandomNum(Integer.parseInt(ss[1]), 1)+"+");
+				builder.append(getRandomNum(part, 1)+"+");
 			}
 			builder.deleteCharAt(builder.length()-1);
 			builder.append(")");

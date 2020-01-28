@@ -4,11 +4,11 @@ import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
+import global.ConstantTable;
 import transceiver.Transmitter;
 
 public class Dormant extends Father
 {
-	static boolean accessible=true;
 	@Override
 	public void initialize() 
 	{
@@ -16,15 +16,20 @@ public class Dormant extends Father
 		OnMessageReceiveListener listener=new OnMessageReceiveListener() {
 			
 			@Override
-			public int run(ReceiveMessageType messageType) {
+			public int run(ReceiveMessageType messageType) 
+			{
 				// TODO Auto-generated method stub
 				receiveMessageType=messageType;
+				boolean accessible;
+				if(getDataExchanger().getItem(getMark())==null)
+					accessible=true;
+				else
+					accessible=Boolean.parseBoolean(getDataExchanger().getItem(getMark()));
+				//FIXME:
 				if((!accessible)&messageType.getMsg().equals(".dormant"))
 				{
 					accessible=true;
-					Transmitter.getTransmitter().addMsg(new SendMessageType(
-							receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
-							, receiveMessageType.getfromGroup(), "退出休眠状态"));
+					sendBackMsg("退出休眠状态");
 					return RETURN_STOP;
 				}
 				if(accessible)
@@ -42,12 +47,26 @@ public class Dormant extends Father
 	}
 	public void changeDormant()
 	{
-		if(accessible)
+		boolean accessible=Boolean.parseBoolean(getDataExchanger().getItem(getMark()));
+		accessible=!accessible;
+		getDataExchanger().addItem(getMark(), Boolean.toString(accessible));
+		sendBackMsg("设为"+(accessible?"监听":"苏醒")+"模式");
+	}
+	private String getMark()
+	{
+		String string = null;
+		switch(receiveMessageType.getMsgType())
 		{
-			accessible=false;
-			Transmitter.getTransmitter().addMsg(new SendMessageType(
-					receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
-					, receiveMessageType.getfromGroup(), "进入休眠状态"));
+		case ConstantTable.MSGTYPE_PERSON:
+			string="P"+receiveMessageType.getfromQQ();
+			break;
+		case ConstantTable.MSGTYPE_GROUP:
+			string="G"+receiveMessageType.getfromGroup();
+			break;
+		case ConstantTable.MSGTYPE_DISCUSS:
+			string="D"+receiveMessageType.getfromGroup();
+			break;
 		}
+		return string;
 	}
 }

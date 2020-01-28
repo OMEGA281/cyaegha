@@ -47,35 +47,35 @@ public class Coc extends Father
 			
 			x=getRandomNum(6, 3)*5;
 			smallSum+=x;
-			stringBuilder.append("力量:"+x+"\t");
+			stringBuilder.append("力量:"+x+"  ");
 			
 			x=getRandomNum(6, 3)*5;
 			smallSum+=x;
-			stringBuilder.append("体质:"+x+"\t");
+			stringBuilder.append("体质:"+x+"  ");
 			
 			x=(getRandomNum(6, 2)+6)*5;
 			smallSum+=x;
-			stringBuilder.append("体型:"+x+"\n");
+			stringBuilder.append("体型:"+x+"  ");
 			
 			x=getRandomNum(6, 3)*5;
 			smallSum+=x;
-			stringBuilder.append("敏捷:"+x+"\t");
+			stringBuilder.append("敏捷:"+x+"  ");
 			
 			x=getRandomNum(6, 3)*5;
 			smallSum+=x;
-			stringBuilder.append("外貌:"+x+"\t");
+			stringBuilder.append("外貌:"+x+"  ");
 			
 			x=(getRandomNum(6, 2)+6)*5;
 			smallSum+=x;
-			stringBuilder.append("智力:"+x+"\n");
+			stringBuilder.append("智力:"+x+"  ");
 			
 			x=getRandomNum(6, 3)*5;
 			smallSum+=x;
-			stringBuilder.append("意志:"+x+"\t");
+			stringBuilder.append("意志:"+x+"  ");
 			
 			x=(getRandomNum(6, 2)+6)*5;
 			smallSum+=x;
-			stringBuilder.append("教育:"+x+"\t");
+			stringBuilder.append("教育:"+x+"  ");
 			
 			x=getRandomNum(6, 3)*5;
 			bigSum=smallSum+x;

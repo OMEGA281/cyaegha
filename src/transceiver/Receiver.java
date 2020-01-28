@@ -8,6 +8,8 @@ import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import connection.ReceiveMessageType;
+import connection.SendMessageType;
+import global.ConstantTable;
 import surveillance.Log;
 import tools.FileSimpleIO;
 
@@ -32,22 +34,39 @@ public class Receiver
 					
 					code_0:for (OnMessageReceiveListener messageReceiveListener : Register.getRegister().messageReceiveListeners) 
 					{
-						response=messageReceiveListener.run(receiveMessageType);
-						switch(response)
-						{
-						case OnEventListener.RETURN_PASS:
-							continue;
-						case OnEventListener.RETURN_STOP:
-							break code_0;
-						default:
-							Log.e("出现未知的返回类型");
-							continue;
+						try {
+							response=messageReceiveListener.run(receiveMessageType);
+							switch(response)
+							{
+							case OnEventListener.RETURN_PASS:
+								continue;
+							case OnEventListener.RETURN_STOP:
+								break code_0;
+							default:
+								Log.e("出现未知的返回类型");
+								continue;
+							}
+						} catch (Exception e) {
+							//FIXME:
+							Transmitter.getTransmitter().addMsg(
+									new SendMessageType(ConstantTable.MSGTYPE_PERSON, 1304554598, 0
+											, "接受监听器出现错误！\n"+receiveMessageType.getMsg()+"\n"
+											+e.getMessage()));
 						}
 					}
 					
-					if(response==OnEventListener.RETURN_PASS&Matcher.ifCommand(receiveMessageType.getMsg()))
+					try 
 					{
-						Matcher.getMatcher().CommandProcesser(receiveMessageType);
+						if(response==OnEventListener.RETURN_PASS&Matcher.ifCommand(receiveMessageType.getMsg()))
+						{
+							Matcher.getMatcher().CommandProcesser(receiveMessageType);
+						}
+					} catch (Exception e) {
+						//FIXME:
+						Transmitter.getTransmitter().addMsg(
+								new SendMessageType(ConstantTable.MSGTYPE_PERSON, 1304554598, 0
+										, "命令处理器出现错误！\n"+receiveMessageType.getMsg()+"\n"
+										+e.getMessage()));
 					}
 					
 				}
