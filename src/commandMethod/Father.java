@@ -42,7 +42,7 @@ public abstract class Father
 		case ConstantTable.MSGTYPE_DISCUSS:
 			return CQSender.getSender().getQQInfo(receiveMessageType.getfromQQ()).getNick();
 		case ConstantTable.MSGTYPE_GROUP:
-			return CQSender.getSender().getQQInfoInGroup(receiveMessageType.getfromQQ(), receiveMessageType.getfromGroup()).getNick();
+			return CQSender.getSender().getQQInfoInGroup(receiveMessageType.getfromQQ(), receiveMessageType.getfromGroup()).getCard();
 		}
 		return "";
 	}

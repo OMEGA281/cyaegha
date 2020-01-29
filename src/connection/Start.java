@@ -462,5 +462,4 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         JOptionPane.showMessageDialog(null, "这是测试菜单B，可以在这里加载窗口");
         return 0;
     }
-
 }
