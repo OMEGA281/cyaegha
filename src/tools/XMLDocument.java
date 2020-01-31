@@ -30,7 +30,8 @@ public class XMLDocument
 	/**
 	 * 通过地址来读取XML文件
 	 * @param url 地址
-	 * @param creat 如果文件不存在，是否创建一个空XML
+	 * @param creat 如果文件不存在，是否创建一个空XML<br>
+	 * 新建的XML文件只有一个root的根元素
 	 * @throws JDOMException 文件不符合XML规范
 	 * @throws IOException 文件不存在
 	 */
