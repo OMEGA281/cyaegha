@@ -151,7 +151,7 @@ public class ERPG extends Father
 		int i=-1;
 		try
 		{
-			i=formatNum(arrayList.get(0), 1, 10);
+			i=formatNum(arrayList.get(0), 1, 30);
 			sendBackMsg("掷出了"+arrayList.get(0)+"d100="+i);
 			return;
 		}catch (NumberFormatException e) {
@@ -183,7 +183,7 @@ public class ERPG extends Father
 		{
 			try
 			{
-				time=formatNum(arrayList.get(0), 1, 5);
+				time=formatNum(arrayList.get(0), 1, 30);
 			}
 			catch(NumberFormatException exception)
 			{
@@ -219,7 +219,7 @@ public class ERPG extends Father
 		{
 			try
 			{
-				time=formatNum(arrayList.get(0), 1, 5);
+				time=formatNum(arrayList.get(0), 1, 10);
 			}catch (NumberFormatException e) {
 				// TODO: handle exception
 				stringBuilder.append("数量错误，请输入1~5，按照默认数量\n");
@@ -253,7 +253,7 @@ public class ERPG extends Father
 		{
 			try
 			{
-				time=formatNum(arrayList.get(0), 1, 5);
+				time=formatNum(arrayList.get(0), 1, 10);
 			}catch (NumberFormatException e) {
 				// TODO: handle exception
 				stringBuilder.append("数量错误，请输入1~5");
@@ -430,7 +430,7 @@ public class ERPG extends Father
 		{
 			try
 			{
-				time=formatNum(arrayList.get(readPoint), 1, 5);
+				time=formatNum(arrayList.get(readPoint), 1, 10);
 				readPoint++;
 			}
 			catch (NumberFormatException e) {
@@ -499,12 +499,12 @@ public class ERPG extends Father
 		{
 			try
 			{
-				time=formatNum(arrayList.get(readPoint), 1, 5);
+				time=formatNum(arrayList.get(readPoint), 1, 10);
 				readPoint++;
 			}
 			catch (NumberFormatException e) {
 				// TODO: handle exception
-				builder.append("输入的数值错误，请设为1~5，按照默认值\n");
+				builder.append("输入的数值错误，请设为1~10，按照默认值\n");
 				time=1;
 			}
 		}
@@ -900,7 +900,7 @@ public class ERPG extends Father
 				try
 				{
 					if(time==-1)
-						time=formatNum(ss[0], 1, 10);
+						time=formatNum(ss[0], 1, 30);
 					else
 						part=formatNum(ss[0], 2, 500);
 					if(part==-1)
