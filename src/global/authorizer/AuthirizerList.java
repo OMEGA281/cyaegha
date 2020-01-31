@@ -59,21 +59,10 @@ class AuthirizerList
 	}};
 	
 	
-	protected AuthirizerList(String path) 
+	protected AuthirizerList(String path) throws JDOMException, IOException 
 	{
 		this.path=path;
-		try
-		{
-			document=XMLDocument.getDocument(path, true);
-		} catch (JDOMException e)
-		{
-			// TODO 提交到log
-			e.printStackTrace();
-		} catch (IOException e)
-		{
-			// TODO 提交到log
-			e.printStackTrace();
-		}
+		document=XMLDocument.getDocument(path, true);
 	}
 	
 	/**
@@ -144,6 +133,25 @@ class AuthirizerList
 		} catch (IOException e)
 		{
 			// TODO 提交错误到log
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 重新刷新文档，主要是为了避免出现人工修改的情况<br>
+	 * 警告：如果表内的信息量很大的话，大量的重复刷新会造成性能下降！
+	 */
+	private void refreshDocument()
+	{
+		try
+		{
+			document=XMLDocument.getDocument(path, true);
+		} catch (JDOMException e)
+		{
+			// TODO 提交到log
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			// TODO 提交到log
 			e.printStackTrace();
 		}
 	}

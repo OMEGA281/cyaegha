@@ -1,6 +1,6 @@
 package connection;
 
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 
 public class ReceiveMessageType 
 {
@@ -70,14 +70,14 @@ public class ReceiveMessageType
 	{
 		// TODO Auto-generated method stub
 		StringBuilder sb=new StringBuilder();
-		sb.append(ConstantTable.STRING_MSGTYPE+"="+MsgType!=null?MsgType:"null"+",");
-		sb.append(ConstantTable.STRING_SUBTYPE+"="+SubType!=null?SubType:"null"+",");
-		sb.append(ConstantTable.STRING_MSGID+"="+MsgID!=null?MsgID:"null"+",");
-		sb.append(ConstantTable.STRING_FROMQQ+"="+fromQQ!=null?fromQQ:"null"+",");
-		sb.append(ConstantTable.STRING_FROMGROUP+"="+fromGroup!=null?fromGroup:"null"+",");
-		sb.append(ConstantTable.STRING_FROMANONYMOUS+"="+fromAnonymous!=null?fromAnonymous:"null"+",");
-		sb.append(ConstantTable.STRING_MSG+"="+Msg!=null?Msg:"null"+",");
-		sb.append(ConstantTable.STRING_TIME+"="+time!=null?time:"null");
+		sb.append(UniversalConstantsTable.STRING_MSGTYPE+"="+MsgType!=null?MsgType:"null"+",");
+		sb.append(UniversalConstantsTable.STRING_SUBTYPE+"="+SubType!=null?SubType:"null"+",");
+		sb.append(UniversalConstantsTable.STRING_MSGID+"="+MsgID!=null?MsgID:"null"+",");
+		sb.append(UniversalConstantsTable.STRING_FROMQQ+"="+fromQQ!=null?fromQQ:"null"+",");
+		sb.append(UniversalConstantsTable.STRING_FROMGROUP+"="+fromGroup!=null?fromGroup:"null"+",");
+		sb.append(UniversalConstantsTable.STRING_FROMANONYMOUS+"="+fromAnonymous!=null?fromAnonymous:"null"+",");
+		sb.append(UniversalConstantsTable.STRING_MSG+"="+Msg!=null?Msg:"null"+",");
+		sb.append(UniversalConstantsTable.STRING_TIME+"="+time!=null?time:"null");
 		return sb.toString();
 	}
 }

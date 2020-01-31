@@ -4,7 +4,7 @@ import org.meowy.cqp.jcq.entity.CoolQ;
 import org.meowy.cqp.jcq.entity.Member;
 import org.meowy.cqp.jcq.entity.QQInfo;
 
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 import surveillance.Log;
 
 public class CQSender 
@@ -50,13 +50,13 @@ public class CQSender
 	{
 		switch (sendMessageType.getType()) 
 		{
-		case ConstantTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_PERSON:
 			CQ.sendPrivateMsg(sendMessageType.toQQ, sendMessageType.Msg);
 			break;
-		case ConstantTable.MSGTYPE_GROUP:
+		case UniversalConstantsTable.MSGTYPE_GROUP:
 			CQ.sendGroupMsg(sendMessageType.toGroup, sendMessageType.Msg);
 			break;
-		case ConstantTable.MSGTYPE_DISCUSS:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			CQ.sendDiscussMsg(sendMessageType.toGroup, sendMessageType.Msg);
 			break;
 		default:

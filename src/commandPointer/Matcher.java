@@ -10,7 +10,7 @@ import org.jdom2.JDOMException;
 
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 import surveillance.Log;
 import tools.GetJarResources;
 import tools.XMLDocument;

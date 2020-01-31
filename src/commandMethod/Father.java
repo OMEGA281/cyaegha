@@ -12,7 +12,7 @@ import commandMethod.register.Register;
 import connection.CQSender;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 import tools.FileSimpleIO;
 import transceiver.Transmitter;
 
@@ -38,10 +38,10 @@ public abstract class Father
 	{
 		switch(getMsgType())
 		{
-		case ConstantTable.MSGTYPE_PERSON:
-		case ConstantTable.MSGTYPE_DISCUSS:
+		case UniversalConstantsTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			return CQSender.getSender().getQQInfo(receiveMessageType.getfromQQ()).getNick();
-		case ConstantTable.MSGTYPE_GROUP:
+		case UniversalConstantsTable.MSGTYPE_GROUP:
 			return CQSender.getSender().getQQInfoInGroup(receiveMessageType.getfromQQ(), receiveMessageType.getfromGroup()).getCard();
 		}
 		return "";
@@ -68,7 +68,7 @@ public abstract class Father
 	/**获取本方法数据储存文件夹*/
 	public String getPluginDataFloder()
 	{
-		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+"\\";
+		String path=UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+"\\";
 		if(!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;
@@ -76,7 +76,7 @@ public abstract class Father
 	/**获取本方法设置储存文件夹*/
 	public String getPluginSettingFloder()
 	{
-		String path=ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+"\\";
+		String path=UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+"\\";
 		if(!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;
@@ -115,7 +115,7 @@ public abstract class Father
 		if(string.isEmpty())
 			return;
 		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				ConstantTable.MSGTYPE_PERSON, QQ, 0, string));
+				UniversalConstantsTable.MSGTYPE_PERSON, QQ, 0, string));
 	}
 	public void sendGroupMsg(long group,long QQ,String string)
 	{
@@ -126,7 +126,7 @@ public abstract class Father
 		if(string.isEmpty())
 			return;
 		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				ConstantTable.MSGTYPE_GROUP, QQ, group, string));
+				UniversalConstantsTable.MSGTYPE_GROUP, QQ, group, string));
 	}
 	public void sendDiscussMsg(long group,long QQ,String string)
 	{
@@ -137,7 +137,7 @@ public abstract class Father
 		if(string.isEmpty())
 			return;
 		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				ConstantTable.MSGTYPE_DISCUSS, QQ, group, string));
+				UniversalConstantsTable.MSGTYPE_DISCUSS, QQ, group, string));
 	}
 	/**
 	 * 加载交换器<br>
@@ -145,7 +145,7 @@ public abstract class Father
 	public DataExchanger getDataExchanger()
 	{
 		if(dataExchanger==null)
-			dataExchanger=new DataExchanger(ConstantTable.ROOTPATH+ConstantTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+".xml");
+			dataExchanger=new DataExchanger(UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+".xml");
 		return dataExchanger;
 	}
 	/**
@@ -154,7 +154,7 @@ public abstract class Father
 	public AuthorityExchanger getAuthorityExchanger()
 	{
 		if(authorityExchanger==null)
-			authorityExchanger=new AuthorityExchanger(ConstantTable.ROOTPATH+ConstantTable.PLUGIN_AUTHORITYPATH+this.getClass().getSimpleName()+".xml");
+			authorityExchanger=new AuthorityExchanger(UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_AUTHORITYPATH+this.getClass().getSimpleName()+".xml");
 		return authorityExchanger;
 	}
 	/**
@@ -163,7 +163,7 @@ public abstract class Father
 	public SettingExchanger getSettingExchanger()
 	{
 		if(settingExchanger==null)
-			settingExchanger=new SettingExchanger(ConstantTable.ROOTPATH+ConstantTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+".xml");
+			settingExchanger=new SettingExchanger(UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+".xml");
 		return settingExchanger;
 	}
 }

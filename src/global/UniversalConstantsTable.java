@@ -1,6 +1,6 @@
 package global;
 
-public class ConstantTable
+public class UniversalConstantsTable
 {
 	public static String ROOTPATH;
 	public static final String PLUGIN_DATAPATH="data\\";

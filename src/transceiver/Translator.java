@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import connection.ReceiveMessageType;
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 
 public class Translator 
 {
@@ -16,40 +16,40 @@ public class Translator
 		
 		StringBuffer sb=new StringBuffer();
 		sb.append("[");
-		sb.append(ConstantTable.STRING_TIME+"=");
+		sb.append(UniversalConstantsTable.STRING_TIME+"=");
 		sb.append(m.gettime());
-		sb.append(","+ConstantTable.STRING_MSGTYPE+"=");
+		sb.append(","+UniversalConstantsTable.STRING_MSGTYPE+"=");
 		sb.append(m.getMsgType());
-		sb.append(","+ConstantTable.STRING_SUBTYPE+"=");
+		sb.append(","+UniversalConstantsTable.STRING_SUBTYPE+"=");
 		sb.append(m.getsubType());
-		sb.append(","+ConstantTable.STRING_MSGID+"=");
+		sb.append(","+UniversalConstantsTable.STRING_MSGID+"=");
 		sb.append(m.getMsgID());
 		sb.append(",");
-		if(m.getMsgType()==ConstantTable.MSGTYPE_PERSON)
+		if(m.getMsgType()==UniversalConstantsTable.MSGTYPE_PERSON)
 		{
-			sb.append(ConstantTable.STRING_FROMQQ+"=");
+			sb.append(UniversalConstantsTable.STRING_FROMQQ+"=");
 			sb.append(m.getfromQQ());
 		}
-		else if(m.getMsgType()==ConstantTable.MSGTYPE_GROUP)
-			if(m.getfromQQ()!=ConstantTable.QQ_ANONYMOUS)
+		else if(m.getMsgType()==UniversalConstantsTable.MSGTYPE_GROUP)
+			if(m.getfromQQ()!=UniversalConstantsTable.QQ_ANONYMOUS)
 			{
-				sb.append(ConstantTable.STRING_FROMQQ+"=");
+				sb.append(UniversalConstantsTable.STRING_FROMQQ+"=");
 				sb.append(m.getfromQQ());
-				sb.append(","+ConstantTable.STRING_FROMGROUP+"=");
+				sb.append(","+UniversalConstantsTable.STRING_FROMGROUP+"=");
 				sb.append(m.getfromGroup());
 			}
 			else
 			{
-				sb.append(","+ConstantTable.STRING_FROMANONYMOUS+"=");
+				sb.append(","+UniversalConstantsTable.STRING_FROMANONYMOUS+"=");
 				sb.append(m.getfromAnonymous());
-				sb.append(","+ConstantTable.STRING_FROMGROUP+"=");
+				sb.append(","+UniversalConstantsTable.STRING_FROMGROUP+"=");
 				sb.append(m.getfromGroup());
 			}
 		else
 		{
-			sb.append(ConstantTable.STRING_FROMQQ+"=");
+			sb.append(UniversalConstantsTable.STRING_FROMQQ+"=");
 			sb.append(m.getfromQQ());
-			sb.append(","+ConstantTable.STRING_FROMDISCUSS+"=");
+			sb.append(","+UniversalConstantsTable.STRING_FROMDISCUSS+"=");
 			sb.append(m.getfromGroup());
 		}
 		sb.append("]");
@@ -67,13 +67,13 @@ public class Translator
 			String[] value=infoArr[i].split("=");
 			infoMap.put(value[0], value[1]);
 		}
-		int MsgType=infoMap.containsKey(ConstantTable.STRING_MSGTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGTYPE)):ConstantTable.NUM_NULL;
-		int SubType=infoMap.containsKey(ConstantTable.STRING_SUBTYPE)?Integer.parseInt(infoMap.get(ConstantTable.STRING_SUBTYPE)):ConstantTable.NUM_NULL;
-		int MsgID=infoMap.containsKey(ConstantTable.STRING_MSGID)?Integer.parseInt(infoMap.get(ConstantTable.STRING_MSGID)):ConstantTable.NUM_NULL;
-		long fromQQ=infoMap.containsKey(ConstantTable.STRING_FROMQQ)?Long.parseLong(infoMap.get(ConstantTable.STRING_FROMQQ)):ConstantTable.NUM_NULL;
-		long fromGroup=infoMap.containsKey(ConstantTable.STRING_FROMGROUP)?Long.parseLong(infoMap.get(ConstantTable.STRING_FROMGROUP)):ConstantTable.NUM_NULL;
-		String fromAnonymous=infoMap.containsKey(ConstantTable.STRING_FROMANONYMOUS)?infoMap.get(ConstantTable.STRING_FROMANONYMOUS):null;
-		long time=infoMap.containsKey(ConstantTable.STRING_TIME)?Long.parseLong(infoMap.get(ConstantTable.STRING_TIME)):ConstantTable.NUM_NULL;
+		int MsgType=infoMap.containsKey(UniversalConstantsTable.STRING_MSGTYPE)?Integer.parseInt(infoMap.get(UniversalConstantsTable.STRING_MSGTYPE)):UniversalConstantsTable.NUM_NULL;
+		int SubType=infoMap.containsKey(UniversalConstantsTable.STRING_SUBTYPE)?Integer.parseInt(infoMap.get(UniversalConstantsTable.STRING_SUBTYPE)):UniversalConstantsTable.NUM_NULL;
+		int MsgID=infoMap.containsKey(UniversalConstantsTable.STRING_MSGID)?Integer.parseInt(infoMap.get(UniversalConstantsTable.STRING_MSGID)):UniversalConstantsTable.NUM_NULL;
+		long fromQQ=infoMap.containsKey(UniversalConstantsTable.STRING_FROMQQ)?Long.parseLong(infoMap.get(UniversalConstantsTable.STRING_FROMQQ)):UniversalConstantsTable.NUM_NULL;
+		long fromGroup=infoMap.containsKey(UniversalConstantsTable.STRING_FROMGROUP)?Long.parseLong(infoMap.get(UniversalConstantsTable.STRING_FROMGROUP)):UniversalConstantsTable.NUM_NULL;
+		String fromAnonymous=infoMap.containsKey(UniversalConstantsTable.STRING_FROMANONYMOUS)?infoMap.get(UniversalConstantsTable.STRING_FROMANONYMOUS):null;
+		long time=infoMap.containsKey(UniversalConstantsTable.STRING_TIME)?Long.parseLong(infoMap.get(UniversalConstantsTable.STRING_TIME)):UniversalConstantsTable.NUM_NULL;
 		String Msg=s.substring(s.indexOf("]")+1);
 		ReceiveMessageType messageType=new ReceiveMessageType(MsgType, SubType, MsgID, fromQQ, fromGroup, fromAnonymous, Msg, time);
 		return messageType;

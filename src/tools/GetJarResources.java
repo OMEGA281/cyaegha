@@ -3,7 +3,7 @@ package tools;
 import java.io.IOException;
 import java.io.InputStream;
 
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 import surveillance.Log;
 /**获取包内的文件<br>
  * */
@@ -25,7 +25,7 @@ public class GetJarResources
 	public InputStream getJarResources()
 	{
 		InputStream inputStream=GetJarResources.class
-				.getResourceAsStream(ConstantTable.PATH_JARRESOURCES+FileName);
+				.getResourceAsStream(UniversalConstantsTable.PATH_JARRESOURCES+FileName);
 		if(inputStream==null)
 		{
 			Log.e(FileName,"不存在");

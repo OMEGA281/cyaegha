@@ -7,7 +7,7 @@ import commandMethod.ERPG;
 import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 import surveillance.Log;
 import tools.TimeSimpleTool;
 import transceiver.Receiver;
@@ -132,8 +132,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         appDirectory = CQ.getAppDirectory();
         // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
+        System.out.println(appDirectory);
     	System.out.println("启动中……");
-    	ConstantTable.ROOTPATH=appDirectory+"\\";
+    	UniversalConstantsTable.ROOTPATH=appDirectory+"\\";
 //    	启动注册器
     	new Register();
     	
@@ -205,7 +206,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     public int privateMsg(int subType, int msgId, long fromQQ, String msg, int font) {
         // 这里处理消息
 //        CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
-    	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_PERSON
+    	Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_PERSON
     			, subType, msgId, fromQQ, 0, null, msg,TimeSimpleTool.getNowTimeStamp()));
         return MSG_IGNORE;
     }
@@ -229,12 +230,12 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         if (fromQQ == 80000000L && !fromAnonymous.equals("")) {
             // 将匿名用户信息放到 anonymous 变量中
             Anonymous anonymous = CQ.getAnonymous(fromAnonymous);
-            Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
+            Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_GROUP
         			, subType, msgId, 80000000L, fromGroup, fromAnonymous, msg,TimeSimpleTool.getNowTimeStamp()));
         }
         else
         {
-        	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_GROUP
+        	Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_GROUP
         			, subType, msgId, fromQQ, fromGroup, null, msg,TimeSimpleTool.getNowTimeStamp()));
         }
 
@@ -269,7 +270,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int discussMsg(int subType, int msgId, long fromDiscuss, long fromQQ, String msg, int font) {
         // 这里处理消息
-    	Receiver.getReceiver().addMsg(new ReceiveMessageType(ConstantTable.MSGTYPE_DISCUSS
+    	Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_DISCUSS
     			, subType, msgId, fromQQ, fromDiscuss, null, msg,TimeSimpleTool.getNowTimeStamp()));
         return MSG_IGNORE;
     }

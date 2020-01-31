@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import commandMethod.register.OnGroupMemberChangeListener;
 import connection.GroupChangeType;
 import connection.ReceiveMessageType;
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 
 public class Welcome extends Father
 {
@@ -47,13 +47,13 @@ public class Welcome extends Father
 		String name = null;
 		switch(receiveMessageType.getMsgType())
 		{
-		case ConstantTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_PERSON:
 			name="P"+receiveMessageType.getfromQQ();
 			break;
-		case ConstantTable.MSGTYPE_GROUP:
+		case UniversalConstantsTable.MSGTYPE_GROUP:
 			name="G"+receiveMessageType.getfromGroup();
 			break;
-		case ConstantTable.MSGTYPE_DISCUSS:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			name="D"+receiveMessageType.getfromGroup();
 			break;
 		}
@@ -69,13 +69,13 @@ public class Welcome extends Father
 		String name = null;
 		switch(receiveMessageType.getMsgType())
 		{
-		case ConstantTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_PERSON:
 			name="P"+receiveMessageType.getfromQQ();
 			break;
-		case ConstantTable.MSGTYPE_GROUP:
+		case UniversalConstantsTable.MSGTYPE_GROUP:
 			name="G"+receiveMessageType.getfromGroup();
 			break;
-		case ConstantTable.MSGTYPE_DISCUSS:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			name="D"+receiveMessageType.getfromGroup();
 			break;
 		}

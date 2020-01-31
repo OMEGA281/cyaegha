@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
 
@@ -1110,13 +1110,13 @@ public class ERPG extends Father
 		name=transToMain(name);
 		switch (type) 
 		{
-		case ConstantTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_PERSON:
 			mark="P"+receiveMessageType.getfromQQ();
 			break;
-		case ConstantTable.MSGTYPE_GROUP:
+		case UniversalConstantsTable.MSGTYPE_GROUP:
 			mark="G"+receiveMessageType.getfromQQ()+"G"+receiveMessageType.getfromGroup();
 			break;
-		case ConstantTable.MSGTYPE_DISCUSS:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			mark="D"+receiveMessageType.getfromQQ()+"D"+receiveMessageType.getfromGroup();
 			break;
 
@@ -1138,13 +1138,13 @@ public class ERPG extends Father
 		name=transToMain(name);
 		switch (type) 
 		{
-		case ConstantTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_PERSON:
 			mark="P"+receiveMessageType.getfromQQ();
 			break;
-		case ConstantTable.MSGTYPE_GROUP:
+		case UniversalConstantsTable.MSGTYPE_GROUP:
 			mark="G"+receiveMessageType.getfromQQ()+"G"+receiveMessageType.getfromGroup();
 			break;
-		case ConstantTable.MSGTYPE_DISCUSS:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			mark="D"+receiveMessageType.getfromQQ()+"D"+receiveMessageType.getfromGroup();
 			break;
 
@@ -1168,13 +1168,13 @@ public class ERPG extends Father
 		name=transToMain(name);
 		switch (type) 
 		{
-		case ConstantTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_PERSON:
 			mark="P"+receiveMessageType.getfromQQ();
 			break;
-		case ConstantTable.MSGTYPE_GROUP:
+		case UniversalConstantsTable.MSGTYPE_GROUP:
 			mark="G"+receiveMessageType.getfromQQ()+"G"+receiveMessageType.getfromGroup();
 			break;
-		case ConstantTable.MSGTYPE_DISCUSS:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			mark="D"+receiveMessageType.getfromQQ()+"D"+receiveMessageType.getfromGroup();
 			break;
 

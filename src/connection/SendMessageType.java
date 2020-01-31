@@ -1,6 +1,6 @@
 package connection;
 
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 
 public class SendMessageType 
 {
@@ -30,10 +30,10 @@ public class SendMessageType
 	{
 		// TODO Auto-generated method stub
 		StringBuilder sb=new StringBuilder();
-		sb.append((ConstantTable.STRING_SENDTYPE+"="+type!=null?type:"null")+",");
-		sb.append((ConstantTable.STRING_SENDCLIENT+"="+toQQ!=null?toQQ:"null")+",");
-		sb.append((ConstantTable.STRING_SENDCLIENT+"="+toGroup!=null?toGroup:"null")+",");
-		sb.append(ConstantTable.STRING_MSG+"="+Msg!=null?Msg:"null");
+		sb.append((UniversalConstantsTable.STRING_SENDTYPE+"="+type!=null?type:"null")+",");
+		sb.append((UniversalConstantsTable.STRING_SENDCLIENT+"="+toQQ!=null?toQQ:"null")+",");
+		sb.append((UniversalConstantsTable.STRING_SENDCLIENT+"="+toGroup!=null?toGroup:"null")+",");
+		sb.append(UniversalConstantsTable.STRING_MSG+"="+Msg!=null?Msg:"null");
 		return sb.toString();
 	}
 	public void setType(int type) {

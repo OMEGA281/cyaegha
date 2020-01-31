@@ -16,7 +16,7 @@ import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import connection.CQSender;
 import connection.ReceiveMessageType;
-import global.ConstantTable;
+import global.UniversalConstantsTable;
 import surveillance.Log;
 
 public class Ignorer extends Father {
@@ -142,21 +142,21 @@ public class Ignorer extends Father {
 				// TODO Auto-generated method stub
 				switch (messageType.getMsgType()) 
 				{
-				case ConstantTable.MSGTYPE_PERSON:
+				case UniversalConstantsTable.MSGTYPE_PERSON:
 					if(!getList(BLACKLIST_PERSON).contains(messageType.getfromQQ())&&
 							(getList(WHITELIST_PERSON).contains(messageType.getfromQQ())|
 									ifWL(IFWL_PERSON)))
 						return RETURN_PASS;
 					else
 						return RETURN_STOP;
-				case ConstantTable.MSGTYPE_GROUP:
+				case UniversalConstantsTable.MSGTYPE_GROUP:
 					if(!getList(BLACKLIST_GROUP).contains(messageType.getfromGroup())&&
 							(getList(WHITELIST_GROUP).contains(messageType.getfromGroup())|
 									ifWL(IFWL_GROUP)))
 						return RETURN_PASS;
 					else
 						return RETURN_STOP;
-				case ConstantTable.MSGTYPE_DISCUSS:
+				case UniversalConstantsTable.MSGTYPE_DISCUSS:
 					if(!getList(BLACKLIST_DISCUSS).contains(messageType.getfromGroup())&&
 							(getList(WHITELIST_DISCUSS).contains(messageType.getfromGroup())|
 									ifWL(IFWL_DISCUSS)))
@@ -195,15 +195,15 @@ public class Ignorer extends Father {
 			{
 			case "group":
 			case "g":
-				type=ConstantTable.MSGTYPE_GROUP;
+				type=UniversalConstantsTable.MSGTYPE_GROUP;
 				break;
 			case "discuss":
 			case "d":
-				type=ConstantTable.MSGTYPE_DISCUSS;
+				type=UniversalConstantsTable.MSGTYPE_DISCUSS;
 				break;
 			case "person":
 			case "p":
-				type=ConstantTable.MSGTYPE_PERSON;
+				type=UniversalConstantsTable.MSGTYPE_PERSON;
 				break;
 
 			default:
@@ -239,13 +239,13 @@ public class Ignorer extends Father {
 			String string=ifW?"WL":"BL";
 			switch (type) 
 			{
-			case ConstantTable.MSGTYPE_PERSON:
+			case UniversalConstantsTable.MSGTYPE_PERSON:
 				string+="person";
 				break;
-			case ConstantTable.MSGTYPE_GROUP:
+			case UniversalConstantsTable.MSGTYPE_GROUP:
 				string+="group";
 				break;
-			case ConstantTable.MSGTYPE_DISCUSS:
+			case UniversalConstantsTable.MSGTYPE_DISCUSS:
 				string+="discuss";
 				break;
 
@@ -269,15 +269,15 @@ public class Ignorer extends Father {
 			{
 			case "group":
 			case "g":
-				type1=ConstantTable.MSGTYPE_GROUP;
+				type1=UniversalConstantsTable.MSGTYPE_GROUP;
 				break;
 			case "discuss":
 			case "d":
-				type1=ConstantTable.MSGTYPE_DISCUSS;
+				type1=UniversalConstantsTable.MSGTYPE_DISCUSS;
 				break;
 			case "person":
 			case "p":
-				type1=ConstantTable.MSGTYPE_PERSON;
+				type1=UniversalConstantsTable.MSGTYPE_PERSON;
 				break;
 
 			default:
@@ -313,13 +313,13 @@ public class Ignorer extends Father {
 			String string1=ifW1?"WL":"BL";
 			switch (type1) 
 			{
-			case ConstantTable.MSGTYPE_PERSON:
+			case UniversalConstantsTable.MSGTYPE_PERSON:
 				string1+="person";
 				break;
-			case ConstantTable.MSGTYPE_GROUP:
+			case UniversalConstantsTable.MSGTYPE_GROUP:
 				string1+="group";
 				break;
-			case ConstantTable.MSGTYPE_DISCUSS:
+			case UniversalConstantsTable.MSGTYPE_DISCUSS:
 				string1+="discuss";
 				break;
 
