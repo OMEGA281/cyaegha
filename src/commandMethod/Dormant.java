@@ -4,6 +4,8 @@ import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
+import global.authorizer.AuthirizerUser;
+import global.authorizer.MinimumAuthority;
 import transceiver.Transmitter;
 
 public class Dormant extends Father
@@ -40,14 +42,13 @@ public class Dormant extends Father
 		listener.priority=OnEventListener.PRIORITY_HIGH;
 		addMessageReceiveListener(listener);
 	}
+	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_OWNER)
 	public void changeDormant()
 	{
 		if(accessible)
 		{
 			accessible=false;
-			Transmitter.getTransmitter().addMsg(new SendMessageType(
-					receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
-					, receiveMessageType.getfromGroup(), "进入休眠状态"));
+			sendBackMsg("进入休眠状态");
 		}
 	}
 }

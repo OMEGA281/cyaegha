@@ -10,8 +10,9 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import tools.XMLDocument;
+import tools.FileSimpleIO.returnType;
 
-class AuthirizerList 
+public class AppAuthirizerList 
 {
 	private Document document;
 	private String path;
@@ -59,7 +60,7 @@ class AuthirizerList
 	}};
 	
 	
-	protected AuthirizerList(String path) throws JDOMException, IOException 
+	public AppAuthirizerList(String path) throws JDOMException, IOException 
 	{
 		this.path=path;
 		document=XMLDocument.getDocument(path, true);
@@ -70,7 +71,7 @@ class AuthirizerList
 	 * @param name 表的名字
 	 * @param aimSuffix 指定的目标类型
 	 * @param typeSuffix 类型（黑名单，白名单）
-	 * @return 表中是数据，若为空则会返回一个长度为0的空表
+	 * @return 表中是数据，若为空则会返回{@code null}
 	 */
 	private ArrayList<Long> getList(String name,ListAimSuffix aimSuffix,ListTypeSuffix typeSuffix)
 	{
@@ -79,7 +80,10 @@ class AuthirizerList
 		addNewPart(name);
 //		FIXME:之后要加上容错及排错机制，还有避免查询群中人及讨论组中人的代码
 		Element pointElement=aimElement.getChild(aimSuffix.letter+typeSuffix.letter);
-		String[] list=pointElement.getText().split(",");
+		String line=pointElement.getText();
+		if(line.isEmpty())
+			return null;
+		String[] list=line.split(",");
 		ArrayList<Long> arrayList=new ArrayList<Long>();
 		for (String string : list)
 		{
@@ -108,15 +112,100 @@ class AuthirizerList
 		{
 			groupElement=new Element(XMLGroupHead+number);
 			pointElement.addContent(groupElement);
+			Element statuesElement=aimElement.getChild(aimSuffix.letter+ListeningStatusSuffix);
+			Element subElement=statuesElement.getChild(XMLGroupHead+number);
+			if(subElement==null)
+			{
+				subElement=new Element(XMLGroupHead+number);
+				subElement.setAttribute(ListeningStatusSuffix, statuesElement.getAttributeValue(ListeningStatusSuffix));
+			}
+			saveDocument();
 		}
-		saveDocument();
-		String[] list=groupElement.getText().split(",");
+		String line=groupElement.getText();
+		if(line.isEmpty())
+			return null;
+		String[] list=line.split(",");
 		ArrayList<Long> arrayList=new ArrayList<Long>();
 		for (String string : list)
 		{
-			arrayList.add(Long.getLong(string));
+			arrayList.add(Long.parseLong(string));
 		}
 		return arrayList;
+	}
+	
+	/**
+	 * 获得指定表的监听状态
+	 * @param name 项目名称
+	 * @param listAimSuffix 指定的目标类型
+	 * @param num 群或讨论组的号码（当非双重表的时候，此参数无用）
+	 * @return 现在的状态
+	 */
+	private ListeningStatus getListeningStatus(String name,ListAimSuffix listAimSuffix,long num)
+	{
+		refreshDocument();
+		Element rootElement=document.getRootElement();
+		Element aimElement=rootElement.getChild(name);
+		addNewPart(name);
+		switch(listAimSuffix)
+		{
+		case DISCUSS:
+		case PERSON:
+		case GROUP:
+			Element childElement=aimElement.getChild(listAimSuffix.letter+ListeningStatusSuffix);
+			String sStatus=childElement.getAttributeValue(ListeningStatusSuffix);
+			ListeningStatus status = null;
+			for (ListeningStatus listeningStatus : ListeningStatus.values())
+			{
+				if(sStatus.equals(listeningStatus.letter))
+				{
+					status=listeningStatus;
+					break;
+				}
+			}
+			if(status==null)
+			{
+				return ListeningStatus.NONE;
+			}
+			return status;
+		case PERSONINDISCUSS:
+		case PERSONINGROUP:
+			Element childElement2=aimElement.getChild(listAimSuffix.letter+ListeningStatusSuffix);
+			String superStatus=childElement2.getAttributeValue(ListeningStatusSuffix);
+			ListeningStatus superListeningStatus=null;
+			for (ListeningStatus listeningStatus : ListeningStatus.values())
+			{
+				if(superStatus.equals(listeningStatus.letter))
+				{
+					superListeningStatus=listeningStatus;
+					break;
+				}
+			}
+			if(superListeningStatus==null)
+			{
+				return ListeningStatus.NONE;
+			}
+			Element subElement=childElement2.getChild(XMLGroupHead+num);
+			if(subElement==null)
+			{
+				return superListeningStatus;
+			}
+			String subStatus=subElement.getAttributeValue(ListeningStatusSuffix);
+			ListeningStatus subListeningStatus=null;
+			for (ListeningStatus listeningStatus : ListeningStatus.values())
+			{
+				if(subStatus.equals(listeningStatus.letter))
+				{
+					subListeningStatus=listeningStatus;
+					break;
+				}
+			}
+			if(subListeningStatus==null)
+			{
+				return ListeningStatus.NONE;
+			}
+			return subListeningStatus;
+		}
+		return ListeningStatus.NONE;
 	}
 
 	/**
@@ -173,19 +262,14 @@ class AuthirizerList
 		{
 			for (ListTypeSuffix type : ListTypeSuffix.values())
 			{
-				aimElement.addContent(new Element(aim.letter+type.letter));
+				Element subElement=new Element(aim.letter+type.letter);
+				aimElement.addContent(subElement);
 			}
-			Element element=new Element(ListeningStatusSuffix);
+			Element statusElement=new Element(aim.letter+ListeningStatusSuffix);
 //			FIXME:这里之后要加入一个由设置的默认值而影响的
-			element.setText(ListeningStatus.ONLY_WHITE.letter);
-			rootElement.addContent(element);
-		}
-		
-		aimElement.addContent(new Element(ListAimSuffix.PERSONINGROUP.letter+ListTypeSuffix.WHITE.letter));
-		aimElement.addContent(new Element(ListAimSuffix.PERSONINGROUP.letter+ListTypeSuffix.BLACK.letter));
-		aimElement.addContent(new Element(ListAimSuffix.PERSONINDISCUSS.letter+ListTypeSuffix.WHITE.letter));
-		aimElement.addContent(new Element(ListAimSuffix.PERSONINDISCUSS.letter+ListTypeSuffix.BLACK.letter));
-		
+			statusElement.setAttribute(ListeningStatusSuffix, ListeningStatus.ONLY_WHITE.letter);
+			aimElement.addContent(statusElement);
+		}	
 		rootElement.addContent(aimElement);
 		saveDocument();
 	}
@@ -207,6 +291,8 @@ class AuthirizerList
 		Element partElement=rootElement.getChild(name);
 		Element listElement=partElement.getChild(aimSuffix.letter+typeSuffix.letter);
 		ArrayList<Long> list=getList(name, aimSuffix, typeSuffix);
+		if(list==null)
+			list=new ArrayList<Long>();
 		if(list.contains(num))
 			return false;
 		list.add(num);
@@ -217,7 +303,7 @@ class AuthirizerList
 		}
 		listElement.setText(builder.toString());
 		saveDocument();
-		removeClient(name, aimSuffix, typeSuffix, num);
+		removeClient(name, aimSuffix, typeSuffix==ListTypeSuffix.WHITE?ListTypeSuffix.BLACK:ListTypeSuffix.WHITE, num);
 		return true;
 	}
 	
@@ -239,8 +325,16 @@ class AuthirizerList
 		addNewPart(name);
 		Element partElement=rootElement.getChild(name);
 		Element groupElement=partElement.getChild(aimSuffix.letter+typeSuffix.letter);
-		Element listElement=groupElement.getChild(ListeningStatusSuffix+groupNum);
+		Element listElement=groupElement.getChild(XMLGroupHead+groupNum);
+		if(listElement==null)
+		{
+			listElement=new Element(XMLGroupHead+groupNum);
+			groupElement.addContent(listElement);
+		}
+		
 		ArrayList<Long> list=getDoubleList(name, aimSuffix, typeSuffix,groupNum);
+		if(list==null)
+			list=new ArrayList<Long>();
 		if(list.contains(num))
 			return false;
 		list.add(num);
@@ -251,7 +345,7 @@ class AuthirizerList
 		}
 		listElement.setText(builder.toString());
 		saveDocument();
-		removeDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
+		removeDoubleClient(name, aimSuffix, typeSuffix==ListTypeSuffix.WHITE?ListTypeSuffix.BLACK:ListTypeSuffix.WHITE, groupNum, num);
 		return true;
 	}
 	
@@ -272,6 +366,8 @@ class AuthirizerList
 		Element partElement=rootElement.getChild(name);
 		Element listElement=partElement.getChild(aimSuffix.letter+typeSuffix.letter);
 		ArrayList<Long> list=getList(name, aimSuffix, typeSuffix);
+		if(list==null)
+			list=new ArrayList<Long>();
 		if(!list.contains(num))
 			return false;
 		list.remove(num);
@@ -303,8 +399,15 @@ class AuthirizerList
 		addNewPart(name);
 		Element partElement=rootElement.getChild(name);
 		Element groupElement=partElement.getChild(aimSuffix.letter+typeSuffix.letter);
-		Element listElement=groupElement.getChild(ListeningStatusSuffix+groupNum);
+		Element listElement=groupElement.getChild(XMLGroupHead+groupNum);
+		if(listElement==null)
+		{
+			listElement=new Element(XMLGroupHead+groupNum);
+			groupElement.addContent(listElement);
+		}
 		ArrayList<Long> list=getDoubleList(name, aimSuffix, typeSuffix,groupNum);
+		if(list==null)
+			list=new ArrayList<Long>();
 		if(!list.contains(num))
 			return false;
 		list.remove(num);
@@ -318,227 +421,304 @@ class AuthirizerList
 		return true;
 	}
 	
-	/**
-	 * 获得群白名单
-	 * @param name 项目的名字
-	 * @return 白名单列表
-	 */
- 	protected ArrayList<Long> getGroupWhiteList(String name)
-	{
-		ListAimSuffix aim=ListAimSuffix.GROUP;
-		ListTypeSuffix type=ListTypeSuffix.WHITE;
-		ArrayList<Long> arrayList=getList(name,aim,type);
-		return arrayList;
-	}
-	/**
-	 * 获得讨论组白名单
-	 * @param name 项目的名字
-	 * @return 白名单列表
-	 */
-	protected ArrayList<Long> getDiscussWhiteList(String name)
-	{
-		ListAimSuffix aim=ListAimSuffix.DISCUSS;
-		ListTypeSuffix type=ListTypeSuffix.WHITE;
-		ArrayList<Long> arrayList=getList(name,aim,type);
-		return arrayList;
-	}
-	/**
-	 * 获得个人白名单
-	 * @param name 项目的名字
-	 * @return 白名单列表
-	 */
-	protected ArrayList<Long> getPersonWhiteList(String name)
-	{
-		ListAimSuffix aim=ListAimSuffix.DISCUSS;
-		ListTypeSuffix type=ListTypeSuffix.WHITE;
-		ArrayList<Long> arrayList=getList(name,aim,type);
-		return arrayList;
-	}
-	/**
-	 * 获得群黑名单
-	 * @param name 项目的名字
-	 * @return 白名单列表
-	 */
-	protected ArrayList<Long> getGroupBlackList(String name)
-	{
-		ListAimSuffix aim=ListAimSuffix.GROUP;
-		ListTypeSuffix type=ListTypeSuffix.BLACK;
-		ArrayList<Long> arrayList=getList(name,aim,type);
-		return arrayList;
-	}
-	/**
-	 * 获得讨论组黑名单
-	 * @param name 项目的名字
-	 * @return 白名单列表
-	 */
-	protected ArrayList<Long> getDiscussBlackList(String name)
-	{
-		ListAimSuffix aim=ListAimSuffix.DISCUSS;
-		ListTypeSuffix type=ListTypeSuffix.BLACK;
-		ArrayList<Long> arrayList=getList(name,aim,type);
-		return arrayList;
-	}
-	/**
-	 * 获得在群中某个人黑名单
-	 * @param name 项目的名字
-	 * @return 白名单列表
-	 */
-	protected ArrayList<Long> getPersonBlackList(String name)
-	{
-		ListAimSuffix aim=ListAimSuffix.PERSON;
-		ListTypeSuffix type=ListTypeSuffix.BLACK;
-		ArrayList<Long> arrayList=getList(name,aim,type);
-		return arrayList;
-	}
-	
-	protected ArrayList<Long> getGroupDetialedWhiteList(String name,long GroupNumber)
-	{
-		ListAimSuffix aim=ListAimSuffix.PERSONINGROUP;
-		ListTypeSuffix type=ListTypeSuffix.WHITE;
-		ArrayList<Long> arrayList=getDoubleList(name, aim, type, GroupNumber);
-		return arrayList;
-	}
-	protected ArrayList<Long> getGroupDetialedBlackList(String name,long GroupNumber)
-	{
-		ListAimSuffix aim=ListAimSuffix.PERSONINGROUP;
-		ListTypeSuffix type=ListTypeSuffix.BLACK;
-		ArrayList<Long> arrayList=getDoubleList(name, aim, type, GroupNumber);
-		return arrayList;
-	}
-	protected ArrayList<Long> getDiscussDetialedWhiteList(String name,long GroupNumber)
-	{
-		ListAimSuffix aim=ListAimSuffix.PERSONINDISCUSS;
-		ListTypeSuffix type=ListTypeSuffix.WHITE;
-		ArrayList<Long> arrayList=getDoubleList(name, aim, type, GroupNumber);
-		return arrayList;
-	}
-	protected ArrayList<Long> getDiscussDetialedBlackList(String name,long GroupNumber)
-	{
-		ListAimSuffix aim=ListAimSuffix.PERSONINDISCUSS;
-		ListTypeSuffix type=ListTypeSuffix.BLACK;
-		ArrayList<Long> arrayList=getDoubleList(name, aim, type, GroupNumber);
-		return arrayList;
-	}
-	
-	protected boolean addGroupWhiteList(String name,long num)
+	public boolean addGroupWhiteList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.GROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return addClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean addGroupBlackList(String name,long num)
+	public boolean addGroupBlackList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.GROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return addClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean addDiscussWhiteList(String name,long num)
+	public boolean addDiscussWhiteList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.DISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return addClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean addDiscussBlackList(String name,long num)
+	public boolean addDiscussBlackList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.DISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return addClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean addPersonWhiteList(String name,long num)
+	public boolean addPersonWhiteList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSON;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return addClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean addPersonBlackList(String name,long num)
+	public boolean addPersonBlackList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSON;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return addClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean addGroupDetialedWhiteList(String name,long groupNum,long num)
+	public boolean addGroupDetialedWhiteList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINGROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return addDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
 	}
-	protected boolean addGroupDetialedBlackList(String name,long groupNum,long num)
+	public boolean addGroupDetialedBlackList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINGROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return addDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
 	}
-	protected boolean addDiscussDetialedWhiteList(String name,long groupNum,long num)
+	public boolean addDiscussDetialedWhiteList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINDISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return addDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
 	}
-	protected boolean addDiscussDetialedBlackList(String name,long groupNum,long num)
+	public boolean addDiscussDetialedBlackList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINDISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return addDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
 	}
 	
-	protected boolean removeGroupWhiteList(String name,long num)
+	public boolean removeGroupWhiteList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.GROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return removeClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean removeGroupBlackList(String name,long num)
+	public boolean removeGroupBlackList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.GROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return removeClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean removeDiscussWhiteList(String name,long num)
+	public boolean removeDiscussWhiteList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.DISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return removeClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean removeDiscussBlackList(String name,long num)
+	public boolean removeDiscussBlackList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.DISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return removeClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean removePersonWhiteList(String name,long num)
+	public boolean removePersonWhiteList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSON;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return removeClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean removePersonBlackList(String name,long num)
+	public boolean removePersonBlackList(String name,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSON;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return removeClient(name, aimSuffix, typeSuffix, num);
 	}
-	protected boolean removeGroupDetialedWhiteList(String name,long groupNum,long num)
+	public boolean removeGroupDetialedWhiteList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINGROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return removeDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
 	}
-	protected boolean removeGroupDetialedBlackList(String name,long groupNum,long num)
+	public boolean removeGroupDetialedBlackList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINGROUP;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return removeDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
 	}
-	protected boolean removeDiscussDetialedWhiteList(String name,long groupNum,long num)
+	public boolean removeDiscussDetialedWhiteList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINDISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.WHITE;
 		return removeDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
 	}
-	protected boolean removeDiscussDetialedBlackList(String name,long groupNum,long num)
+	public boolean removeDiscussDetialedBlackList(String name,long groupNum,long num)
 	{
 		ListAimSuffix aimSuffix=ListAimSuffix.PERSONINDISCUSS;
 		ListTypeSuffix typeSuffix=ListTypeSuffix.BLACK;
 		return removeDoubleClient(name, aimSuffix, typeSuffix, groupNum, num);
+	}
+	
+	/**
+	 * 返回名单情况
+	 * @param name 权限名称
+	 * @param num 查询号码
+	 * @return 返回数字：-1/在黑名单中；0/不存在于任何名单；1/在白名单中
+	 */
+	public int getPersonPermission(String name,long num)
+	{
+		ArrayList<Long> black=getList(name, ListAimSuffix.PERSON, ListTypeSuffix.BLACK);
+		if(black!=null)
+			if(black.contains(num))
+				return -1;
+		ArrayList<Long> white=getList(name, ListAimSuffix.PERSON, ListTypeSuffix.WHITE);
+		if(white!=null)
+			if(white.contains(num))
+				return 1;
+		return 0;
+	}
+	/**
+	 * 返回名单情况
+	 * @param name 权限名称
+	 * @param num 查询号码
+	 * @return 返回数字：-1/在黑名单中；0/不存在于任何名单；1/在白名单中
+	 */
+	public int getGroupPermission(String name,long num)
+	{
+		ArrayList<Long> black=getList(name, ListAimSuffix.GROUP, ListTypeSuffix.BLACK);
+		if(black!=null)
+			if(black.contains(num))
+				return -1;
+		ArrayList<Long> white=getList(name, ListAimSuffix.GROUP, ListTypeSuffix.WHITE);
+		if(white!=null)
+			if(white.contains(num))
+				return 1;
+		return 0;
+	}
+	/**
+	 * 返回名单情况
+	 * @param name 权限名称
+	 * @param groupNum 群号码
+	 * @param num 查询号码
+	 * @return 返回数字：-1/在黑名单中；0/不存在于任何名单；1/在白名单中
+	 */
+	public int getDiscussPermission(String name,long num)
+	{
+		ArrayList<Long> black=getList(name, ListAimSuffix.DISCUSS, ListTypeSuffix.BLACK);
+		if(black!=null)
+			if(black.contains(num))
+				return -1;
+		ArrayList<Long> white=getList(name, ListAimSuffix.DISCUSS, ListTypeSuffix.WHITE);
+		if(white!=null)
+			if(white.contains(num))
+				return 1;
+		return 0;
+	}
+	/**
+	 * 返回名单情况
+	 * @param name 权限名称
+	 * @param groupNum 群号码
+	 * @param num 查询号码
+	 * @return 返回数字：-1/在黑名单中；0/不存在于任何名单；1/在白名单中
+	 */
+	public int getGroupDetialedPermission(String name,long groupNum,long num)
+	{
+		ArrayList<Long> black=getDoubleList(name, ListAimSuffix.PERSONINGROUP, ListTypeSuffix.BLACK,groupNum);
+		if(black!=null)
+			if(black.contains(num))
+				return -1;
+		ArrayList<Long> white=getDoubleList(name, ListAimSuffix.PERSONINGROUP, ListTypeSuffix.WHITE,groupNum);
+		if(white!=null)
+			if(white.contains(num))
+				return 1;
+		return 0;
+	}
+	/**
+	 * 返回名单情况
+	 * @param name 权限名称
+	 * @param num 查询号码
+	 * @return 返回数字：-1/在黑名单中；0/不存在于任何名单；1/在白名单中
+	 */
+	public int getDiscussDetialedPermission(String name,long groupNum,long num)
+	{
+		ArrayList<Long> black=getDoubleList(name, ListAimSuffix.PERSONINDISCUSS, ListTypeSuffix.BLACK,groupNum);
+		if(black!=null)
+			if(black.contains(num))
+				return -1;
+		ArrayList<Long> white=getDoubleList(name, ListAimSuffix.PERSONINDISCUSS, ListTypeSuffix.WHITE,groupNum);
+		if(white!=null)
+			if(white.contains(num))
+				return 1;
+		return 0;
+	}
+
+	public boolean hasPersonPermission(String name,long number)
+	{
+		ListeningStatus status=getListeningStatus(name, ListAimSuffix.PERSON, number);
+		switch(status)
+		{
+		case ALL:
+			return true;
+		case NONE:
+			return false;
+		case ONLY_WHITE:
+		case EXCEPT_BLACK:
+			int clientStatus=getPersonPermission(name, number);
+			if(clientStatus>=1||(status==ListeningStatus.EXCEPT_BLACK&&clientStatus>=0))
+				return true;
+		}
+		return false;
+	}
+	public boolean hasGroupPermission(String name,long number)
+	{
+		ListeningStatus status=getListeningStatus(name, ListAimSuffix.GROUP, number);
+		switch(status)
+		{
+		case ALL:
+			return true;
+		case NONE:
+			return false;
+		case ONLY_WHITE:
+		case EXCEPT_BLACK:
+			int clientStatus=getGroupPermission(name, number);
+			if(clientStatus>=1||(status==ListeningStatus.EXCEPT_BLACK&&clientStatus>=0))
+				return true;
+		}
+		return false;
+	}
+	public boolean hasDiscussPermission(String name,long number)
+	{
+		ListeningStatus status=getListeningStatus(name, ListAimSuffix.DISCUSS, number);
+		switch(status)
+		{
+		case ALL:
+			return true;
+		case NONE:
+			return false;
+		case ONLY_WHITE:
+		case EXCEPT_BLACK:
+			int clientStatus=getDiscussPermission(name, number);
+			if(clientStatus>=1||(status==ListeningStatus.EXCEPT_BLACK&&clientStatus>=0))
+				return true;
+		}
+		return false;
+	}
+	public boolean hasGroupDetailedPermission(String name,long groupNum,long number)
+	{
+		ListeningStatus status=getListeningStatus(name, ListAimSuffix.PERSONINGROUP, groupNum);
+		switch(status)
+		{
+		case ALL:
+			return true;
+		case NONE:
+			return false;
+		case ONLY_WHITE:
+		case EXCEPT_BLACK:
+			int clientStatus=getGroupDetialedPermission(name, groupNum, number);
+			if(clientStatus>=1||(status==ListeningStatus.EXCEPT_BLACK&&clientStatus>=0))
+				return true;
+		}
+		return false;
+	}
+	public boolean hasDiscussDetailedPermission(String name,long groupNum,long number)
+	{
+		ListeningStatus status=getListeningStatus(name, ListAimSuffix.PERSONINDISCUSS, groupNum);
+		switch(status)
+		{
+		case ALL:
+			return true;
+		case NONE:
+			return false;
+		case ONLY_WHITE:
+		case EXCEPT_BLACK:
+			int clientStatus=getDiscussDetialedPermission(name, groupNum, number);
+			if(clientStatus>=1||(status==ListeningStatus.EXCEPT_BLACK&&clientStatus>=0))
+				return true;
+		}
+		return false;
 	}
 }

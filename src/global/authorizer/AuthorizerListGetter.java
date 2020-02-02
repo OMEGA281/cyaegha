@@ -9,21 +9,21 @@ import org.jdom2.JDOMException;
 import global.UniversalConstantsTable;
 import surveillance.Log;
 
-class AuthorizerListGetter 
+public class AuthorizerListGetter 
 {
 	private static final String AuthirizerListPath=UniversalConstantsTable.ROOTPATH+"AuthirizerList\\";
-	private HashMap<String, AuthirizerList> appAuthorizerMap=new HashMap<>();
+	private static HashMap<String, AppAuthirizerList> appAuthorizerMap=new HashMap<>();
 	/**
 	 * 初始化用方法
 	 */
-	protected static void init()
+	public static void init()
 	{
-		
+		new AuthorizerListGetter().loadLocalList();
 	}
 	/**
 	 * 加载存在于本地磁盘的权限表<br>
 	 * 每次使用本方法都会重新刷新{@code appAuthorizerMap}<br>
-	 * 对于超大量的数据时请慎重！<br>
+	 * 对于大量的数据时请慎重！<br>
 	 * 若仅仅只是刷新某个表内的数据请使用表内的刷新方法！
 	 */
 	private void loadLocalList()
@@ -42,10 +42,10 @@ class AuthorizerListGetter
 		{
 			String allName=file.getName();
 			String name=allName.substring(0,allName.indexOf('.'));
-			AuthirizerList authirizerList;
+			AppAuthirizerList authirizerList;
 			try
 			{
-				authirizerList=new AuthirizerList(file.getPath());
+				authirizerList=new AppAuthirizerList(file.getPath());
 			} catch (JDOMException e)
 			{
 //				非正常的XML文件
@@ -61,5 +61,24 @@ class AuthorizerListGetter
 			Log.i("载入了表："+name);
 		}
 		Log.i("加载完毕，共有"+appAuthorizerMap.size()+"个表被加载");
+	}
+	public static AppAuthirizerList getAuthirizerList(String string)
+	{
+		return appAuthorizerMap.get(string);
+	}
+	public static void addNewAuthirizerList(String string)
+	{
+		try
+		{
+			appAuthorizerMap.put(string, new AppAuthirizerList("test.xml"));
+		} catch (JDOMException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

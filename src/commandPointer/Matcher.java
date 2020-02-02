@@ -114,7 +114,7 @@ public class Matcher
 		return null;
 	}
 	/**处理命令用的集成方法
-	 * @param CommandMsg 源信息，不需要进行任何的处理*/
+	 * @param messagePackage 源信息，不需要进行任何的处理*/
 	public void CommandProcesser(ReceiveMessageType messagePackage)
 	{
 		StringBuilder stringBuilder=new StringBuilder(messagePackage.getMsg());

@@ -3,33 +3,69 @@ package connection;
 import org.meowy.cqp.jcq.entity.CoolQ;
 import org.meowy.cqp.jcq.entity.Member;
 import org.meowy.cqp.jcq.entity.QQInfo;
+import org.meowy.cqp.jcq.entity.enumerate.Authority;
 
 import global.UniversalConstantsTable;
+import global.authorizer.AuthirizerUser;
 import surveillance.Log;
 
 public class CQSender 
 {
 	static CQSender cqSender;
-	CoolQ CQ;
+	static CoolQ CQ;
 	
-	public QQInfo getQQInfo(long QQ)
+	public static QQInfo getQQInfo(long QQ)
 	{
 		return CQ.getStrangerInfo(QQ);
 	}
 	
-	public Member getQQInfoInGroup(long QQ,long GroupNum)
+	public static Member getQQInfoInGroup(long QQ,long GroupNum)
 	{
 		return CQ.getGroupMemberInfo(GroupNum, QQ);
 	}
+	/**
+	 * 获取这条信息发出者所在环境的权限
+	 * @param messageType 信息包
+	 * @return 权限情况
+	 */
+	public static AuthirizerUser getAuthirizer(ReceiveMessageType messageType)
+	{
+		int msgType=messageType.MsgType;
+//		FIXME:这里是之后加入处理匿名者的代码
+		if(messageType.getfromAnonymous()!=null)
+			if(messageType.getfromAnonymous()!="")
+				return AuthirizerUser.BANNED_USER;
+		
+		switch(msgType)
+		{
+		case UniversalConstantsTable.MSGTYPE_PERSON:
+			return AuthirizerUser.PERSON_CLIENT;
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
+			return AuthirizerUser.DISCUSS_MEMBER;
+		case UniversalConstantsTable.MSGTYPE_GROUP:
+			long QQ=messageType.getfromQQ();
+			long GroupNum=messageType.getfromGroup();
+			Authority i=getQQInfoInGroup(QQ, GroupNum).getAuthority();
+			switch(i)
+			{
+			case ADMIN:
+				return AuthirizerUser.GROUP_MANAGER;
+			case MEMBER:
+				return AuthirizerUser.GROUP_MEMBER;
+			case OWNER:
+				return AuthirizerUser.GROUP_OWNER;
+			}
+		}
+		return AuthirizerUser.BANNED_USER;
+	}
 	
-	public String getMyName()
+	public static String getMyName()
 	{
 		return CQ.getLoginNick();
 	}
 	
 	public CQSender(CoolQ CQ) 
 	{
-		// TODO Auto-generated constructor stub
 		if(cqSender==null)
 		{
 			this.CQ=CQ;

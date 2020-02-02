@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface NeedPermission
+public @interface RefuseReply
 {
-	String[] permissions();
+	String reply();
 }

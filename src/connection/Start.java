@@ -1,6 +1,7 @@
 package connection;
 
 import org.meowy.cqp.jcq.entity.*;
+import org.meowy.cqp.jcq.entity.enumerate.Authority;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
 import commandMethod.ERPG;
@@ -8,6 +9,8 @@ import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
 import global.UniversalConstantsTable;
+import global.authorizer.AppAuthirizerList;
+import global.authorizer.AuthorizerListGetter;
 import surveillance.Log;
 import tools.TimeSimpleTool;
 import transceiver.Receiver;
@@ -93,14 +96,25 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         
         demo.privateMsg(1, 34, 1304554598, "sdf", 0);
         String string=new Scanner(System.in).next();
-        demo.privateMsg(1, 34, 1304554598, ".st san 80", 0);
-        demo.privateMsg(1, 34, 1304554598, ".sc 2d2*3+1/3d6+1", 0);
+        
+        demo.privateMsg(1, 34, 1304554598, ".tm", 0);
+        demo.groupMsg(1, 23, 123456, 123456, null, ".tm", 1);
     }
     
 //    用于加载后启动的测试方法，打包前需去除
     private void testmethod() 
     {
-    	
+    	AuthorizerListGetter.init();
+    	System.out.println(AuthorizerListGetter.getAuthirizerList("text")==null);
+    	AuthorizerListGetter.addNewAuthirizerList("text");
+    	AppAuthirizerList authirizerList=AuthorizerListGetter.getAuthirizerList("text");
+    	System.out.println(authirizerList==null);
+    	authirizerList.addDiscussWhiteList("check", 123456);
+    	System.out.println(authirizerList.getDiscussPermission("check", 123456));
+    	authirizerList.addGroupDetialedWhiteList("check", 123456, 654321);
+    	System.out.println(authirizerList.getGroupDetialedPermission("check", 123456, 654321));
+    	System.out.println(authirizerList.getGroupDetialedPermission("check", 123456, 123456));
+    	System.out.println(authirizerList.hasGroupDetailedPermission("check", 123456, 123456));
 	}
     
     
@@ -132,7 +146,6 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         appDirectory = CQ.getAppDirectory();
         // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
-        System.out.println(appDirectory);
     	System.out.println("启动中……");
     	UniversalConstantsTable.ROOTPATH=appDirectory+"\\";
 //    	启动注册器
