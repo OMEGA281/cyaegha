@@ -98,20 +98,16 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         String string=new Scanner(System.in).next();
         
         demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
-        demo.privateMsg(1, 34, 1304554598, ".r 1", 0);
-        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
-        demo.privateMsg(1, 34, 1304554598, ".r 1", 0);
-        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
-        demo.privateMsg(1, 34, 1304554598, ".r 1", 0);
+        demo.privateMsg(1, 34, 1304554598, ".help", 0);
     }
     
 //    用于加载后启动的测试方法，打包前需去除
     private void testmethod() 
     {
     	AuthorizerListGetter.init();
-    	System.out.println(AuthorizerListGetter.getAuthirizerList("text")==null);
+    	System.out.println(AuthorizerListGetter.getAppAuthirizerList("text")==null);
     	AuthorizerListGetter.addNewAuthirizerList("text");
-    	AppAuthirizerList authirizerList=AuthorizerListGetter.getAuthirizerList("text");
+    	AppAuthirizerList authirizerList=AuthorizerListGetter.getAppAuthirizerList("text");
     	System.out.println(authirizerList==null);
     	authirizerList.addDiscussWhiteList("check", 123456);
     	System.out.println(authirizerList.getDiscussPermission("check", 123456));

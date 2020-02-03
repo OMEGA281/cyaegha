@@ -38,7 +38,7 @@ public class Dormant extends Father
 				if((!accessible)&messageType.getMsg().equals(".dormant"))
 				{
 					accessible=true;
-					getDataExchanger().addItem(value, Boolean.toString(accessible));
+					getDataExchanger().addItem(mark, Boolean.toString(accessible));
 					sendBackMsg("退出休眠状态");
 					return RETURN_STOP;
 				}
@@ -69,7 +69,7 @@ public class Dormant extends Father
 		if(accessible)
 		{
 			accessible=false;
-			getDataExchanger().addItem(value, Boolean.toString(accessible));
+			getDataExchanger().addItem(mark, Boolean.toString(accessible));
 			sendBackMsg("进入休眠状态");
 		}
 	}

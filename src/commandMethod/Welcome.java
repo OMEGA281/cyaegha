@@ -6,6 +6,8 @@ import commandMethod.register.OnGroupMemberChangeListener;
 import connection.GroupChangeType;
 import connection.ReceiveMessageType;
 import global.UniversalConstantsTable;
+import global.authorizer.AuthirizerUser;
+import global.authorizer.MinimumAuthority;
 
 public class Welcome extends Father
 {
@@ -31,12 +33,13 @@ public class Welcome extends Father
 		groupMemberChangeListener.priority=30;
 		addGroupMemberChangeListener(groupMemberChangeListener);
 	}
-	
+	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
 	public void welcome()
 	{
 		deleteString();
 		sendBackMsg("删除成功");
 	}
+	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
 	public void welcome(ArrayList<String> arrayList)
 	{
 		setString(arrayList.get(0));

@@ -45,7 +45,7 @@ public class XMLDocument
 			{
 				try 
 				{
-					file.createNewFile();
+					FileSimpleIO.createFile(url);
 					FileWriter fileWriter=new FileWriter(file);
 					Document document=new Document(new Element("root"));
 					XMLOutputter outputter=new XMLOutputter(Format.getCompactFormat().setEncoding("UTF-8").setIndent("\t"));

@@ -7,6 +7,7 @@ import org.meowy.cqp.jcq.entity.enumerate.Authority;
 
 import global.UniversalConstantsTable;
 import global.authorizer.AuthirizerUser;
+import global.authorizer.AuthorizerListGetter;
 import surveillance.Log;
 
 public class CQSender 
@@ -31,6 +32,13 @@ public class CQSender
 	public static AuthirizerUser getAuthirizer(ReceiveMessageType messageType)
 	{
 		int msgType=messageType.MsgType;
+		
+		long client=messageType.getfromQQ();
+		if(AuthorizerListGetter.getCoreAuthirizerList().isSOP(client))
+			return AuthirizerUser.SUPER_OP;
+		if(AuthorizerListGetter.getCoreAuthirizerList().isOP(client))
+			return AuthirizerUser.OP;
+		
 //		FIXME:这里是之后加入处理匿名者的代码
 		if(messageType.getfromAnonymous()!=null)
 			if(messageType.getfromAnonymous()!="")

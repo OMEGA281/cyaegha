@@ -12,7 +12,10 @@ import surveillance.Log;
 public class AuthorizerListGetter 
 {
 	private static final String AuthirizerListPath=UniversalConstantsTable.ROOTPATH+"AuthirizerList\\";
+	private static final String CoreAuthirizerListPath=AuthirizerListPath+"CoreAuthirizerList.xml";
+	
 	private static HashMap<String, AppAuthirizerList> appAuthorizerMap=new HashMap<>();
+	private static CoreAuthirizerList coreAuthirizerList;
 	/**
 	 * 初始化用方法
 	 */
@@ -62,10 +65,11 @@ public class AuthorizerListGetter
 		}
 		Log.i("加载完毕，共有"+appAuthorizerMap.size()+"个表被加载");
 	}
-	public static AppAuthirizerList getAuthirizerList(String string)
+	public static AppAuthirizerList getAppAuthirizerList(String string)
 	{
 		return appAuthorizerMap.get(string);
 	}
+	@Deprecated
 	public static void addNewAuthirizerList(String string)
 	{
 		try
@@ -80,5 +84,24 @@ public class AuthorizerListGetter
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public static CoreAuthirizerList getCoreAuthirizerList()
+	{
+		if(coreAuthirizerList==null)
+		{
+			try
+			{
+				coreAuthirizerList=new CoreAuthirizerList(CoreAuthirizerListPath);
+			} catch (JDOMException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return coreAuthirizerList;
 	}
 }

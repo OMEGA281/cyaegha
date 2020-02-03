@@ -17,6 +17,7 @@ import commandMethod.register.OnMessageReceiveListener;
 import connection.CQSender;
 import connection.ReceiveMessageType;
 import global.UniversalConstantsTable;
+import global.authorizer.AuthorizerListGetter;
 import surveillance.Log;
 
 public class Ignorer extends Father {
@@ -120,8 +121,9 @@ public class Ignorer extends Father {
 								{
 									superOP=Long.parseLong(string);
 									addList(WHITELIST_PERSON, superOP);
+									AuthorizerListGetter.getCoreAuthirizerList().setSOP(superOP);
 									sendPrivateMsg(superOP, 
-											CQSender.getSender().getMyName()+"将您设为superOP");
+											CQSender.getMyName()+"将您设为superOP");
 								}
 								catch(NumberFormatException exception)
 								{

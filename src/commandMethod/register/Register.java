@@ -48,7 +48,7 @@ public class Register
 			@Override
 			public int compare(OnMessageReceiveListener o1, OnMessageReceiveListener o2) {
 				// TODO Auto-generated method stub
-				return o1.priority-o2.priority;
+				return o2.priority-o1.priority;
 			}
 			
 		});
@@ -57,7 +57,7 @@ public class Register
 			@Override
 			public int compare(OnGroupMemberChangeListener o1, OnGroupMemberChangeListener o2) {
 				// TODO Auto-generated method stub
-				return o1.priority-o2.priority;
+				return o2.priority-o1.priority;
 			}
 			
 		});
@@ -66,7 +66,7 @@ public class Register
 			@Override
 			public int compare(OnMessageSendListener o1, OnMessageSendListener o2) {
 				// TODO Auto-generated method stub
-				return o1.priority-o2.priority;
+				return o2.priority-o1.priority;
 			}
 			
 		});
