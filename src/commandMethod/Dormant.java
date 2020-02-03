@@ -4,13 +4,18 @@ import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
+import global.UniversalConstantsTable;
 import global.authorizer.AuthirizerUser;
 import global.authorizer.MinimumAuthority;
 import transceiver.Transmitter;
 
 public class Dormant extends Father
 {
-	static boolean accessible=true;
+	private static final String groupNumHead="N";
+	private static final String discussNumHead="D";
+	private static final String personNumHead="P";
+	
+	boolean accessible;
 	@Override
 	public void initialize() 
 	{
@@ -22,9 +27,18 @@ public class Dormant extends Father
 			public int run(ReceiveMessageType messageType) {
 				// TODO Auto-generated method stub
 				receiveMessageType=messageType;
+				String mark=getMark();
+				if(mark==null)
+					return RETURN_STOP;
+				String value=getDataExchanger().getItem(mark);
+				if(value==null)
+					accessible=false;
+				else
+					accessible=Boolean.parseBoolean(value);
 				if((!accessible)&messageType.getMsg().equals(".dormant"))
 				{
 					accessible=true;
+					getDataExchanger().addItem(value, Boolean.toString(accessible));
 					sendBackMsg("退出休眠状态");
 					return RETURN_STOP;
 				}
@@ -44,10 +58,32 @@ public class Dormant extends Father
 	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_OWNER)
 	public void changeDormant()
 	{
+		String mark=getMark();
+		if(mark==null)
+			return;
+		String value=getDataExchanger().getItem(mark);
+		if(value==null)
+			accessible=false;
+		else
+			accessible=Boolean.parseBoolean(value);
 		if(accessible)
 		{
 			accessible=false;
+			getDataExchanger().addItem(value, Boolean.toString(accessible));
 			sendBackMsg("进入休眠状态");
 		}
+	}
+	private String getMark()
+	{
+		switch(receiveMessageType.getMsgType())
+		{
+		case UniversalConstantsTable.MSGTYPE_GROUP:
+			return groupNumHead+receiveMessageType.getfromGroup();
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
+			return discussNumHead+receiveMessageType.getfromGroup();
+		case UniversalConstantsTable.MSGTYPE_PERSON:
+			return personNumHead+receiveMessageType.getfromQQ();
+		}
+		return null;
 	}
 }
