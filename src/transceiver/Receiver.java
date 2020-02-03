@@ -1,5 +1,7 @@
 package transceiver;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -7,7 +9,10 @@ import commandMethod.register.OnEventListener;
 import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.Register;
 import commandPointer.Matcher;
+import connection.CQSender;
 import connection.ReceiveMessageType;
+import global.authorizer.AuthirizerUser;
+import global.authorizer.MinimumAuthority;
 import surveillance.Log;
 import tools.FileSimpleIO;
 
@@ -32,6 +37,47 @@ public class Receiver
 					
 					code_0:for (OnMessageReceiveListener messageReceiveListener : Register.getRegister().messageReceiveListeners) 
 					{
+						AuthirizerUser userAuthirizer=CQSender.getAuthirizer(receiveMessageType);
+						boolean hasPermision;
+						
+						Class<?> nowClass=messageReceiveListener.getClass();
+						Method method = null;
+						try
+						{
+							method = nowClass.getDeclaredMethod("run", ReceiveMessageType.class);
+						} catch (NoSuchMethodException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SecurityException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if(method!=null)
+						{
+							MinimumAuthority authority=method.getAnnotation(MinimumAuthority.class);
+							if(authority==null)
+							{
+//								FIXME:将来会在这里加入默认影响
+								hasPermision=AuthirizerUser.GROUP_MEMBER.ifAccessible(userAuthirizer);
+							}
+							else
+							{
+								hasPermision=authority.authirizerUser().ifAccessible(userAuthirizer);
+							}
+						}
+						else
+						{
+//							如果这步的话就是错误的方法了
+							continue;
+						}
+						
+						if(!hasPermision)
+						{
+							continue;
+						}
+						
 						response=messageReceiveListener.run(receiveMessageType);
 						switch(response)
 						{

@@ -24,7 +24,7 @@ class LifeCycleController
         // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
     	Log.i("初始化中……");
-    	UniversalConstantsTable.ROOTPATH=CQ.getAppDirectory()+"\\";
+    	UniversalConstantsTable.ROOTPATH=CQ.getAppDirectory()+"\\"+CQ.getLoginQQ();
     	//    	启动注册器
     	new Register();
     	

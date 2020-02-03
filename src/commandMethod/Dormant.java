@@ -18,15 +18,14 @@ public class Dormant extends Father
 		OnMessageReceiveListener listener=new OnMessageReceiveListener() {
 			
 			@Override
+			@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_OWNER)
 			public int run(ReceiveMessageType messageType) {
 				// TODO Auto-generated method stub
 				receiveMessageType=messageType;
 				if((!accessible)&messageType.getMsg().equals(".dormant"))
 				{
 					accessible=true;
-					Transmitter.getTransmitter().addMsg(new SendMessageType(
-							receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
-							, receiveMessageType.getfromGroup(), "退出休眠状态"));
+					sendBackMsg("退出休眠状态");
 					return RETURN_STOP;
 				}
 				if(accessible)

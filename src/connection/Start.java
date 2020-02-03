@@ -97,8 +97,12 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         demo.privateMsg(1, 34, 1304554598, "sdf", 0);
         String string=new Scanner(System.in).next();
         
-        demo.privateMsg(1, 34, 1304554598, ".tm", 0);
-        demo.groupMsg(1, 23, 123456, 123456, null, ".tm", 1);
+        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
+        demo.privateMsg(1, 34, 1304554598, ".r 1", 0);
+        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
+        demo.privateMsg(1, 34, 1304554598, ".r 1", 0);
+        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
+        demo.privateMsg(1, 34, 1304554598, ".r 1", 0);
     }
     
 //    用于加载后启动的测试方法，打包前需去除
@@ -143,7 +147,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int startup() {
         // 获取应用数据目录(无需储存数据时，请将此行注释)
-        appDirectory = CQ.getAppDirectory();
+        appDirectory = CQ.getAppDirectory()+"\\"+CQ.getLoginQQ();
         // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
         // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
     	System.out.println("启动中……");

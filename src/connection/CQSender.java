@@ -36,6 +36,7 @@ public class CQSender
 			if(messageType.getfromAnonymous()!="")
 				return AuthirizerUser.BANNED_USER;
 		
+		
 		switch(msgType)
 		{
 		case UniversalConstantsTable.MSGTYPE_PERSON:
