@@ -22,7 +22,7 @@ public class Register
 		// TODO Auto-generated constructor stub
 		if(register==null)
 			Log.d("初始化注册器");
-			register=this;
+		register=this;
 	}
 	public static Register getRegister()
 	{

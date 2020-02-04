@@ -1,6 +1,5 @@
 package transceiver;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -14,7 +13,6 @@ import connection.ReceiveMessageType;
 import global.authorizer.AuthirizerUser;
 import global.authorizer.MinimumAuthority;
 import surveillance.Log;
-import tools.FileSimpleIO;
 
 public class Receiver 
 {

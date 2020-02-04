@@ -68,6 +68,30 @@ public class CQSender
 		return AuthirizerUser.BANNED_USER;
 	}
 	
+	/**
+	 * 获得某群内某人的权限<br>
+	 * 注意：本方法主要针对群，不会返回管理员权限
+	 * @param groupNum 群号
+	 * @param num QQ号
+	 * @return
+	 */
+	public static AuthirizerUser getAuthirizer(long groupNum,long num)
+	{
+		Member member=getQQInfoInGroup(num, groupNum);
+		if(member==null)
+			return AuthirizerUser.BANNED_USER;
+		switch(member.getAuthority())
+		{
+		case ADMIN:
+			return AuthirizerUser.GROUP_MANAGER;
+		case MEMBER:
+			return AuthirizerUser.GROUP_MEMBER;
+		case OWNER:
+			return AuthirizerUser.GROUP_OWNER;
+		}
+		return AuthirizerUser.BANNED_USER;
+	}
+	
 	public static String getMyName()
 	{
 		return CQ.getLoginNick();
@@ -76,6 +100,23 @@ public class CQSender
 	public static long getMyQQ()
 	{
 		return CQ.getLoginQQ();
+	}
+	
+	public static void dismissGroup(long l)
+	{
+		AuthirizerUser authirizerUser=getAuthirizer(l, getMyQQ());
+		if(authirizerUser!=AuthirizerUser.GROUP_OWNER&&
+				authirizerUser!=AuthirizerUser.GROUP_MEMBER&&authirizerUser!=AuthirizerUser.GROUP_MANAGER)
+		{
+			Log.e("异常的退群操作！中止本次操作！群号："+l);
+			return;
+		}
+		CQ.setGroupLeave(l, authirizerUser==AuthirizerUser.GROUP_OWNER?true:false);
+	}
+	
+	public static void dismissDiscuss(long l)
+	{
+		CQ.setDiscussLeave(l);
 	}
 	
 	public CQSender(CoolQ CQ) 

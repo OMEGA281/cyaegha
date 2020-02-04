@@ -303,9 +303,61 @@ public class ERPG extends Father
 				+"如果不包含项目数值，则为清除该条目\n";
 		if(arrayList.size()<2)
 		{
-			removeSkill(arrayList.get(0));
-			sendBackMsg("已删除"+getMessageSenderName()+"的"+arrayList.get(0));
-			return;
+//			检测是哪一种类型，可能是连续的输入，也可能是表达式
+			if(Pattern.compile("[+-]").matcher(arrayList.get(0)).find())
+			{
+//				检测到了运算符
+				String[] part=arrayList.get(0).split("[+-]");
+				String skill=null;
+//				检测并获得修改的名称
+				for (String string : part) 
+				{
+					if(!Pattern.compile("[0-9d]*").matcher(string).matches())
+					{
+						if(skill==null||skill.equals(string))
+							skill=string;
+						else
+						{
+							sendBackMsg("算数表达式仅可以含有一种技能名");
+							return;
+						}
+					}
+				}
+				
+				if(skill==null)
+				{
+					sendBackMsg("没有找到技能名称");
+					return;
+				}
+				int last=getSkill(skill);
+				if(last<0)
+				{
+					sendBackMsg("该技能不存在");
+					return;
+				}
+				
+//				替换
+				arrayList.set(0, arrayList.get(0).replaceAll(skill, Integer.toString(getSkill(skill))));
+//				链接
+				setSkill(skill, transRandomString(arrayList.get(0)));
+				StringBuilder stringBuilder=new StringBuilder();
+				stringBuilder.append(getMessageSenderName()+"的"+skill+"从"+last+"变成了"+getSkill(skill));
+				sendBackMsg(stringBuilder.toString());
+				return;
+			}
+			StringBuilder builder=new StringBuilder(arrayList.get(0));
+			char[] cs=builder.toString().toCharArray();
+			arrayList.clear();
+			int lastIndex=0;
+			for(int i=1;i<cs.length;i++)
+			{
+				if(('0'<=cs[i]&&cs[i]<='9'&&!('0'<=cs[i-1]&&cs[i-1]<='9'))||(!('0'<=cs[i]&&cs[i]<='9')&&('0'<=cs[i-1]&&cs[i-1]<='9')))
+				{
+					arrayList.add(builder.substring(lastIndex, i).toString());
+					lastIndex=i;
+				}
+			}
+			arrayList.add(builder.substring(lastIndex,builder.length()));
 		}
 		ArrayList<String> output=new ArrayList<>();
 		for(int i=0;i<arrayList.size();i+=2)
@@ -329,7 +381,7 @@ public class ERPG extends Father
 		StringBuilder builder=new StringBuilder();
 		builder.append(getMessageSenderName()+"添加了以下属性：\n");
 		for (String string : output) {
-			builder.append(string+"\n");
+			builder.append(string+"  ");
 		}
 		sendBackMsg(builder.toString());
 	}

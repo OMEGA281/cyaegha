@@ -9,6 +9,7 @@ import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.OnMessageSendListener;
 import commandMethod.register.Register;
+import commandPointer.AuxiliaryClass;
 import connection.CQSender;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
@@ -16,6 +17,7 @@ import global.UniversalConstantsTable;
 import tools.FileSimpleIO;
 import transceiver.Transmitter;
 
+@AuxiliaryClass
 public abstract class Father 
 {
 	/**若是由命令调用，则一定会更新本变量，若是以listener调用，则需手动更新*/
