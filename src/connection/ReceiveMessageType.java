@@ -1,5 +1,12 @@
 package connection;
 
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import org.meowy.cqp.jcq.message.ActionMsg;
+import org.meowy.cqp.jcq.message.CQCode;
+import org.meowy.cqp.jcq.message.CoolQMsg;
+
 import global.UniversalConstantsTable;
 
 public class ReceiveMessageType 
@@ -12,6 +19,7 @@ public class ReceiveMessageType
 	String fromAnonymous;
 	String Msg;
 	long time;
+	boolean shouldRespone;
 	/**收到消息时的通用包形式
 	 * @param MsgType 消息类型，常量池中有
 	 * @param subType 子类型，常量池中有
@@ -31,6 +39,7 @@ public class ReceiveMessageType
 		this.fromGroup=fromGroup;
 		this.fromAnonymous=fromAnonymous;
 		this.Msg=Msg;
+		dealMsg();
 		this.time=time;
 	}
 	public int getMsgType()
@@ -79,5 +88,51 @@ public class ReceiveMessageType
 		sb.append(UniversalConstantsTable.STRING_MSG+"="+Msg!=null?Msg:"null"+",");
 		sb.append(UniversalConstantsTable.STRING_TIME+"="+time!=null?time:"null");
 		return sb.toString();
+	}
+	public boolean shouldRespone()
+	{
+		return shouldRespone;
+	}
+	private void dealMsg()
+	{
+		Pattern space=Pattern.compile("[ ]+");
+		CQCode code=new CQCode();
+		CoolQMsg coolQMsg=new CoolQMsg(Msg);
+		ArrayList<Long> arrayList=new ArrayList<Long>();
+		int index=0;
+		for(;index<coolQMsg.size();index++)
+		{
+			ActionMsg actionMsg=coolQMsg.get(index);
+			if(space.matcher(actionMsg.getMsg()).matches())
+				continue;
+			long l=code.getAt(actionMsg.getMsg());
+			if(l==-1000)
+				break;
+			arrayList.add(l);
+		}
+//		处理是否应该响应
+		if(arrayList.size()>0)
+		{
+			if(arrayList.contains(-1l))
+				shouldRespone=true;
+			else if(arrayList.contains(CQSender.getMyQQ()))
+				shouldRespone=true;
+			else
+				shouldRespone=false;
+		}
+		else
+			shouldRespone=true;
+		
+		if(index>=coolQMsg.size())
+		{
+			shouldRespone=false;
+			Msg="";
+		}
+		StringBuilder builder=new StringBuilder();
+		for(int i=index;i<coolQMsg.size();i++)
+		{
+			builder.append(coolQMsg.get(i).getMsg());
+		}
+		Msg=builder.toString().trim();
 	}
 }

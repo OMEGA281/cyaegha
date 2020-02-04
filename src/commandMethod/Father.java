@@ -40,9 +40,9 @@ public abstract class Father
 		{
 		case UniversalConstantsTable.MSGTYPE_PERSON:
 		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			return CQSender.getSender().getQQInfo(receiveMessageType.getfromQQ()).getNick();
+			return CQSender.getQQInfo(receiveMessageType.getfromQQ()).getNick();
 		case UniversalConstantsTable.MSGTYPE_GROUP:
-			return CQSender.getSender().getQQInfoInGroup(receiveMessageType.getfromQQ(), receiveMessageType.getfromGroup()).getCard();
+			return CQSender.getQQInfoInGroup(receiveMessageType.getfromQQ(), receiveMessageType.getfromGroup()).getCard();
 		}
 		return "";
 	}

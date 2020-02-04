@@ -73,6 +73,11 @@ public class CQSender
 		return CQ.getLoginNick();
 	}
 	
+	public static long getMyQQ()
+	{
+		return CQ.getLoginQQ();
+	}
+	
 	public CQSender(CoolQ CQ) 
 	{
 		if(cqSender==null)

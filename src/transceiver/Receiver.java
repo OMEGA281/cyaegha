@@ -34,66 +34,67 @@ public class Receiver
 					ReceiveMessageType receiveMessageType=MsgQueue.poll();
 //					System.out.println("抽取队列，当前队列剩余量："+MsgQueue.size());
 					int response=OnEventListener.RETURN_PASS;
+					if(!receiveMessageType.shouldRespone())
+						continue;
 					
-					code_0:for (OnMessageReceiveListener messageReceiveListener : Register.getRegister().messageReceiveListeners) 
+					try
 					{
-						AuthirizerUser userAuthirizer=CQSender.getAuthirizer(receiveMessageType);
-						boolean hasPermision;
-						
-						Class<?> nowClass=messageReceiveListener.getClass();
-						Method method = null;
-						try
+						code_0:for (OnMessageReceiveListener messageReceiveListener : Register.getRegister().messageReceiveListeners) 
 						{
+							AuthirizerUser userAuthirizer=CQSender.getAuthirizer(receiveMessageType);
+							boolean hasPermision;
+							
+							Class<?> nowClass=messageReceiveListener.getClass();
+							Method method = null;
 							method = nowClass.getDeclaredMethod("run", ReceiveMessageType.class);
-						} catch (NoSuchMethodException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (SecurityException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						if(method!=null)
-						{
-							MinimumAuthority authority=method.getAnnotation(MinimumAuthority.class);
-							if(authority==null)
+							if(method!=null)
 							{
+								MinimumAuthority authority=method.getAnnotation(MinimumAuthority.class);
+								if(authority==null)
+								{
 //								FIXME:将来会在这里加入默认影响
-								hasPermision=AuthirizerUser.GROUP_MEMBER.ifAccessible(userAuthirizer);
+									hasPermision=AuthirizerUser.GROUP_MEMBER.ifAccessible(userAuthirizer);
+								}
+								else
+								{
+									hasPermision=authority.authirizerUser().ifAccessible(userAuthirizer);
+								}
 							}
 							else
+//							如果这步的话就是错误的方法了
+								continue;
+							
+							if(!hasPermision)
+								continue;
+							
+							response=messageReceiveListener.run(receiveMessageType);
+							switch(response)
 							{
-								hasPermision=authority.authirizerUser().ifAccessible(userAuthirizer);
+							case OnEventListener.RETURN_PASS:
+								continue;
+							case OnEventListener.RETURN_STOP:
+								break code_0;
+							default:
+								Log.e("出现未知的返回类型");
+								continue;
 							}
 						}
-						else
-						{
-//							如果这步的话就是错误的方法了
-							continue;
-						}
-						
-						if(!hasPermision)
-						{
-							continue;
-						}
-						
-						response=messageReceiveListener.run(receiveMessageType);
-						switch(response)
-						{
-						case OnEventListener.RETURN_PASS:
-							continue;
-						case OnEventListener.RETURN_STOP:
-							break code_0;
-						default:
-							Log.e("出现未知的返回类型");
-							continue;
-						}
+					} catch (Exception e)
+					{
+						// TODO Auto-generated catch block
+						Log.e("监听器出现问题");
 					}
 					
-					if(response==OnEventListener.RETURN_PASS&Matcher.ifCommand(receiveMessageType.getMsg()))
+					try
 					{
-						Matcher.getMatcher().CommandProcesser(receiveMessageType);
+						if(response==OnEventListener.RETURN_PASS&Matcher.ifCommand(receiveMessageType.getMsg()))
+						{
+							Matcher.getMatcher().CommandProcesser(receiveMessageType);
+						}
+					} catch (Exception e)
+					{
+						// TODO Auto-generated catch block
+						Log.e("命令反射器出现错误");
 					}
 					
 				}

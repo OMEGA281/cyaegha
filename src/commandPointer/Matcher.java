@@ -133,8 +133,8 @@ public class Matcher
 		if(commandPackage==null)
 		{
 			Log.i("无效命令：",stringBuilder.toString());
-			Transmitter.getTransmitter().addMsg(new SendMessageType(messagePackage.getMsgType()
-					, messagePackage.getfromQQ(),messagePackage.getfromGroup(), "无效命令\n您可以使用.help来显示所有命令"));
+//			Transmitter.getTransmitter().addMsg(new SendMessageType(messagePackage.getMsgType()
+//					, messagePackage.getfromQQ(),messagePackage.getfromGroup(), "无效命令\n您可以使用.help来显示所有命令"));
 		}
 		else
 		{

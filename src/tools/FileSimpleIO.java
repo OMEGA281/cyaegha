@@ -143,11 +143,10 @@ public class FileSimpleIO
 		if(file.exists())
 			return returnType.SUCCESS;
 		String path=file.getParent();
-		String name=file.getName();
 		if(path!=null)
 			new File(path).mkdirs();
 		try {
-			new File(name).createNewFile();
+			new File(aim).createNewFile();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			return returnType.FAILED_CRAETFILE;

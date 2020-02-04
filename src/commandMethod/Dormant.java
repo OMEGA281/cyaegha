@@ -1,7 +1,9 @@
 package commandMethod;
 
 import commandMethod.register.OnEventListener;
+import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.OnMessageReceiveListener;
+import connection.GroupChangeType;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
 import global.UniversalConstantsTable;
@@ -23,7 +25,7 @@ public class Dormant extends Father
 		OnMessageReceiveListener listener=new OnMessageReceiveListener() {
 			
 			@Override
-			@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_OWNER)
+			@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
 			public int run(ReceiveMessageType messageType) {
 				// TODO Auto-generated method stub
 				receiveMessageType=messageType;
@@ -54,8 +56,29 @@ public class Dormant extends Father
 		};
 		listener.priority=OnEventListener.PRIORITY_HIGH;
 		addMessageReceiveListener(listener);
+		OnGroupMemberChangeListener groupMemberChangeListener=new OnGroupMemberChangeListener() {
+			
+			@Override
+			public int run(GroupChangeType groupChangeType)
+			{
+				String mark=getMark();
+				if(mark==null)
+					return RETURN_STOP;
+				String value=getDataExchanger().getItem(mark);
+				if(value==null)
+					accessible=false;
+				else
+					accessible=Boolean.parseBoolean(value);
+				if(accessible)
+					return RETURN_PASS;
+				else
+					return RETURN_STOP;
+			}
+		};
+		groupMemberChangeListener.priority=OnEventListener.PRIORITY_MAX;
+		addGroupMemberChangeListener(groupMemberChangeListener);
 	}
-	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_OWNER)
+	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
 	public void changeDormant()
 	{
 		String mark=getMark();
