@@ -3,6 +3,7 @@ package commandMethod;
 import commandMethod.register.OnEventListener;
 import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.OnMessageReceiveListener;
+import connection.CQSender;
 import connection.GroupChangeType;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
@@ -13,7 +14,7 @@ import transceiver.Transmitter;
 
 public class Dormant extends Father
 {
-	private static final String groupNumHead="N";
+	private static final String groupNumHead="G";
 	private static final String discussNumHead="D";
 	private static final String personNumHead="P";
 	
@@ -25,7 +26,7 @@ public class Dormant extends Father
 		OnMessageReceiveListener listener=new OnMessageReceiveListener() {
 			
 			@Override
-			@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
+			@MinimumAuthority(authirizerUser = AuthirizerUser.BANNED_USER)
 			public int run(ReceiveMessageType messageType) {
 				// TODO Auto-generated method stub
 				receiveMessageType=messageType;
@@ -37,7 +38,8 @@ public class Dormant extends Father
 					accessible=false;
 				else
 					accessible=Boolean.parseBoolean(value);
-				if((!accessible)&messageType.getMsg().equals(".dormant"))
+				if((!accessible)&messageType.getMsg().equals(".dormant")
+						&AuthirizerUser.GROUP_MANAGER.ifAccessible(CQSender.getAuthirizer(receiveMessageType)))
 				{
 					accessible=true;
 					getDataExchanger().addItem(mark, Boolean.toString(accessible));

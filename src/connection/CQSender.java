@@ -70,13 +70,19 @@ public class CQSender
 	
 	/**
 	 * 获得某群内某人的权限<br>
-	 * 注意：本方法主要针对群，不会返回管理员权限
 	 * @param groupNum 群号
 	 * @param num QQ号
 	 * @return
 	 */
 	public static AuthirizerUser getAuthirizer(long groupNum,long num)
 	{
+		
+		long client=num;
+		if(AuthorizerListGetter.getCoreAuthirizerList().isSOP(client))
+			return AuthirizerUser.SUPER_OP;
+		if(AuthorizerListGetter.getCoreAuthirizerList().isOP(client))
+			return AuthirizerUser.OP;
+		
 		Member member=getQQInfoInGroup(num, groupNum);
 		if(member==null)
 			return AuthirizerUser.BANNED_USER;
