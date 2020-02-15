@@ -100,11 +100,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 
         demo.privateMsg(1, 34, 1304554598, "sdf", 0);
         String string=new Scanner(System.in).next();
-        demo.privateMsg(1, 67, 1304554598, ".monitor add g w 22222", 1);
-        demo.groupMsg(1, 98, 22222, 2, null, ".ra", 1);
-        demo.groupMsg(1, 98, 22222, 1, null, ".dormant", 1);
-        demo.groupMsg(1, 98, 22222, 1, null, ".ra", 1);
-        demo.groupMsg(1, 98, 22222, 2, null, ".ra", 1);
+        demo.privateMsg(1, 89, 12345678, ".st 理智1设置2", 1);
         
 		
 //        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);

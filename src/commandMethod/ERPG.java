@@ -621,6 +621,7 @@ public class ERPG extends Father
 			changeNum=b;
 			break;
 		}
+		int pastSan=getSkill("san");
 		formateAndSaveSkill("san", san-changeNum);
 		StringBuilder builder=new StringBuilder();
 		builder.append("对"+getMessageSenderName()+"进行理智检定\n");
@@ -628,9 +629,11 @@ public class ERPG extends Father
 		if(checkStatus.specialStatus!=null)
 			builder.append(","+checkStatus.specialStatus.getString());
 		builder.append("\n");
-		builder.append(getMessageSenderName()+"的理智值变为了"+getSkill("san"));
+		builder.append(getMessageSenderName()+"的理智减少了"+changeNum+"，变为了"+getSkill("san"));
 		if(getSkill("san")<=0)
 			builder.append("\n你陷入了永久的疯狂！");
+		if(getSkill("san")>0&&changeNum>5)
+			builder.append("\n呀嘞~想要试着疯狂吗？");
 		sendBackMsg(builder.toString());
 	}
 	
