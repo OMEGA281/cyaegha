@@ -1,6 +1,7 @@
 package commandMethod.dataExchanger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DataExchanger extends Exchanger
 {
@@ -21,6 +22,12 @@ public class DataExchanger extends Exchanger
 		// TODO Auto-generated method stub
 		super.addListItem(listName, name, text);
 		writeDocument();
+	}
+	@Override
+	public HashMap<String, String> getAllItem()
+	{
+		// TODO Auto-generated method stub
+		return super.getAllItem();
 	}
 	@Override
 	public boolean deleteItem(String name) {

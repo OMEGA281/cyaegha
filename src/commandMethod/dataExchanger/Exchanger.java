@@ -100,6 +100,22 @@ class Exchanger
 		return element.getText();
 	}
 	/**
+	 * 获取全部单独的数据
+	 * @return 数据，如果不存在则会返回空列表
+	 */
+	protected HashMap<String,String> getAllItem()
+	{
+		HashMap<String,String> result=new HashMap<String,String>();
+		List<Element> sub=itemElement.getChildren();
+		if(sub.size()<1)
+			return result;
+		for (Element element : sub)
+		{
+			result.put(element.getName(), element.getText());
+		}
+		return result;
+	}
+	/**
 	 * 删除单独的数据
 	 * 如果不存在则不会操作
 	 * @param name 数据名称
