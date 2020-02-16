@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -223,11 +224,10 @@ class Exchanger
 		Element listElement=this.listElement.getChild(listName);
 		if(listElement==null)
 			return false;
-		if(listElement.removeContent(index)==null)
-		{
+		List<Element> elements=listElement.getChildren();
+		if(elements.size()<=index)
 			return false;
-		}
-		return true;
+		return listElement.removeContent(elements.get(index));
 	}
 	/**
 	 * 删除列表中的某一种数据

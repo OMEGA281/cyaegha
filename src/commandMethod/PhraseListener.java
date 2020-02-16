@@ -3,6 +3,7 @@ package commandMethod;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import commandMethod.register.OnMessageReceiveListener;
@@ -12,17 +13,9 @@ import global.authorizer.MinimumAuthority;
 
 public class PhraseListener extends Father 
 {
-	private static ArrayList<WordRefect> WordsMap=new ArrayList<>();
-	private static final int ONLY_EXISTS=0;
-	private static final int CONTAIN_EXISTS=1;
-	private class WordRefect
-	{
-		ArrayList<String> words=new ArrayList<>();
-		String returnString;
-		boolean existStatus;
-	}
-	
-	public static final String XMLHead="H";
+	private static final String Split="##";
+	private static final String LISTNAME="return";
+	private static final String HEAD="head";
 	
 	@Override
 	public void initialize() 
@@ -34,25 +27,29 @@ public class PhraseListener extends Father
 				// TODO Auto-generated method stub
 				
 				receiveMessageType=messageType;
-				HashMap<String, String> word=getDataExchanger().getAllItem();
-				for (Entry<String, String> entry : word.entrySet())
+				
+				ArrayList<String[]> arrayList=getDataExchanger().getList(LISTNAME);
+				if(arrayList==null)
+					return RETURN_PASS;
+				for (String[] strings : arrayList)
 				{
-					String secret=entry.getKey().substring(1, entry.getKey().length());
-					
-					char[] cs=new char[secret.length()/5];
-					for(int i=0;i<secret.length();i=i+5)
+					String $patten=strings[1].split(Split, 2)[0];
+					Pattern pattern=Pattern.compile($patten);
+					if(pattern.matcher(receiveMessageType.getMsg()).matches())
 					{
-						cs[i/5]=(char) Integer.parseInt(secret.substring(i, i+5));
-					}
-					Pattern pattern=Pattern.compile(new String(cs));
-					String msg=messageType.getMsg();
-					if(pattern.matcher(msg).matches())
-					{
-						sendBackMsg(entry.getValue());
-						break;
+						String[] answer=strings[1].split(Split, 2)[1].split(",");
+						if(answer.length==1)
+						{
+							sendBackMsg(answer[0]);
+						}
+						else
+						{
+							Random random=new Random();
+							sendBackMsg(answer[random.nextInt(answer.length)]);
+							return RETURN_PASS;
+						}
 					}
 				}
-				
 				
 				return RETURN_PASS;
 			}
@@ -72,14 +69,45 @@ public class PhraseListener extends Father
 			sendBackMsg("回应不是这么添加的哦！");
 			return;
 		}
-		String partten=arrayList.get(0);
-		char[] text=partten.toCharArray();
-		String tranS="";
-		for (char c : text)
+		String index1=arrayList.get(0);
+		String index2=arrayList.get(1);
+		ArrayList<String[]> texts=getDataExchanger().getList(LISTNAME);
+//		完全空的表
+		if(texts==null)
 		{
-			tranS=tranS+String.format("%05d", (int)c);
+			getDataExchanger().addListItem(LISTNAME, HEAD, index1+Split+index2);
+			sendBackMsg("成功添加了条目");
+			return;
 		}
-		getDataExchanger().addItem(XMLHead+tranS, arrayList.get(1));
+//		表中有了
+		code_0:for (int i=0;i<texts.size();i++)
+		{
+			String[] strings=texts.get(i);
+			String line=strings[1];
+			String patten=line.split(Split, 2)[0];
+			if(!patten.equals(index1))
+				continue;
+			String[] answer=line.split(Split, 2)[1].split(",");
+			for (String string : answer)
+			{
+				if(string.equals(index2))
+				{
+					sendBackMsg("表中已有相同条目");
+					return;
+				}
+			}
+			StringBuffer buffer=new StringBuffer();
+			for (String string : answer)
+			{
+				buffer.append(string+",");
+			}
+			buffer.append(index2);
+			getDataExchanger().deleteListItem(LISTNAME, i);
+			getDataExchanger().addListItem(LISTNAME, HEAD, patten+Split+buffer.toString());
+			sendBackMsg("成功添加了条目");
+			return;
+		}
+		getDataExchanger().addListItem(LISTNAME, HEAD, index1+Split+index2);
 		sendBackMsg("成功添加了条目");
 	}
 	
@@ -91,19 +119,66 @@ public class PhraseListener extends Father
 	@MinimumAuthority(authirizerUser = AuthirizerUser.OP)
 	public void deleteanswer(ArrayList<String> arrayList)
 	{
+		String aim=null;
 		if(arrayList.size()<1)
 		{
 			sendBackMsg("回应不是这么删除的哦！");
 			return;
 		}
-		String partten=arrayList.get(0);
-		char[] text=partten.toCharArray();
-		String tranS="";
-		for (char c : text)
+		String patten=arrayList.get(0);
+		if(arrayList.size()>1)
+			aim=arrayList.get(1);
+		
+		ArrayList<String[]> list=getDataExchanger().getList(LISTNAME);
+		boolean b=false;
+		for (int i=0;i<list.size();i++)
 		{
-			tranS=tranS+String.format("%05d", (int)c);
+			String text=list.get(i)[1];
+			String $patten=text.split(Split, 2)[0];
+			if(!$patten.equals(patten))
+				continue;
+			String[] $answer=text.split(Split,2)[1].split(",");
+			if(aim!=null)
+			{
+				boolean find=false;
+				for (int o=0;o<$answer.length;o++)
+				{
+					String string=$answer[o];
+					if(string.equals(aim))
+					{
+						$answer[o]="";
+						find=true;
+						break;
+					}
+				}
+				if(find)
+				{
+					StringBuffer buffer=new StringBuffer();
+					for (String string : $answer)
+					{
+						if(!string.isEmpty())
+						{
+							buffer.append(string+",");
+						}
+					}
+					b=getDataExchanger().deleteListItem(LISTNAME, i);
+					if(buffer.length()>0)
+						getDataExchanger().addListItem(LISTNAME, HEAD, $patten+Split+buffer.toString());
+					sendBackMsg(b?"成功删除了条目":"没有这个条目");
+					return;
+				}
+				else
+				{
+					sendBackMsg("未检测指定的回复");
+					return;
+				}
+			}
+			else
+			{
+				b=getDataExchanger().deleteListItem(LISTNAME, i);
+				break;
+			}
 		}
-		boolean b= getDataExchanger().deleteItem(XMLHead+tranS);
 		sendBackMsg(b?"成功删除了条目":"没有这个条目");
 	}
 }
