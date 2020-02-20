@@ -97,34 +97,75 @@ public class Matcher
 		}
 		return result;
 	}
-	/**用于检测是否存在该命令
-	 * @param root 所处的父级命令 若为null则为根
-	 * @param s 待检测语句
+	/**用于检测是否存在该命令<br>
+	 * 匹配原则：优先按照字符串全部分隔开匹配，若未检测到命令则去除所有空格<br>
+	 * 越长的命令的优先级越高
+	 * 同时会删除s的前面的命令部分
+	 * @param s 待检测语句,删除了前面的点，以及前后的空格
 	 * @return 返回搜寻到的命令集，如果没有则返回空*/
-	private CommandPackage ifCommandExist(String s)
+	private CommandPackage ifCommandExist(StringBuilder s)
 	{
-		String[] commandString=s.toLowerCase().split(" ");
+		CommandPackage result = null;
 		for (CommandPackage commandPackage : commandList) 
 		{
-			if(commandString[0].equals(commandPackage.name))
+			if(s.toString().startsWith(commandPackage.name))
 			{
-				return commandPackage;
+				if(result!=null)
+				{
+					if(result.name.length()<commandPackage.name.length())
+						result=commandPackage;
+				}
+				else
+					result=commandPackage;
 			}
 		}
-		return null;
+		if(result==null)
+		{
+			for (CommandPackage commandPackage : commandList) 
+			{
+				if(s.toString().replaceAll(" ", "").startsWith(commandPackage.name.replaceAll(" ", "")))
+				{
+					if(result!=null)
+					{
+						if(result.name.replaceAll(" ", "").length()<commandPackage.name.replaceAll(" ", "").length())
+							result=commandPackage;
+					}
+					else
+						result=commandPackage;
+				}
+			}
+		}
+		if(result!=null)
+		{
+			String command=result.name;
+			for (char c : command.toCharArray())
+			{
+				if(c==' '&&s.charAt(0)!=' ')
+					continue;
+				if(s.charAt(0)==' '||s.charAt(0)==c)
+				{
+					s.deleteCharAt(0);
+				}
+				else
+				{
+					Log.e("命令处理时出现异常情况！");
+					return null;
+				}
+			}
+		}
+		return result;
 	}
-	/**处理命令用的集成方法
+	/**启动命令用的集成方法
 	 * @param messagePackage 源信息，不需要进行任何的处理*/
 	public void CommandProcesser(ReceiveMessageType messagePackage)
 	{
-		StringBuilder stringBuilder=new StringBuilder(messagePackage.getMsg());
+		StringBuilder stringBuilder=new StringBuilder(messagePackage.getMsg().trim());
 		stringBuilder.deleteCharAt(0);
-		CommandPackage commandPackage=ifCommandExist(stringBuilder.toString());
+		CommandPackage commandPackage=ifCommandExist(stringBuilder);
 		
-		
-		String[] commandparts=stringBuilder.toString().split(" ");
+		String[] commandparts=stringBuilder.toString().trim().split(" ");
 		ArrayList<String> params=new ArrayList<String>();
-		for(int i=1;i<commandparts.length;i++)
+		for(int i=0;i<commandparts.length;i++)
 		{
 			params.add(commandparts[i]);
 		}

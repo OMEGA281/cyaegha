@@ -100,12 +100,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 
         demo.privateMsg(1, 34, 1304554598, "sdf", 0);
         String string=new Scanner(System.in).next();
-        demo.privateMsg(1, 89, 1304554598, ".addanswer 咕咕咕 456", 1);
-        demo.privateMsg(1, 89, 1304554598, ".addanswer 咕咕咕 123", 1);
-        demo.privateMsg(1, 89, 1304554598, ".addanswer 咕咕咕 234", 1);
-        demo.privateMsg(1, 89, 1304554598, ".addanswer 咕咕咕 345", 1);
-        demo.privateMsg(1, 89, 1304554598, ".deleteanswer 咕咕咕 345", 1);
-        demo.privateMsg(1, 89, 1304554598, "咕咕咕", 1);
+        demo.privateMsg(1, 89, 1304554598, ".mode change public", 1);
+        demo.privateMsg(1, 89, 1304554598, ".modechangepublic", 1);
+        
         
 		
 //        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
