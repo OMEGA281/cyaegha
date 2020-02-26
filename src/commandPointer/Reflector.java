@@ -166,7 +166,7 @@ public class Reflector
 		call("setReceiveMessageType",receiveMessageType);
 		
 		AuthirizerUser user=CQSender.getAuthirizer(receiveMessageType);
-		boolean hasPramas=params.size()==0?false:true;
+		boolean hasPramas=params.isEmpty()?false:true;
 		
 		if(getMethodAuthirizer(methodName, hasPramas).ifAccessible(user))
 		{

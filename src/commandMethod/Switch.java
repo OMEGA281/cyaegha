@@ -119,8 +119,7 @@ public class Switch extends Father
 					{
 						if(!frameShowing)
 							new SOPSetFrame();
-						else
-							return RETURN_STOP;
+						return RETURN_STOP;
 					}
 				}
 				boolean accessible=thisAccessiable();
@@ -144,19 +143,13 @@ public class Switch extends Father
 			}
 		};
 		interceptor.priority=100;
+		addMessageReceiveListener(interceptor);
 	}
 	
 	@MinimumAuthority(authirizerUser = AuthirizerUser.OP)
 	public void mode_change()
 	{
-		String string=getDataExchanger().getItem(LISTENMODE);
-		if(string==null)
-		{
-			string=ListeningMode.PRIVATE.name();
-			getDataExchanger().addItem(LISTENMODE, string);
-		}
-		ListeningMode mode=ListeningMode.formant(string);
-		if(mode==null)
+		ListeningMode mode=getListeningMode();
 		if(mode==ListeningMode.ABNORMAL)
 		{
 			Log.f("异常的监听模式！停止运行！");
@@ -166,6 +159,7 @@ public class Switch extends Father
 		{
 			Log.i("停止了亢奋模式");
 			getDataExchanger().addItem(LISTENMODE, ListeningMode.PRIVATE.name());
+			setDefault(mode);
 			sendBackMsg("停止了亢奋模式，转为私用模式");
 			return;
 		}
@@ -174,6 +168,7 @@ public class Switch extends Father
 			newIndex=0;
 		mode=ListeningMode.values()[newIndex];
 		getDataExchanger().addItem(LISTENMODE, mode.name());
+		setDefault(mode);
 		sendBackMsg("模式调整为"+mode.modeName+"\n"+mode.help);
 	}
 	
@@ -185,8 +180,10 @@ public class Switch extends Father
 		if(mode==ListeningMode.ABNORMAL)
 		{
 			sendBackMsg("错误的模式名");
+			return;
 		}
 		getDataExchanger().addItem(LISTENMODE, mode.name());
+		setDefault(mode);
 		sendBackMsg("模式调整为"+mode.modeName+"\n"+mode.help);
 	}
 	
@@ -440,6 +437,7 @@ public class Switch extends Father
 		if(arrayList==null)
 		{
 			getDataExchanger().addListItem(DORMANTLIST, getMark(), Boolean.toString(Boolean.parseBoolean(getDataExchanger().getItem(SpecificStateString.DefaultDormant.name()))));
+			arrayList=getDataExchanger().getListItem(DORMANTLIST, getMark());
 		}
 		boolean b=Boolean.parseBoolean(arrayList.get(0));
 		if(b==true)
@@ -568,7 +566,7 @@ public class Switch extends Father
 	 */
 	private boolean userAccessiable(long num)
 	{
-		ListeningMode listeningMode=ListeningMode.formant(getDataExchanger().getItem(LISTENMODE));
+		ListeningMode listeningMode=getListeningMode();
 		if(listeningMode==ListeningMode.ABNORMAL)
 		{
 			Log.e("处于异常状态！");
@@ -624,7 +622,7 @@ public class Switch extends Father
 	 */
 	private boolean groupAccessiable(long num)
 	{
-		ListeningMode listeningMode=ListeningMode.formant(getDataExchanger().getItem(LISTENMODE));
+		ListeningMode listeningMode=getListeningMode();
 		if(listeningMode==ListeningMode.ABNORMAL)
 		{
 			Log.e("处于异常状态！");
@@ -680,7 +678,7 @@ public class Switch extends Father
 	 */
 	private boolean discussAccessiable(long num)
 	{
-		ListeningMode listeningMode=ListeningMode.formant(getDataExchanger().getItem(LISTENMODE));
+		ListeningMode listeningMode=getListeningMode();
 		if(listeningMode==ListeningMode.ABNORMAL)
 		{
 			Log.e("处于异常状态！");
@@ -859,5 +857,20 @@ public class Switch extends Father
 	private void setSOP(long num)
 	{
 		AuthorizerListGetter.getCoreAuthirizerList().setSOP(num);
+	}
+	/**
+	 * 获得现在的监听状态，如果没有记录过状态则默认是私有状态
+	 * @return
+	 */
+	private ListeningMode getListeningMode()
+	{
+		String string=getDataExchanger().getItem(LISTENMODE);
+		if(string==null)
+		{
+			string=ListeningMode.PRIVATE.name();
+			getDataExchanger().addItem(LISTENMODE, string);
+			setDefault(ListeningMode.PRIVATE);
+		}
+		return ListeningMode.formant(string);
 	}
 }

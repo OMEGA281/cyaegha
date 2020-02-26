@@ -100,8 +100,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 
         demo.privateMsg(1, 34, 1304554598, "sdf", 0);
         String string=new Scanner(System.in).next();
+        demo.privateMsg(1, 34, 1304554598, ".bot on", 0);
         demo.privateMsg(1, 89, 1304554598, ".mode change public", 1);
         demo.privateMsg(1, 89, 1304554598, ".modechangepublic", 1);
+        demo.privateMsg(1, 89, 1304554598, ".botoff", 1);
         
         
 		

@@ -167,7 +167,8 @@ public class Matcher
 		ArrayList<String> params=new ArrayList<String>();
 		for(int i=0;i<commandparts.length;i++)
 		{
-			params.add(commandparts[i]);
+			if(!commandparts[i].isEmpty())
+				params.add(commandparts[i]);
 		}
 		
 		
