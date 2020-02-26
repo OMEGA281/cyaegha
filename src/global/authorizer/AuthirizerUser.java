@@ -18,6 +18,11 @@ public enum AuthirizerUser
 		// TODO Auto-generated constructor stub
 		authorityValue=i;
 	}
+	/**
+	 * 比较获得该用户的权限是否可以得到
+	 * @param clientAuthirizer 用户的权限
+	 * @return
+	 */
 	public boolean ifAccessible(AuthirizerUser clientAuthirizer)
 	{
 		if(clientAuthirizer.authorityValue>=authorityValue)

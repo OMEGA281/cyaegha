@@ -36,6 +36,10 @@ public class CoreAuthirizerList
 		sopElement.setText(Long.toString(l));
 		saveDocument();
 	}
+	/**
+	 * 返回SOP的QQ号码
+	 * @return 如果没有则返回-1
+	 */
 	public long getSOP()
 	{
 		Element rootElement=document.getRootElement();
