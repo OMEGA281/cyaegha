@@ -677,9 +677,9 @@ public class ERPG extends Father
 		case EX_SUCCESS:
 		case S_SUCCESS:
 		case SUCCESS:
+			upNum=0;
 			break;
 		case FAILED:
-			upNum=0;
 			break;
 		}
 		
@@ -695,7 +695,7 @@ public class ERPG extends Father
 		if(checkStatus.specialStatus!=null)
 			builder.append(","+checkStatus.specialStatus.getString());
 		builder.append("\n"+getMessageSenderName()+"的"+string);
-		builder.append(checkStatus.levelStatus!=LevelStatus.FAILED?"获得了1d10="+upNum+"点增长":"没有发生变化");
+		builder.append(checkStatus.levelStatus!=LevelStatus.FAILED?"没有发生变化":"获得了1d10="+upNum+"点增长");
 		builder.append(","+string+"现在是"+(temporaryNum?temporarySkillNum:getSkill(string)));
 		sendBackMsg(builder.toString());
 	}

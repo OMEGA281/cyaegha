@@ -37,7 +37,7 @@ public class PhraseListener extends Father
 					Pattern pattern=Pattern.compile($patten);
 					if(pattern.matcher(receiveMessageType.getMsg()).matches())
 					{
-						String[] answer=strings[1].split(Split, 2)[1].split(",");
+						String[] answer=strings[1].split(Split, 2)[1].split(Split);
 						if(answer.length==1)
 						{
 							sendBackMsg(answer[0]);
@@ -80,14 +80,14 @@ public class PhraseListener extends Father
 			return;
 		}
 //		表中有了
-		code_0:for (int i=0;i<texts.size();i++)
+		for (int i=0;i<texts.size();i++)
 		{
 			String[] strings=texts.get(i);
 			String line=strings[1];
 			String patten=line.split(Split, 2)[0];
 			if(!patten.equals(index1))
 				continue;
-			String[] answer=line.split(Split, 2)[1].split(",");
+			String[] answer=line.split(Split, 2)[1].split(Split);
 			for (String string : answer)
 			{
 				if(string.equals(index2))
@@ -99,7 +99,7 @@ public class PhraseListener extends Father
 			StringBuffer buffer=new StringBuffer();
 			for (String string : answer)
 			{
-				buffer.append(string+",");
+				buffer.append(string+Split);
 			}
 			buffer.append(index2);
 			getDataExchanger().deleteListItem(LISTNAME, i);
@@ -137,7 +137,7 @@ public class PhraseListener extends Father
 			String $patten=text.split(Split, 2)[0];
 			if(!$patten.equals(patten))
 				continue;
-			String[] $answer=text.split(Split,2)[1].split(",");
+			String[] $answer=text.split(Split,2)[1].split(Split);
 			if(aim!=null)
 			{
 				boolean find=false;
@@ -158,7 +158,7 @@ public class PhraseListener extends Father
 					{
 						if(!string.isEmpty())
 						{
-							buffer.append(string+",");
+							buffer.append(string+Split);
 						}
 					}
 					b=getDataExchanger().deleteListItem(LISTNAME, i);

@@ -99,14 +99,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		// demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
 
         demo.privateMsg(1, 34, 1304554598, ".bot on", 0);
-        demo.privateMsg(1, 89, 1304554598, ".monitoradgw123456", 1);
-        demo.groupMsg(1, 56, 123456, 234567, null, ".help", 1);
-        demo.groupMsg(1, 56, 123456, 234567, null, ".boton", 1);
-        demo.groupMsg(1, 56, 123456, 1304554598, null, ".boton", 1);
-        demo.groupMsg(1, 56, 123456, 234567, null, ".r", 1);
-        demo.groupMsg(1, 56, 123456, 1304554598, null, ".botoff", 1);
-        demo.groupMsg(1, 56, 123456, 234567, null, ".r", 1);
-        demo.groupMsg(1, 56, 123456, 1304554598, null, ".r", 1);
+        demo.privateMsg(1, 89, 1304554598, ".answeradd123 456", 1);
+        demo.privateMsg(1, 89, 1304554598, ".answeradd123 567", 1);
+        demo.privateMsg(1, 89, 1304554598, ".answeradd123 678", 1);
+        demo.privateMsg(1, 89, 1304554598, "123", 1);
         
         
 		
