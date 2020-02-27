@@ -135,4 +135,16 @@ public class ReceiveMessageType
 		}
 		Msg=builder.toString().trim();
 	}
+	public String getNick()
+	{
+		switch(MsgType)
+		{
+		case UniversalConstantsTable.MSGTYPE_PERSON:
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
+			return CQSender.getQQInfo(fromQQ).getNick();
+		case UniversalConstantsTable.MSGTYPE_GROUP:
+			return CQSender.getQQInfoInGroup(fromQQ, fromGroup).getCard();
+		}
+		return null;
+	}
 }

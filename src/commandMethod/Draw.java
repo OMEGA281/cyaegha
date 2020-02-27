@@ -1,6 +1,7 @@
 package commandMethod;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
+import connection.CQSender;
+import global.UniversalConstantsTable;
 import surveillance.Log;
 import tools.FileSimpleIO;
 import tools.GetJarResources;
@@ -19,74 +22,6 @@ import tools.XMLDocument;
 public class Draw extends Father
 {
 	public static String CARDPOOL_PATH;
-	static String defaultCardPool;
-	/**这里记录着返回时使用的语言<br>
-	 * 第一维顺序是按照{@link subCommandList}来的<br>
-	 * 第二维顺序是按照{@link status}来的<br>
-	 * 将来也许会改为外部XML文件读取*/
-	public static final String[][] returnMsg= {{"设置默认牌库成功","没有找到相应的文件","参数错误"}};
-	
-	public interface subCommandMethod
-	{
-		/**参数按序传入*/
-		status run(ArrayList<String> pramas);
-	}
-	private enum status
-	{
-		SUCCESS(0),NULL(1),FAILED(2);
-		int index;
-		int getIndex()
-		{
-			return index;
-		}
-		status(int j) 
-		{
-			// TODO Auto-generated constructor stub
-			index=j;
-		}
-	}
-	/**子命令枚举*/
-	private enum subCommandList
-	{
-		set(0,new subCommandMethod() {
-
-			@Override
-			public status run(ArrayList<String> pramas) {
-				// TODO Auto-generated method stub
-				if(pramas.size()<1)
-					return status.FAILED;
-				String cardPool=pramas.get(0);
-				if(!cardPool.endsWith("\\.xml"))
-					cardPool=cardPool+".xml";
-				if(!new FileSimpleIO(CARDPOOL_PATH+cardPool).exists())
-					return status.NULL;
-				else
-				{
-					defaultCardPool=cardPool;
-					return status.SUCCESS;
-				}
-			}
-			
-		});
-		
-		
-		private int index;
-		private subCommandMethod commandMethod;
-		int getIndex()
-		{
-			return index;
-		}
-		subCommandMethod getMethod()
-		{
-			return commandMethod;
-		}
-		subCommandList(int index, subCommandMethod subCommandMethod) 
-		{
-			// TODO Auto-generated constructor stub
-			this.index=index;
-			this.commandMethod=subCommandMethod;
-		}
-	}
 
 	@Override
 	public void initialize() {
@@ -95,6 +30,7 @@ public class Draw extends Father
 	}
 	private String drawCard(int time)
 	{
+		String defaultCardPool=getDataExchanger().getItem(getMark());
 		if(defaultCardPool==null)
 		{
 			sendBackMsg("您尚未定义默认牌库，您可以使用.draw set …来设置默认牌库");
@@ -107,11 +43,8 @@ public class Draw extends Father
 		if(time==0)
 			return null;
 		if(time>10)
-		{
-			sendBackMsg("抽取次数过多");
-			return null;
-		}
-		StringBuilder builder=new StringBuilder();
+			return "抽取次数过多";
+		StringBuilder builder=new StringBuilder(receiveMessageType.getNick()+"抽到了这些：\n");
 		for(int i=1;i<=time;i++)
 		{
 			String sigleCard=drawCard(cardPool);
@@ -122,38 +55,56 @@ public class Draw extends Father
 		builder.deleteCharAt(builder.length()-1);
 		return builder.toString();
 	}
-	public void commandPointer(ArrayList<String> arrayList)
+	public void draw(ArrayList<String> arrayList)
 	{
-		String prama=arrayList.get(0).toLowerCase();
-		arrayList.remove(0);
-		for (subCommandList subCommand : subCommandList.values()) 
+		String cardName=arrayList.get(0);
+		int time;
+		if(arrayList.size()>1)
 		{
-			if(prama.equals(subCommand.name()))
+			String times=arrayList.get(1);
+			try
 			{
-				sendBackMsg(returnMsg[subCommand.getIndex()][subCommand.getMethod().run(arrayList).getIndex()]);
+				time=Integer.parseInt(times);
+			}catch (NumberFormatException e)
+			{
+				sendBackMsg("输入的次数不合法");
 				return;
 			}
 		}
-		if(Pattern.compile("[0-9]*").matcher(prama).matches())
+		else
 		{
-			sendBackMsg(drawCard(Integer.parseInt(prama)));
-			return;
+			Pattern pattern=Pattern.compile(".*[0-9]");
+			if(pattern.matcher(cardName).matches())
+			{
+				String num="";
+				for(;;)
+				{
+					if(cardName.isEmpty())
+						break;
+					char c=cardName.charAt(cardName.length()-1);
+					if(Pattern.matches("[0-9]", Character.toString(c)))
+					{
+						num=c+num;
+						cardName=cardName.substring(0,cardName.length()-1);
+					}
+					else
+						break;
+				}
+				time=Integer.parseInt(num);
+			}
+			else
+				time=1;
+		}
+		if(cardName.isEmpty())
+		{
+			drawCard(time);
 		}
 		else
 		{
-			int time=1;
-			if(arrayList.size()>=1)
-			{
-				time=0;
-				if(Pattern.compile("[0-9]*").matcher(arrayList.get(0)).matches())
-					time=Integer.parseInt(arrayList.get(0));
-			}
-			sendBackMsg(drawCard(prama, time));
-			return;
+			drawCard(cardName, time);
 		}
-		
 	}
-	public void commandPointer()
+	public void draw()
 	{
 		String s=drawCard(1);
 		if(s!=null)
@@ -200,5 +151,59 @@ public class Draw extends Father
 		Random random=new Random();
 		int x=random.nextInt(element.size());
 		return element.get(x).getText();
+	}
+	public void drawlist()
+	{
+		File[] files=new File(getPluginDataFloder()).listFiles();
+		StringBuilder stringBuilder=new StringBuilder("目前存在着如下牌库：\n");
+		for (File file : files)
+		{
+			if(file.getName().endsWith(".xml"))
+			{
+				String filename=file.getName();
+				stringBuilder.append(filename.substring(0, filename.length()-4));
+				stringBuilder.append("/");
+			}
+		}
+		if(stringBuilder.length()>0)
+			stringBuilder.deleteCharAt(stringBuilder.length()-1);
+		sendBackMsg(stringBuilder.toString());
+	}
+	public void drawset()
+	{
+		sendBackMsg(getDataExchanger().deleteItem(getMark())?"删除了默认牌库":"还未设置默认牌库");
+	}
+	public void drawset(ArrayList<String> arrayList)
+	{
+		String card=arrayList.get(0);
+		if(!card.endsWith("\\.xml"))
+			card+=".xml";
+		if(!new File(CARDPOOL_PATH+card).exists())
+			sendBackMsg("未查询到牌库："+card);
+		else
+		{
+			getDataExchanger().addItem(getMark(), card);
+			sendBackMsg("将"+card+"设置为默认牌库");
+		}
+	}
+	private String getMark()
+	{
+		String string;
+		switch (receiveMessageType.getMsgType())
+		{
+		case UniversalConstantsTable.MSGTYPE_PERSON:
+			string="P"+receiveMessageType.getfromQQ();
+			break;
+		case UniversalConstantsTable.MSGTYPE_GROUP:
+			string="G"+receiveMessageType.getfromGroup();
+			break;
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
+			string="D"+receiveMessageType.getfromGroup();
+			break;
+		default:
+			string=null;
+			break;
+		}
+		return string;
 	}
 }
