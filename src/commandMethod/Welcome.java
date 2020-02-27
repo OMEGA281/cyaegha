@@ -16,7 +16,6 @@ public class Welcome extends Father
 	public void initialize() 
 	{
 		// TODO Auto-generated method stub
-		help=".welcome 欢迎语\n 不接函数则为清除";
 		OnGroupMemberChangeListener groupMemberChangeListener=new OnGroupMemberChangeListener() {
 			@Override
 			public int run(GroupChangeType groupChangeType) {

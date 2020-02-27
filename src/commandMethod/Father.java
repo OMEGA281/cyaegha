@@ -2,9 +2,7 @@ package commandMethod;
 
 import java.io.File;
 
-import commandMethod.dataExchanger.AuthorityExchanger;
 import commandMethod.dataExchanger.DataExchanger;
-import commandMethod.dataExchanger.SettingExchanger;
 import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.OnMessageSendListener;
@@ -22,10 +20,7 @@ public abstract class Father
 {
 	/**若是由命令调用，则一定会更新本变量，若是以listener调用，则需手动更新*/
 	ReceiveMessageType receiveMessageType;
-	String help;
-	private AuthorityExchanger authorityExchanger;
 	private DataExchanger dataExchanger;
-	private SettingExchanger settingExchanger;
 	
 	public Father() 
 	{
@@ -63,10 +58,6 @@ public abstract class Father
 	}
 	/**初始化时启动的方法，所有的监听器全放在此处*/
 	public abstract void initialize();
-	public void setHelp(String help)
-	{
-		this.help=help;
-	}
 	/**获取本方法数据储存文件夹*/
 	public String getPluginDataFloder()
 	{
@@ -142,30 +133,12 @@ public abstract class Father
 				UniversalConstantsTable.MSGTYPE_DISCUSS, QQ, group, string));
 	}
 	/**
-	 * 加载交换器<br>
+	 * 获得数据交换器，用于储存数据<br>
 	 */
 	public DataExchanger getDataExchanger()
 	{
 		if(dataExchanger==null)
 			dataExchanger=new DataExchanger(UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+".xml");
 		return dataExchanger;
-	}
-	/**
-	 * 加载交换器<br>
-	 */
-	public AuthorityExchanger getAuthorityExchanger()
-	{
-		if(authorityExchanger==null)
-			authorityExchanger=new AuthorityExchanger(UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_AUTHORITYPATH+this.getClass().getSimpleName()+".xml");
-		return authorityExchanger;
-	}
-	/**
-	 * 加载交换器<br>
-	 */
-	public SettingExchanger getSettingExchanger()
-	{
-		if(settingExchanger==null)
-			settingExchanger=new SettingExchanger(UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_SETTINGPATH+this.getClass().getSimpleName()+".xml");
-		return settingExchanger;
 	}
 }
