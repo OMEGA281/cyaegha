@@ -14,6 +14,8 @@ import org.jdom2.JDOMException;
 
 import connection.CQSender;
 import global.UniversalConstantsTable;
+import global.authorizer.AuthirizerUser;
+import global.authorizer.MinimumAuthority;
 import surveillance.Log;
 import tools.FileSimpleIO;
 import tools.GetJarResources;
@@ -95,14 +97,16 @@ public class Draw extends Father
 			else
 				time=1;
 		}
+		String back;
 		if(cardName.isEmpty())
 		{
-			drawCard(time);
+			back=drawCard(time);
 		}
 		else
 		{
-			drawCard(cardName, time);
+			back=drawCard(cardName, time);
 		}
+		sendBackMsg(back);
 	}
 	public void draw()
 	{
@@ -169,10 +173,12 @@ public class Draw extends Father
 			stringBuilder.deleteCharAt(stringBuilder.length()-1);
 		sendBackMsg(stringBuilder.toString());
 	}
+	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
 	public void drawset()
 	{
 		sendBackMsg(getDataExchanger().deleteItem(getMark())?"删除了默认牌库":"还未设置默认牌库");
 	}
+	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
 	public void drawset(ArrayList<String> arrayList)
 	{
 		String card=arrayList.get(0);
