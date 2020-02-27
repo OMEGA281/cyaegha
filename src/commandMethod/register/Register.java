@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import commandMethod.Info;
+import commandPointer.AuxiliaryClass;
 import commandPointer.Reflector;
 import surveillance.Log;
 import tools.ClassUtils;
@@ -36,12 +37,11 @@ public class Register
 //		System.out.println(className.size());
 		for (String classpath : className) 
 		{
-			if(!Info.ifIgnore(classpath))
-			{
-//				System.out.println(classpath);
-				Reflector.getReflector(classpath).startMethod();
-				Log.d("加载类：",classpath);
-			}
+			Reflector reflector=Reflector.getReflector(classpath);
+			if(reflector.getClassAnnotation(AuxiliaryClass.class)!=null)
+				continue;
+			Reflector.getReflector(classpath).startInit();
+			Log.d("加载类：",classpath);
 		}
 		Collections.sort(messageReceiveListeners, new Comparator<OnMessageReceiveListener>() {
 

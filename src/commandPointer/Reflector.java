@@ -12,9 +12,13 @@ import connection.ReceiveMessageType;
 import global.authorizer.AuthirizerUser;
 import global.authorizer.MinimumAuthority;
 
+/**
+ * 简单的反射器，残缺版，只能执行响应的功能
+ * @author GuoJiaCheng
+ *
+ */
 public class Reflector 
 {
-	//FIXME:去除joor
 	private static Map<String,Reflector> reflectorMap=new HashMap<String, Reflector>();
 	Class<?> clazz;
 	Object object;
@@ -88,8 +92,13 @@ public class Reflector
 			e.printStackTrace();
 		} 
 	}
-	
-	private Annotation[] getAnnotation(String methodName,boolean hasPramas)
+	/**
+	 * 获取全部的注解
+	 * @param methodName 方法的名称
+	 * @param hasPramas 是否具有参数
+	 * @return
+	 */
+	public Annotation[] getAnnotation(String methodName,boolean hasPramas)
 	{
 		Method method;
 		try
@@ -114,8 +123,15 @@ public class Reflector
 		Annotation[] annotations=method.getDeclaredAnnotations();
 		return annotations;
 	}
-	
-	private Annotation getAnnotation(String methodName,Class<?> annotationClass,boolean hasPramas)
+	/**
+	 * 获取注解
+	 * @param <T>注解的类型
+	 * @param methodName 方法名
+	 * @param annotationClass 注解类型
+	 * @param hasPramas 是否存在参数
+	 * @return 需要的注解，如果不存在则会返回null
+	 */
+	public <T extends Annotation> T getAnnotation(String methodName,Class<T> annotationClass,boolean hasPramas)
 	{
 		Method method;
 		try
@@ -137,7 +153,17 @@ public class Reflector
 			e.printStackTrace();
 			return null;
 		}
-		return method.getAnnotation((Class<Annotation>)annotationClass);
+		return method.getAnnotation(annotationClass);
+	}
+	/**
+	 * 获得类的注解
+	 * @param <T> 注解类型
+	 * @param annotationClass 注解类型
+	 * @return 查询的注解，如果不存在则返回null
+	 */
+	public <T extends Annotation> T getClassAnnotation(Class<T> annotationClass)
+	{
+		return clazz.getAnnotation(annotationClass);
 	}
 	
 	private AuthirizerUser getMethodAuthirizer(String string,boolean hasPramas)
@@ -186,7 +212,7 @@ public class Reflector
 		call(methodName);
 	}
 	/**专门启动自定类的初始化方法(无参)*/
-	public void startMethod()
+	public void startInit()
 	{
 		call("initialize");
 	}
