@@ -37,14 +37,7 @@ public class Help extends Father
 		ArrayList<Command> arrayList=getCommands();
 		ArrayList<String> type=new ArrayList<>();
 		code_0:for (Command command : arrayList) {
-			boolean visible=true;
-			if(command.visible==null)
-				visible=true;
-			else
-			{
-				if(command.visible.toLowerCase().equals("false"))
-					visible=false;
-			}
+			boolean visible=ifCommandVisible(command);
 			if(visible)
 			{
 				if(command.type!=null)
@@ -89,7 +82,7 @@ public class Help extends Father
 		ArrayList<String> subCommand=new ArrayList<>();
 		for (Command command : commands) {
 			if(command.type!=null)
-				if(command.type.equals(string))
+				if(command.type.equals(string)&&ifCommandVisible(command))
 					subCommand.add("."+command.name+" "+command.help);
 		}
 		if(subCommand.size()<1)
@@ -136,5 +129,17 @@ public class Help extends Father
 			arrayList.add(command);
 		}
 		return arrayList;
+	}
+	private boolean ifCommandVisible(Command command)
+	{
+		boolean visible=true;
+		if(command.visible==null)
+			visible=true;
+		else
+		{
+			if(command.visible.toLowerCase().equals("false"))
+				visible=false;
+		}
+		return visible;
 	}
 }

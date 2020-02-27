@@ -128,14 +128,14 @@ public class Switch extends Father
 					if(receiveMessageType.getMsg().replaceAll(" ", "").equals(".boton")
 							||receiveMessageType.getMsg().replaceAll(" ", "").equals(".boton"))
 					{
-						if(AuthirizerUser.GROUP_MEMBER.ifAccessible(CQSender.getAuthirizer(receiveMessageType)))
+						if(AuthirizerUser.GROUP_MANAGER.ifAccessible(CQSender.getAuthirizer(receiveMessageType)))
 							bot_on();
 						else
 							sendBackMsg("权限不足");
 					}
 					else
 					{
-						if(Boolean.parseBoolean(getDormantStatus(getMark())))
+						if(Boolean.parseBoolean(getDormantStatus()))
 							return RETURN_PASS;
 					}
 				}
@@ -195,7 +195,7 @@ public class Switch extends Father
 		boolean hasW=addNumToList(ListType.PERSONWHITELIST, num);
 		string+=hasW?"将"+num+"添加到了白名单":"白名单中已存在";
 		string+="\n";
-		string+=deleteNumToList(ListType.PERSONWHITELIST, num)?"并移出了黑名单":"";
+		string+=deleteNumToList(ListType.PERSONBLACKLIST, num)?"并移出了黑名单":"";
 		sendBackMsg(string);
 	}
 	@MinimumAuthority(authirizerUser = AuthirizerUser.OP)
@@ -206,7 +206,7 @@ public class Switch extends Father
 		boolean hasW=addNumToList(ListType.GROUPWHITELIST, num);
 		string+=hasW?"将"+num+"添加到了白名单":"白名单中已存在";
 		string+="\n";
-		string+=deleteNumToList(ListType.GROUPWHITELIST, num)?"并移出了黑名单":"";
+		string+=deleteNumToList(ListType.GROUPBLACKLIST, num)?"并移出了黑名单":"";
 		sendBackMsg(string);
 	}
 	@MinimumAuthority(authirizerUser = AuthirizerUser.OP)
@@ -217,7 +217,7 @@ public class Switch extends Father
 		boolean hasW=addNumToList(ListType.DISCUSSWHITELIST, num);
 		string+=hasW?"将"+num+"添加到了白名单":"白名单中已存在";
 		string+="\n";
-		string+=deleteNumToList(ListType.DISCUSSWHITELIST, num)?"并移出了黑名单":"";
+		string+=deleteNumToList(ListType.DISCUSSBLACKLIST, num)?"并移出了黑名单":"";
 		sendBackMsg(string);
 	}
 	@MinimumAuthority(authirizerUser = AuthirizerUser.OP)
@@ -228,7 +228,7 @@ public class Switch extends Father
 		boolean hasW=addNumToList(ListType.PERSONBLACKLIST, num);
 		string+=hasW?"将"+num+"添加到了黑名单":"黑名单中已存在";
 		string+="\n";
-		string+=deleteNumToList(ListType.PERSONBLACKLIST, num)?"并移出了白名单":"";
+		string+=deleteNumToList(ListType.PERSONWHITELIST, num)?"并移出了白名单":"";
 		sendBackMsg(string);
 	}
 	@MinimumAuthority(authirizerUser = AuthirizerUser.OP)
@@ -239,7 +239,7 @@ public class Switch extends Father
 		boolean hasW=addNumToList(ListType.GROUPBLACKLIST, num);
 		string+=hasW?"将"+num+"添加到了黑名单":"黑名单中已存在";
 		string+="\n";
-		string+=deleteNumToList(ListType.GROUPBLACKLIST, num)?"并移出了白名单":"";
+		string+=deleteNumToList(ListType.GROUPWHITELIST, num)?"并移出了白名单":"";
 		sendBackMsg(string);
 	}
 	@MinimumAuthority(authirizerUser = AuthirizerUser.OP)
@@ -250,7 +250,7 @@ public class Switch extends Father
 		boolean hasW=addNumToList(ListType.DISCUSSBLACKLIST, num);
 		string+=hasW?"将"+num+"添加到了黑名单":"黑名单中已存在";
 		string+="\n";
-		string+=deleteNumToList(ListType.DISCUSSBLACKLIST, num)?"并移出了白名单":"";
+		string+=deleteNumToList(ListType.DISCUSSWHITELIST, num)?"并移出了白名单":"";
 		sendBackMsg(string);
 	}
 	
@@ -479,12 +479,16 @@ public class Switch extends Father
 		String[] strings=string.split(",");
 		for (String string2 : strings)
 		{
+			if(string2.isEmpty())
+				continue;
 			if(Long.parseLong(string2)==num)
 				return false;
 		}
 		StringBuilder builder=new StringBuilder();
 		for (String string2 : strings)
 		{
+			if(string2.isEmpty())
+				continue;
 			builder.append(string2);
 			builder.append(',');
 		}
@@ -497,7 +501,6 @@ public class Switch extends Father
 		String string=getDataExchanger().getItem(type.name());
 		if(string==null)
 		{
-			getDataExchanger().addItem(type.name(), Long.toString(num));
 			return false;
 		}
 		String[] strings=string.split(",");
@@ -507,6 +510,8 @@ public class Switch extends Father
 		StringBuilder builder=new StringBuilder();
 		for (String string2 : strings)
 		{
+			if(string2.isEmpty())
+				continue;
 			if(Long.parseLong(string2)==num)
 			{
 				find=true;
@@ -639,6 +644,8 @@ public class Switch extends Father
 			String[] list=line.split(",");
 			for (String string : list)
 			{
+				if(string.isEmpty())
+					continue;
 				if(Long.parseLong(string)==num)
 				{
 					boolean b=Boolean.parseBoolean(getDataExchanger().getItem(SpecificStateString.MonitorWhiteListGroup.name()));
@@ -735,25 +742,40 @@ public class Switch extends Father
 	{
 		switch (receiveMessageType.getMsgType())
 		{
+		//FIXME:在检测群中和讨论组中的时候，用户的权限也会影响，理论上要遵从父级（黑名单除外）
 		case UniversalConstantsTable.MSGTYPE_PERSON:
 			return userAccessiable(receiveMessageType.getfromQQ());
 		case UniversalConstantsTable.MSGTYPE_GROUP:
 			if(groupAccessiable(receiveMessageType.getfromGroup()))
-				if(userAccessiable(receiveMessageType.getfromQQ()))
-					return true;
+				return true;
 			return false;
 		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			if(discussAccessiable(receiveMessageType.getfromGroup()))
-				if(userAccessiable(receiveMessageType.getfromQQ()))
-					return true;
+				return true;
 			return false;
 		default:
 			Log.e("异常消息种类");
 			return false;
 		} 
 	}
-	private String getDormantStatus(String mark)
+	private String getDormantStatus()
 	{
+		String mark;
+		switch (receiveMessageType.getMsgType())
+		{
+		case UniversalConstantsTable.MSGTYPE_PERSON:
+			mark="P"+Long.toString(receiveMessageType.getfromQQ());
+			break;
+		case UniversalConstantsTable.MSGTYPE_GROUP:
+			mark="G"+Long.toString(receiveMessageType.getfromGroup());
+			break;
+		case UniversalConstantsTable.MSGTYPE_DISCUSS:
+			mark="D"+Long.toString(receiveMessageType.getfromGroup());
+			break;
+		default:
+			Log.e("异常的消息类型");
+			return null;
+		}
 		ArrayList<String> arrayList=getDataExchanger().getListItem(DORMANTLIST, mark);
 		if(arrayList==null)
 			return null;
