@@ -418,7 +418,7 @@ public class ERPG extends Father
 		}
 		CheckStatus checkStatus=numCheck(skillnum);
 		StringBuilder builder=new StringBuilder();
-		builder.append("对"+getMessageSenderName()+"的"+skill+"进行检定，掷出1d100="+checkStatus.randomNum+"\n");
+		builder.append("对"+getMessageSenderName()+"的"+skill+"进行检定，掷出1d100="+checkStatus.randomNum+"/"+skillnum+"\n");
 		builder.append("检定"+checkStatus.levelStatus.getString());
 		if(checkStatus.specialStatus!=null)
 			builder.append(","+checkStatus.specialStatus.getString());
@@ -487,7 +487,7 @@ public class ERPG extends Father
 			otherNum.append(arr[i]+",");
 		}
 		otherNum.deleteCharAt(otherNum.length()-1);
-		builder.append("掷奖励骰1d10="+otherNum.toString()+",得"+arr[0]+"\n");
+		builder.append("掷奖励骰1d10="+otherNum.toString()+",得"+arr[0]+"/"+skillpoint+"\n");
 		CheckStatus checkStatus=numCheck(skillpoint, arr[0]);
 		builder.append("检定"+checkStatus.levelStatus.getString());
 		if(checkStatus.specialStatus!=null)
@@ -556,7 +556,7 @@ public class ERPG extends Father
 			otherNum.append(arr[i]+",");
 		}
 		otherNum.deleteCharAt(otherNum.length()-1);
-		builder.append("掷惩罚骰1d10="+otherNum.toString()+",得"+arr[0]+"\n");
+		builder.append("掷惩罚骰1d10="+otherNum.toString()+",得"+arr[0]+"/"+skillpoint+"\n");
 		CheckStatus checkStatus=numCheck(skillpoint, arr[0]);
 		builder.append("检定"+checkStatus.levelStatus.getString());
 		if(checkStatus.specialStatus!=null)
