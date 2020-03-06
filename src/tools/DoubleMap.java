@@ -47,7 +47,7 @@ public class DoubleMap<K,V1,V2>
 	 * @param value2 第二个数值
 	 * @return 是否已经存在键
 	 */
-	public boolean putFirst(K key,V1 value1,V2 value2)
+	public boolean put(K key,V1 value1,V2 value2)
 	{
 		boolean result=this.value1.containsKey(key);
 		this.value1.put(key, value1);
@@ -111,5 +111,17 @@ public class DoubleMap<K,V1,V2>
 	public int size()
 	{
 		return value1.size();
+	}
+	public boolean containKey(K key)
+	{
+		return value1.containsKey(key);
+	}
+	public boolean containFirstValue(V1 v1)
+	{
+		return value1.containsValue(v1);
+	}
+	public boolean containLastValue(V2 v2)
+	{
+		return value2.containsValue(v2);
 	}
 }

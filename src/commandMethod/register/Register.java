@@ -6,8 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import commandPointer.AuxiliaryClass;
 import commandPointer.Reflector;
+import commandPointer.annotations.AuxiliaryClass;
 import surveillance.Log;
 import tools.ClassUtils;
 

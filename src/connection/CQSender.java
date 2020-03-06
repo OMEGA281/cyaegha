@@ -22,6 +22,11 @@ public class CQSender
 	
 	public static Member getQQInfoInGroup(long QQ,long GroupNum)
 	{
+		Member member=CQ.getGroupMemberInfo(GroupNum, QQ);
+		if(member.getCard()==null)
+			member=CQ.getGroupMemberInfo(GroupNum, QQ, true);
+		if(member.getCard().isEmpty())
+			member=CQ.getGroupMemberInfo(GroupNum, QQ, true);
 		return CQ.getGroupMemberInfo(GroupNum, QQ);
 	}
 	/**

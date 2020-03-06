@@ -1,4 +1,4 @@
-package commandPointer;
+package commandPointer.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

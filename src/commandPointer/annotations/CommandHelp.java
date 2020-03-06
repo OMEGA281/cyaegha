@@ -1,4 +1,4 @@
-package commandPointer;
+package commandPointer.annotations;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

@@ -20,7 +20,7 @@ public class GetJarResources
 		this.FileName=FileName;
 	}
 	/**获取包内的文件<br>
-	 * @return 返回{@link XMLInputStream}
+	 * @return 返回{@code InputStream}
 	 * */
 	public InputStream getJarResources()
 	{

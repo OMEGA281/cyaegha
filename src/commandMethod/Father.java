@@ -1,13 +1,14 @@
 package commandMethod;
 
 import java.io.File;
+import java.io.StringReader;
 
 import commandMethod.dataExchanger.DataExchanger;
 import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.OnMessageReceiveListener;
 import commandMethod.register.OnMessageSendListener;
 import commandMethod.register.Register;
-import commandPointer.AuxiliaryClass;
+import commandPointer.annotations.AuxiliaryClass;
 import connection.CQSender;
 import connection.ReceiveMessageType;
 import connection.SendMessageType;
@@ -27,6 +28,14 @@ public abstract class Father
 		// TODO Auto-generated constructor stub
 		
 	}
+//	/**
+//	 * 用于初始化时加载字符串文件，一般来说加载之后不会再次通过方法内再次调用
+//	 * @return
+//	 */
+//	public boolean getStringResourcer()
+//	{
+//		
+//	}
 	/**
 	 * 本方法仅在命令调用时可以保持实时信息
 	 * @return 当前消息发送者的昵称
@@ -141,4 +150,9 @@ public abstract class Father
 			dataExchanger=new DataExchanger(UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+".xml");
 		return dataExchanger;
 	}
+	
+//	public String replaceString(String index,String...strings)
+//	{
+//		
+//	}
 }
