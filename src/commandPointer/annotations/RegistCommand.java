@@ -18,6 +18,7 @@ public @interface RegistCommand
 {
 	/**
 	 * 命令条目，当输入信息“.[本字符串]”的时候，将会启动本方法
+	 * 为了您开发和维护方便请尽量将监听用的条目和方法名称设为一致
 	 * @return
 	 */
 	String CommandString();

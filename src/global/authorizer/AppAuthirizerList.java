@@ -10,7 +10,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import tools.XMLDocument;
-import tools.FileSimpleIO.returnType;
+import tools.FileSimpleIO.fileReturnType;
 
 public class AppAuthirizerList 
 {
