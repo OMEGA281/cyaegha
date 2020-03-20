@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import connection.CQSender;
+
 public class Luck extends Father
 {
 
@@ -19,10 +21,13 @@ public class Luck extends Father
 	public void jrrp()
 	{
 		String name=receiveMessageType.getNick();
+		if(name.isEmpty())
+			name=CQSender.getQQInfo(receiveMessageType.getfromQQ()).getNick();
 		Date date=new Date(System.currentTimeMillis());
 		int luck=getNum(date, name);
 		StringBuilder builder=new StringBuilder();
-		builder.append("今天"+receiveMessageType.getNick()+"的运气是"+luck+"\n");
+		
+		builder.append("今天"+name+"的运气是"+luck+"\n");
 		switch (luck/10)
 		{
 		case 0:

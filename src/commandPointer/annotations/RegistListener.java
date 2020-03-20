@@ -33,6 +33,34 @@ public @interface RegistListener
 	{
 		
 	}
+	@Documented
+	@Retention(RUNTIME)
+	@Target(METHOD)
+	public @interface MessageSendListener
+	{
+		
+	}
+	@Documented
+	@Retention(RUNTIME)
+	@Target(METHOD)
+	public @interface GroupBanListener
+	{
+		
+	}
+	@Documented
+	@Retention(RUNTIME)
+	@Target(METHOD)
+	public @interface FriendAddListener
+	{
+		
+	}
+	@Documented
+	@Retention(RUNTIME)
+	@Target(METHOD)
+	public @interface GroupAddListener
+	{
+		
+	}
 	int PRIORITY_MAX=100;
 	int PRIORITY_HIGH=75;
 	int PRIORITY_NORMAL=50;

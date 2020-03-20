@@ -1,42 +1,59 @@
 package commandPointer;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.ArrayList;
+import surveillance.Log;
 
 public class ClassLoader
 {
-	private class SelfMethod
+	Class<?> clazz;
+	Object object;
+	ArrayList<SelfMethod> arrayList=new ArrayList<>();
+	
+	
+	public ClassLoader(Class<?> clazz)
 	{
-		private Method method;
-		private String name;
-		private Annotation[] annotations;
-		private Class<?> paramsType[];
-		private Class<?> returnType;
-		
-		class ParamException extends Exception
+		this.clazz=clazz;
+		try
 		{
-			private static final long serialVersionUID = 1L;
-			
-			String reason;
-			public ParamException(String string)
+			object=clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e)
+		{
+			// TODO Auto-generated catch block
+			Log.e("无法实例化类"+clazz);
+		}
+		Method[] methods=clazz.getMethods();
+		for (Method method : methods)
+		{
+			arrayList.add(new SelfMethod(method));
+		}
+	}
+	
+	public Object startMethod(String methodName,Object...params)
+	{
+		for (SelfMethod selfMethod : arrayList)
+		{
+			if(selfMethod.method.getName().equals(methodName))
 			{
-				reason=string;
-			}
-			@Override
-			public String getMessage()
-			{
-				return reason;
+				if(params.length!=selfMethod.method.getParameterTypes().length)
+				{
+					return selfMethod.startMethod(params);
+				}
 			}
 		}
+		return null;
+	}
+	
+	public class SelfMethod
+	{
+		private Method method;
+		private Annotation[] annotations;		
 		
-		public SelfMethod(String name,Method method)
+		public SelfMethod(Method method)
 		{
-			this.name=name;
-			this.method=method;
 			annotations=method.getAnnotations();
-			paramsType=method.getParameterTypes();
-			returnType=method.getReturnType();
 		}
 		public <T extends Annotation> T getAnnotation(Class<T> type) 
 		{
@@ -50,13 +67,21 @@ public class ClassLoader
 			return null;
 		}
 		
-		public Object startMethod(Object...objects) throws ParamException
+		public Object startMethod(Object...objects)
 		{
-			if(objects.length<paramsType.length)
+			if(object!=null)
 			{
-				throw new ParamException("参数数量错误");
+				Log.e("实例为空！");
+				return null;
 			}
-			return null;
+			try
+			{
+				return method.invoke(object, objects);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+			{
+				Log.e("无法启动方法");
+				return null;
+			}
 		}
 	}
 	

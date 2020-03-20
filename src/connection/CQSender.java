@@ -20,6 +20,16 @@ public class CQSender
 		return CQ.getStrangerInfo(QQ);
 	}
 	
+	public static boolean canSendImage()
+	{
+		return CQ.canSendImage();
+	}
+	
+	public static boolean canSendRecord()
+	{
+		return CQ.canSendRecord();
+	}
+	
 	public static Member getQQInfoInGroup(long QQ,long GroupNum)
 	{
 		Member member=CQ.getGroupMemberInfo(GroupNum, QQ);
