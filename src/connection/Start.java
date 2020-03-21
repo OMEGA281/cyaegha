@@ -98,12 +98,12 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		// 以下是收尾触发函数
 		// demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
 
-        demo.privateMsg(1, 34, 1304554598, ".bot on", 0);
-        demo.privateMsg(1, 89, 1304554598, ".image on", 1);
-        demo.privateMsg(1, 89, 1304554598, ".image", 1);
-        demo.privateMsg(1, 89, 1304554598, ".image", 1);
-        demo.privateMsg(1, 89, 1304554598, ".image", 1);
-		
+		demo.privateMsg(1, 34, 1304554598, ".bot on", 0);
+		demo.privateMsg(1, 89, 1304554598, ".image on", 1);
+		demo.privateMsg(1, 89, 1304554598, ".image", 1);
+		demo.privateMsg(1, 89, 1304554598, ".image", 1);
+		demo.privateMsg(1, 89, 1304554598, ".image", 1);
+
 //        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
 //        demo.privateMsg(1, 34, 1304554598, ".rsc", 0);
 	}
@@ -455,10 +455,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		 * 群邀请
 		 */
 		/*
-		 * if(subtype == 1){ // 本号为群管理，判断是否为他人申请入群 CQ.setGroupAddRequest(responseFlag,
-		 * REQUEST_GROUP_ADD, REQUEST_ADOPT, null);// 同意入群 } if(subtype == 2){
-		 * CQ.setGroupAddRequest(responseFlag, REQUEST_GROUP_INVITE, REQUEST_ADOPT,
-		 * null);// 同意进受邀群 }
+		 * if(subtype == 1) { // 本号为群管理，判断是否为他人申请入群
+		 * CQ.setGroupAddRequest(responseFlag,REQUEST_GROUP_ADD, REQUEST_ADOPT, null);
+		 * // 同意入群 } if(subtype == 2) { CQ.setGroupAddRequest(responseFlag,
+		 * REQUEST_GROUP_INVITE, REQUEST_ADOPT, null);// 同意进受邀群 }
 		 */
 		return MSG_IGNORE;
 	}
