@@ -86,7 +86,8 @@ public class Matcher
 	public static boolean ifCommand(String s)
 	{
 		boolean result=false;
-		String[] start=CommandIndicator.START_CHATACTER;
+		//FIXME:
+		String[] start= {".","。"};
 		for(int i=0;i<start.length;i++)
 		{
 			if(s.startsWith(start[i]))

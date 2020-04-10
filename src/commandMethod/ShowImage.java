@@ -1,14 +1,18 @@
 package commandMethod;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.meowy.cqp.jcq.entity.CQImage;
 import org.meowy.cqp.jcq.message.CQCode;
@@ -42,7 +46,33 @@ public class ShowImage extends Father
 			sendBackMsg("现在不行，还没有接到许可的命令");
 			return;
 		}
-		CQImage cqImage=new CQImage("http://www.dmoe.cc/random.php");
+//		http://www.dmoe.cc/random.php
+//		URL url=new URL("https://v1.alapi.cn/api/acg");
+//		HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+//		connection.setRequestMethod("GET");
+//		connection.setConnectTimeout(15000);
+//		connection.setReadTimeout(60000);
+//		connection.connect();
+//		String result;
+//		if (connection.getResponseCode() == 200) 
+//		{
+//            InputStream is = connection.getInputStream();
+//            // 封装输入流is，并指定字符集
+//            BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+//            // 存放数据
+//            StringBuffer sbf = new StringBuffer();
+//            String temp = null;
+//            while ((temp = br.readLine()) != null) {
+//                sbf.append(temp);
+//                sbf.append("\r\n");
+//            }
+//            result = sbf.toString();
+//            br.close();
+//            is.close();
+//        }
+//		connection.disconnect();
+		
+		CQImage cqImage=new CQImage("https://v1.alapi.cn/api/acg");
 		File image=cqImage.download(getPluginDataFloder()+"data.jpg");
 		
 		String md5=DigestUtils.md5Hex(new FileInputStream(image));

@@ -143,7 +143,8 @@ public class ReceiveMessageType
 		case UniversalConstantsTable.MSGTYPE_DISCUSS:
 			return CQSender.getQQInfo(fromQQ).getNick();
 		case UniversalConstantsTable.MSGTYPE_GROUP:
-			return CQSender.getQQInfoInGroup(fromQQ, fromGroup).getCard();
+			String card=CQSender.getQQInfoInGroup(fromQQ, fromGroup).getCard();
+			return card.isEmpty()?CQSender.getQQInfo(fromQQ).getNick():card;
 		}
 		return null;
 	}

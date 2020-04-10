@@ -3,6 +3,7 @@ package commandPointer.annotations;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -19,6 +20,8 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface RegistListener
 {
+	public static final Class<?>[] ListenerList= {MessageReceiveListener.class,GroupMemberChangeListener.class,
+			MessageSendListener.class,GroupBanListener.class,FriendAddListener.class,GroupAddListener.class};
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
