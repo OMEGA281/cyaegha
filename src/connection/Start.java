@@ -17,8 +17,13 @@ import global.authorizer.AuthorizerListGetter;
 import life_controller.SwitchBox;
 import surveillance.Log;
 import tools.TimeSimpleTool;
+import transceiver.EventTrigger;
 import transceiver.Receiver;
 import transceiver.Transmitter;
+import transceiver.event.FriendAddEvent;
+import transceiver.event.GroupAddEvent;
+import transceiver.event.GroupBanEvent;
+import transceiver.event.GroupMemberChangeEvent;
 
 import java.util.Scanner;
 
@@ -343,13 +348,16 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	 */
 	public int groupMemberDecrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ)
 	{
+		GroupMemberChangeEvent groupMemberChangeEvent=new GroupMemberChangeEvent(false, subtype, fromGroup, fromQQ, beingOperateQQ);
+		EventTrigger.getEventTrigger().groupMemberChange(groupMemberChangeEvent);
+		
 		// 这里处理消息
-		for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners)
-		{
-			if (groupMemberChangeListener.run(new GroupChangeType(GroupChangeType.GROUP_MUMBER_DECREASE, subtype,
-					fromGroup, beingOperateQQ, fromQQ)) == OnGroupMemberChangeListener.RETURN_STOP)
-				break;
-		}
+//		for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners)
+//		{
+//			if (groupMemberChangeListener.run(new GroupChangeType(GroupChangeType.GROUP_MUMBER_DECREASE, subtype,
+//					fromGroup, beingOperateQQ, fromQQ)) == OnGroupMemberChangeListener.RETURN_STOP)
+//				break;
+//		}
 		return MSG_IGNORE;
 	}
 
@@ -366,13 +374,16 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	 */
 	public int groupMemberIncrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ)
 	{
+		GroupMemberChangeEvent groupMemberChangeEvent=new GroupMemberChangeEvent(true, subtype, fromGroup, fromQQ, beingOperateQQ);
+		EventTrigger.getEventTrigger().groupMemberChange(groupMemberChangeEvent);
+		
 		// 这里处理消息
-		for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners)
-		{
-			if (groupMemberChangeListener.run(new GroupChangeType(GroupChangeType.GROUP_MUMBER_CREASE, subtype,
-					fromGroup, beingOperateQQ, fromQQ)) == OnGroupMemberChangeListener.RETURN_STOP)
-				break;
-		}
+//		for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners)
+//		{
+//			if (groupMemberChangeListener.run(new GroupChangeType(GroupChangeType.GROUP_MUMBER_CREASE, subtype,
+//					fromGroup, beingOperateQQ, fromQQ)) == OnGroupMemberChangeListener.RETURN_STOP)
+//				break;
+//		}
 		return MSG_IGNORE;
 	}
 
@@ -391,7 +402,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int groupBan(int subType, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ, long duration)
 	{
 		// 这里处理消息
-
+		GroupBanEvent banEvent=new GroupBanEvent(subType, fromGroup, fromQQ, beingOperateQQ, duration);
+		EventTrigger.getEventTrigger().groupBan(banEvent);
+		
 		return 0;
 	}
 
@@ -407,7 +420,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int friendAdd(int subtype, int sendTime, long fromQQ)
 	{
 		// 这里处理消息
-
+		
 		return MSG_IGNORE;
 	}
 
@@ -430,6 +443,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		 * REQUEST_ADOPT 通过 REQUEST_REFUSE 拒绝
 		 */
 
+		FriendAddEvent friendAddEvent=new FriendAddEvent(fromQQ, msg, responseFlag);
+		EventTrigger.getEventTrigger().friendAdd(friendAddEvent);
+		
 		// CQ.setFriendAddRequest(responseFlag, REQUEST_ADOPT, null); // 同意好友添加请求
 		return MSG_IGNORE;
 	}
@@ -449,7 +465,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int requestAddGroup(int subtype, int sendTime, long fromGroup, long fromQQ, String msg, String responseFlag)
 	{
 		// 这里处理消息
-
+		
+		GroupAddEvent groupAddEvent=new GroupAddEvent(fromGroup, fromQQ, responseFlag);
+		EventTrigger.getEventTrigger().groupAdd(groupAddEvent);
+		
 		/**
 		 * REQUEST_ADOPT 通过 REQUEST_REFUSE 拒绝 REQUEST_GROUP_ADD 群添加 REQUEST_GROUP_INVITE
 		 * 群邀请

@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import commandPointer.ClassLoader.SelfStartMethod;
 import commandPointer.annotations.RegistListener;
 import surveillance.Log;
 import tools.ClassUtils;

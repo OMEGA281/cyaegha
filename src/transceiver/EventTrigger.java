@@ -17,6 +17,8 @@ public class EventTrigger
 {
 	public enum EventResult{PASS,STOP}
 	
+	static EventTrigger eventTrigger;
+	
 	EventList<SelfStartMethod> friendAddEvents=new EventList<SelfStartMethod>();
 	EventList<SelfStartMethod> groupAddEvents=new EventList<SelfStartMethod>();
 	EventList<SelfStartMethod> groupBanEvents=new EventList<SelfStartMethod>();
@@ -50,6 +52,11 @@ public class EventTrigger
 			add(t);
 			this.priority.add(priority);
 		}
+	}
+	
+	public static EventTrigger getEventTrigger()
+	{
+		return eventTrigger;
 	}
 	
 	public void addFriendAddMethod(SelfStartMethod method,int priority)
@@ -96,7 +103,7 @@ public class EventTrigger
 		}
 		return true;
 	}
-	private void friendAdd(FriendAddEvent addEvent)
+	public void friendAdd(FriendAddEvent addEvent)
 	{
 		for(int i=0;i<friendAddEvents.size();i++)
 		{
@@ -109,7 +116,7 @@ public class EventTrigger
 			}
 		}
 	}
-	private void groupAdd(GroupAddEvent addEvent)
+	public void groupAdd(GroupAddEvent addEvent)
 	{
 		for(int i=0;i<friendAddEvents.size();i++)
 		{
@@ -122,7 +129,7 @@ public class EventTrigger
 			}
 		}
 	}
-	private void groupBan(GroupBanEvent addEvent)
+	public void groupBan(GroupBanEvent addEvent)
 	{
 		for(int i=0;i<friendAddEvents.size();i++)
 		{
@@ -135,7 +142,7 @@ public class EventTrigger
 			}
 		}
 	}
-	private void GroupMemberChange(GroupMemberChangeEvent addEvent)
+	public void groupMemberChange(GroupMemberChangeEvent addEvent)
 	{
 		for(int i=0;i<friendAddEvents.size();i++)
 		{
@@ -148,7 +155,7 @@ public class EventTrigger
 			}
 		}
 	}
-	private void MessageReceive(MessageReceiveEvent addEvent)
+	public void messageReceive(MessageReceiveEvent addEvent)
 	{
 		for(int i=0;i<friendAddEvents.size();i++)
 		{
@@ -162,7 +169,7 @@ public class EventTrigger
 		}
 	}
 	@Deprecated
-	private void MessageSend(MessageSendEvent addEvent)
+	public void messageSend(MessageSendEvent addEvent)
 	{
 		for(int i=0;i<friendAddEvents.size();i++)
 		{
