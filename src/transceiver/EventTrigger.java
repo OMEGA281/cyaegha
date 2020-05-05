@@ -187,6 +187,7 @@ public class EventTrigger
 				for(;!messageReceiveEventsQueue.isEmpty();)
 				{
 					MessageReceiveEvent event=messageReceiveEventsQueue.poll();
+//					先执行触发器，然后执行命令器
 					code_0:for (SelfStartMethod selfStartMethod : messageReceiveEvents)
 					{
 						EventResult result=(EventResult) selfStartMethod.startMethod(event);
@@ -203,7 +204,7 @@ public class EventTrigger
 				}
 				return ThreadOperter.SLEEP;
 			}
-		}, 500, "messageReceive");
+		}, 100, "messageReceive");
 		
 		setupThread(new ThreadMethod() {
 			

@@ -57,4 +57,8 @@ public class SelfStartMethod
 	{
 		return obj.getClass().getName();
 	}
+	public Class<?> getReturnType()
+	{
+		return method.getReturnType();
+	}
 }

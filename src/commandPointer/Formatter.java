@@ -1,5 +1,6 @@
 package commandPointer;
 
+@Deprecated
 public class Formatter 
 {
 	public static final String exMethodPath="commandMethod.";
