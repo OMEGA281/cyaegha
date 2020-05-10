@@ -27,42 +27,42 @@ public @interface RegistListener
 	@Target(METHOD)
 	public @interface MessageReceiveListener
 	{
-		
+		public int priority() default PRIORITY_NORMAL;
 	}
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface GroupMemberChangeListener
 	{
-		
+		public int priority() default PRIORITY_NORMAL;
 	}
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface MessageSendListener
 	{
-		
+		public int priority() default PRIORITY_NORMAL;
 	}
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface GroupBanListener
 	{
-		
+		public int priority() default PRIORITY_NORMAL;
 	}
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface FriendAddListener
 	{
-		
+		public int priority() default PRIORITY_NORMAL;
 	}
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface GroupAddListener
 	{
-		
+		public int priority() default PRIORITY_NORMAL;
 	}
 	int PRIORITY_MAX=100;
 	int PRIORITY_HIGH=75;
@@ -70,7 +70,7 @@ public @interface RegistListener
 	int PRIORITY_LOW=25;
 	int PRIORITY_MIN=0;
 	/**监听器帮助文件，建议填写*/
-	String help() default "";
+	public String help() default "";
 	/**监听器优先级*/
-	int priority() default PRIORITY_NORMAL;
+	public int priority() default PRIORITY_NORMAL;
 }
