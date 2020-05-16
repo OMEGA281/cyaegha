@@ -72,6 +72,7 @@ public class EventTrigger
 			Log.e("触发器已经被启动！");
 			return;
 		}
+		eventTrigger=this;
 		
 //		FIXME:虽然这样也可以，不过挺难看的，下次整合到枚举中吧
 		
@@ -349,7 +350,7 @@ public class EventTrigger
 		}
 		return true;
 	}
-	public void friendAdd(FriendAddEvent addEvent)
+	public boolean friendAdd(FriendAddEvent addEvent)
 	{
 		for(int i=0;i<friendAddEvents.size();i++)
 		{
@@ -358,74 +359,80 @@ public class EventTrigger
 			if(result==EventResult.STOP)
 			{
 				Log.d("好友添加请求处理后被拦截，拦截者："+method.getParentName());
-				break;
+				return false;
 			}
 		}
+		return true;
 	}
-	public void groupAdd(GroupAddEvent addEvent)
+	public boolean groupAdd(GroupAddEvent addEvent)
 	{
-		for(int i=0;i<friendAddEvents.size();i++)
+		for(int i=0;i<groupAddEvents.size();i++)
 		{
-			SelfStartMethod method=friendAddEvents.get(i);
+			SelfStartMethod method=groupAddEvents.get(i);
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
 				Log.d("群添加请求处理后被拦截，拦截者："+method.getParentName());
-				break;
+				return false;
 			}
 		}
+		return true;
 	}
-	public void groupBan(GroupBanEvent addEvent)
+	public boolean groupBan(GroupBanEvent addEvent)
 	{
-		for(int i=0;i<friendAddEvents.size();i++)
+		for(int i=0;i<groupBanEvents.size();i++)
 		{
-			SelfStartMethod method=friendAddEvents.get(i);
+			SelfStartMethod method=groupBanEvents.get(i);
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
 				Log.d("群被禁言请求处理后被拦截，拦截者："+method.getParentName());
-				break;
+				return false;
 			}
 		}
+		return true;
 	}
-	public void groupMemberChange(GroupMemberChangeEvent addEvent)
+	public boolean groupMemberChange(GroupMemberChangeEvent addEvent)
 	{
-		for(int i=0;i<friendAddEvents.size();i++)
+		for(int i=0;i<groupMemberChangeEvents.size();i++)
 		{
-			SelfStartMethod method=friendAddEvents.get(i);
+			SelfStartMethod method=groupMemberChangeEvents.get(i);
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
 				Log.d("群人数增减请求处理后被拦截，拦截者："+method.getParentName());
-				break;
+				return false;
 			}
 		}
+		return true;
 	}
-	public void messageReceive(MessageReceiveEvent addEvent)
+	public boolean messageReceive(MessageReceiveEvent addEvent)
 	{
-		for(int i=0;i<friendAddEvents.size();i++)
+		for(int i=0;i<messageReceiveEvents.size();i++)
 		{
-			SelfStartMethod method=friendAddEvents.get(i);
+			SelfStartMethod method=messageReceiveEvents.get(i);
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
 				Log.d("消息接受请求处理后被拦截，拦截者："+method.getParentName());
-				break;
+				return false;
 			}
 		}
+		return true;
 	}
 	@Deprecated
-	public void messageSend(MessageSendEvent addEvent)
+	public boolean messageSend(MessageSendEvent addEvent)
 	{
-		for(int i=0;i<friendAddEvents.size();i++)
+		for(int i=0;i<messageSendEvents.size();i++)
 		{
-			SelfStartMethod method=friendAddEvents.get(i);
+			SelfStartMethod method=messageSendEvents.get(i);
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
 				Log.d("消息发出请求处理后被拦截，拦截者："+method.getParentName());
-				break;
+				return false;
 			}
 		}
+		return true;
 	}
 }

@@ -12,6 +12,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
+import commandPointer.annotations.AuxiliaryClass;
 import connection.CQSender;
 import global.UniversalConstantsTable;
 import global.authorizer.AuthirizerUser;
@@ -21,6 +22,7 @@ import tools.FileSimpleIO;
 import tools.GetJarResources;
 import tools.XMLDocument;
 
+@AuxiliaryClass
 public class Draw extends Father
 {
 	public static String CARDPOOL_PATH;

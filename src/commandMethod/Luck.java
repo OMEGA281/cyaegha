@@ -6,8 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import commandPointer.annotations.AuxiliaryClass;
 import connection.CQSender;
 
+@AuxiliaryClass
 public class Luck extends Father
 {
 

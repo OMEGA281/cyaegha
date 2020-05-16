@@ -3,6 +3,9 @@ package commandMethod;
 import java.util.ArrayList;
 import java.util.Random;
 
+import commandPointer.annotations.AuxiliaryClass;
+
+@AuxiliaryClass
 public class Coc extends Father 
 {
 

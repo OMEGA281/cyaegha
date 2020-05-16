@@ -3,12 +3,14 @@ package commandMethod;
 import java.util.ArrayList;
 
 import commandMethod.register.OnGroupMemberChangeListener;
+import commandPointer.annotations.AuxiliaryClass;
 import connection.GroupChangeType;
 import connection.ReceiveMessageType;
 import global.UniversalConstantsTable;
 import global.authorizer.AuthirizerUser;
 import global.authorizer.MinimumAuthority;
 
+@AuxiliaryClass
 public class Welcome extends Father
 {
 	

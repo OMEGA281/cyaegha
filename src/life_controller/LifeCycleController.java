@@ -7,6 +7,7 @@ import commandPointer.Matcher;
 import connection.CQSender;
 import global.UniversalConstantsTable;
 import surveillance.Log;
+import transceiver.EventTrigger;
 import transceiver.Receiver;
 import transceiver.Transmitter;
 
@@ -27,6 +28,7 @@ class LifeCycleController
     	UniversalConstantsTable.ROOTPATH=CQ.getAppDirectory()+"\\"+CQ.getLoginQQ()+"\\";
     	//    	启动注册器
     	new Register();
+    	new EventTrigger();
     	
 		Receiver.getReceiver();
 		Transmitter.getTransmitter();

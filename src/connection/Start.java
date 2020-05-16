@@ -10,6 +10,7 @@ import org.meowy.cqp.jcq.message.CoolQMsg;
 import commandMethod.ERPG;
 import commandMethod.register.OnGroupMemberChangeListener;
 import commandMethod.register.Register;
+import commandPointer.CommandControler;
 import commandPointer.Matcher;
 import global.UniversalConstantsTable;
 import global.authorizer.AppAuthirizerList;
@@ -24,6 +25,7 @@ import transceiver.event.FriendAddEvent;
 import transceiver.event.GroupAddEvent;
 import transceiver.event.GroupBanEvent;
 import transceiver.event.GroupMemberChangeEvent;
+import transceiver.event.MessageReceiveEvent;
 
 import java.util.Scanner;
 
@@ -103,8 +105,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		// 以下是收尾触发函数
 		// demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
 
-		demo.privateMsg(1, 34, 1304554598, ".bot on", 0);
-		demo.privateMsg(1, 56, 1304554598, "[CQ:at,37897]sbuc[CQ:at,37897][CQ:at,37897]", 0);
+		demo.privateMsg(1, 34, 1304554598, ".test测试60", 0);
 
 //        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
 //        demo.privateMsg(1, 34, 1304554598, ".rsc", 0);
@@ -222,8 +223,13 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	{
 		// 这里处理消息
 //        CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
-		Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_PERSON, subType, msgId,
-				fromQQ, 0, null, msg, TimeSimpleTool.getNowTimeStamp()));
+		MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_PERSON,
+				subType, msgId, fromQQ, 0, null, msg);
+		boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
+		if(accessible&&CommandControler.isCommand(msg))
+		{
+			CommandControler.getCommandControler().startCommand(event);
+		}
 		return MSG_IGNORE;
 	}
 
@@ -247,12 +253,22 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		{
 			// 将匿名用户信息放到 anonymous 变量中
 			Anonymous anonymous = CQ.getAnonymous(fromAnonymous);
-			Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_GROUP, subType, msgId,
-					80000000L, fromGroup, fromAnonymous, msg, TimeSimpleTool.getNowTimeStamp()));
+			MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_GROUP,
+					subType, msgId, 80000000L, fromGroup, fromAnonymous, msg);
+			boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
+			if(accessible&&CommandControler.isCommand(msg))
+			{
+				CommandControler.getCommandControler().startCommand(event);
+			}
 		} else
 		{
-			Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_GROUP, subType, msgId,
-					fromQQ, fromGroup, null, msg, TimeSimpleTool.getNowTimeStamp()));
+			MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_GROUP,
+					subType, msgId, fromQQ, fromGroup, null, msg);
+			boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
+			if(accessible&&CommandControler.isCommand(msg))
+			{
+				CommandControler.getCommandControler().startCommand(event);
+			}
 		}
 
 		// 解析CQ码案例 如：[CQ:at,qq=100000]
@@ -288,8 +304,13 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int discussMsg(int subType, int msgId, long fromDiscuss, long fromQQ, String msg, int font)
 	{
 		// 这里处理消息
-		Receiver.getReceiver().addMsg(new ReceiveMessageType(UniversalConstantsTable.MSGTYPE_DISCUSS, subType, msgId,
-				fromQQ, fromDiscuss, null, msg, TimeSimpleTool.getNowTimeStamp()));
+		MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_DISCUSS,
+				subType, msgId, fromQQ, fromDiscuss, null, msg);
+		boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
+		if(accessible&&CommandControler.isCommand(msg))
+		{
+			CommandControler.getCommandControler().startCommand(event);
+		}
 		return MSG_IGNORE;
 	}
 
@@ -463,8 +484,11 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	{
 		// 这里处理消息
 		
-		GroupAddEvent groupAddEvent=new GroupAddEvent(fromGroup, fromQQ, responseFlag);
-		EventTrigger.getEventTrigger().groupAdd(groupAddEvent);
+		if(subtype==2)
+		{
+			GroupAddEvent groupAddEvent=new GroupAddEvent(fromGroup, fromQQ, responseFlag);
+			EventTrigger.getEventTrigger().groupAdd(groupAddEvent);
+		}
 		
 		/**
 		 * REQUEST_ADOPT 通过 REQUEST_REFUSE 拒绝 REQUEST_GROUP_ADD 群添加 REQUEST_GROUP_INVITE

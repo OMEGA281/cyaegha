@@ -8,30 +8,44 @@ import surveillance.Log;
 
 public class SelfStartMethod
 {
-	private Method method;
-	private Annotation[] annotations;		
+	private Method method;		
 	private Object obj;
 	
 	public SelfStartMethod(Method method,Object object)
 	{
+		this.method=method;
 		obj=object;
-		annotations=method.getAnnotations();
 	}
-	public <T> T getAnnotation(Class<T> type) 
+	public <T extends Annotation> T getAnnotation(Class<T> type) 
 	{
-		for (Annotation annotation : annotations)
+		try
 		{
-			if(annotation.getClass()==type)
-			{
-				return (T) annotation;
-			}
+			return method.getAnnotation(type);
+		} catch (NullPointerException e)
+		{
+			return null;
 		}
-		return null;
 	}
 	
-	public Object startMethod(Object...objects)
+	public Object startMethod()
 	{
 		if(obj!=null)
+		{
+			Log.e("实例为空！");
+			return null;
+		}
+		try
+		{
+			return method.invoke(obj);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		{
+			Log.e("无法启动方法");
+			return null;
+		}
+	}
+	public Object startMethod(Object...objects)
+	{
+		if(obj==null)
 		{
 			Log.e("实例为空！");
 			return null;
@@ -41,6 +55,7 @@ public class SelfStartMethod
 			return method.invoke(obj, objects);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 		{
+			e.printStackTrace();
 			Log.e("无法启动方法");
 			return null;
 		}

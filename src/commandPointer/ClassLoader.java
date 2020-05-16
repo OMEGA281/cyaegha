@@ -3,6 +3,7 @@ package commandPointer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import commandPointer.annotations.AuxiliaryClass;
 import commandPointer.annotations.RegistCommand;
 import commandPointer.annotations.RegistListener.FriendAddListener;
 import commandPointer.annotations.RegistListener.GroupAddListener;
@@ -23,6 +24,8 @@ public class ClassLoader
 	public ClassLoader(Class<?> clazz)
 	{
 		this.clazz=clazz;
+		if(clazz.getAnnotation(AuxiliaryClass.class)!=null)
+			return;
 		try
 		{
 			object=clazz.newInstance();
@@ -37,6 +40,10 @@ public class ClassLoader
 			arrayList.add(new SelfStartMethod(method,object));
 		}
 	}
+	/**
+	 * 载入所有的方法，将该类中的所有方法重新注册一遍<br>
+	 * 注意：本方法不会清楚之前的方法，多次注册会重复
+	 */
 	public void reloadClass()
 	{
 		for (SelfStartMethod selfStartMethod : arrayList)

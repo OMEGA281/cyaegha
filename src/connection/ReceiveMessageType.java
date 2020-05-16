@@ -38,7 +38,7 @@ public class ReceiveMessageType
 		this.fromQQ=fromQQ;
 		this.fromGroup=fromGroup;
 		this.fromAnonymous=fromAnonymous;
-		this.Msg=Msg;
+		this.Msg=Msg.trim();
 		dealMsg();
 		this.time=time;
 	}

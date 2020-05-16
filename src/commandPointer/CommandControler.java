@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import commandPointer.annotations.RegistCommand;
+import connection.ReceiveMessageType;
 import surveillance.Log;
+import transceiver.event.MessageReceiveEvent;
 
 public class CommandControler
 {
@@ -43,6 +45,8 @@ public class CommandControler
 		}
 		public Object invoke()
 		{
+			if(paramsType.length==0)
+				return method.startMethod();
 			if(params.length!=paramsType.length)
 			{
 				Log.e("参数数量不符合");
@@ -52,13 +56,18 @@ public class CommandControler
 		}
 		/**
 		 * 将长短的字符串拆分成方法要求的参数
-		 * @param longParams 长段的字符串，写着参数，不符合参数的要求的话则会返回null
+		 * @param longParams 长段的字符串，写着参数，无参数则会返回null
 		 * @return
 		 * @throws Exception 不符合方法所要求的参数要求
 		 */
 		private Object[] paramsDivide(String longParams) throws Exception
 		{
-			StringBuffer regex=new StringBuffer("[ ]*");
+			if(paramsType.length==0)
+				if(longParams.length()==0)
+					return null;
+				else
+					throw new Exception("输入参数不符合正常要求");
+			StringBuffer regex=new StringBuffer();
 			Class<?> lastClass=null;
 			for (int i=0;i<paramsType.length;i++)
 			{
@@ -78,8 +87,8 @@ public class CommandControler
 					regex.append("((?i)false|(?i)true)");
 				else if(class1==Object.class)
 					regex.append("(.)+");
+				lastClass=class1;
 			}
-			regex.append("[ ]*");
 			
 			Pattern pattern=Pattern.compile(regex.toString());
 			java.util.regex.Matcher matcher=pattern.matcher(longParams);
@@ -88,7 +97,14 @@ public class CommandControler
 				Object[] objects=new Object[paramsType.length];
 				for(int i=1;i<=matcher.groupCount();i++)
 				{
-					objects[i]=matcher.group(i);
+					if(paramsType[i-1]==String.class)
+						objects[i-1]=matcher.group(i);
+					else if(paramsType[i-1]==int.class)
+						objects[i-1]=Integer.parseInt(matcher.group(i));
+					else if (paramsType[i-1]==boolean.class)
+						objects[i-1]=Boolean.parseBoolean(matcher.group(i));
+					else if(paramsType[i-1]==Object.class)
+						objects[i-1]=matcher.group(i);
 				}
 				return objects;
 			}
@@ -135,7 +151,7 @@ public class CommandControler
 			}
 			try
 			{
-				this.params=paramsDivide(params.toString());
+				this.params=paramsDivide(params.toString().trim());
 			} catch (Exception e)
 			{
 				return false;
@@ -151,7 +167,7 @@ public class CommandControler
 	{
 		list.add(new CommandPackage(command.CommandString(), command.Help(), method));
 	}
-	public void startCommand(String string)
+	private Object startCommand(String string)
 	{
 		CommandPackage commandPackage = null;
 		int i=0;
@@ -163,6 +179,25 @@ public class CommandControler
 					i=p.commandLength();
 				}
 		if(commandPackage!=null)
-			commandPackage.invoke();
+			return commandPackage.invoke();
+		return null;
+	}
+	/**
+	 * 检测一长串字符串是否是命令
+	 * @param string
+	 * @return
+	 */
+	public static boolean isCommand(String string)
+	{
+		return string.startsWith(".")||string.startsWith("。");
+	}
+	public Object startCommand(MessageReceiveEvent messageType)
+	{
+		if(!isCommand(messageType.getMsg()))
+		{
+			Log.e("非命令！");
+			return null;
+		}
+		return startCommand(messageType.getMsg().substring(1));
 	}
 }

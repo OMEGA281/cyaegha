@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import commandMethod.register.OnMessageReceiveListener;
+import commandPointer.annotations.AuxiliaryClass;
 import connection.CQSender;
 import connection.ReceiveMessageType;
 import global.UniversalConstantsTable;
@@ -22,6 +23,7 @@ import global.authorizer.AuthorizerListGetter;
 import global.authorizer.MinimumAuthority;
 import surveillance.Log;
 
+@AuxiliaryClass
 public class Switch extends Father
 {
 	private static final String LISTENMODE="MODE";

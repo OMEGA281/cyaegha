@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import commandPointer.ClassLoader;
 import commandPointer.Reflector;
 import commandPointer.annotations.AuxiliaryClass;
 import surveillance.Log;
@@ -36,63 +37,14 @@ public class Register
 //		System.out.println(className.size());
 		for (String classpath : className) 
 		{
-			Reflector reflector=Reflector.getReflector(classpath);
-			if(reflector.getClassAnnotation(AuxiliaryClass.class)!=null)
-				continue;
-			Reflector.getReflector(classpath).startInit();
-			Log.d("加载类：",classpath);
+			try
+			{
+				new ClassLoader(Class.forName(classpath)).reloadClass();
+			} catch (ClassNotFoundException e)
+			{
+				Log.e("没有找到目标的类！出乎意料的错误！");
+			}
 		}
-		Collections.sort(messageReceiveListeners, new Comparator<OnMessageReceiveListener>() {
-
-			@Override
-			public int compare(OnMessageReceiveListener o1, OnMessageReceiveListener o2) {
-				// TODO Auto-generated method stub
-				return o2.priority-o1.priority;
-			}
-			
-		});
-		Collections.sort(groupMemberChangeListeners, new Comparator<OnGroupMemberChangeListener>() {
-
-			@Override
-			public int compare(OnGroupMemberChangeListener o1, OnGroupMemberChangeListener o2) {
-				// TODO Auto-generated method stub
-				return o2.priority-o1.priority;
-			}
-			
-		});
-		Collections.sort(messageSendListeners, new Comparator<OnMessageSendListener>() {
-
-			@Override
-			public int compare(OnMessageSendListener o1, OnMessageSendListener o2) {
-				// TODO Auto-generated method stub
-				return o2.priority-o1.priority;
-			}
-			
-		});
-	}
 		
-	public void addMessageReceiveListener(OnMessageReceiveListener messageReceiveListener)
-	{
-		this.messageReceiveListeners.add(messageReceiveListener);
-	}
-	public void addMessageReceiveListener(List<OnMessageReceiveListener> messageReceiveListeners)
-	{
-		this.messageReceiveListeners.addAll(messageReceiveListeners);
-	}
-	public void addGroupMemberChangeListener(OnGroupMemberChangeListener groupMemberChangeListener)
-	{
-		this.groupMemberChangeListeners.add(groupMemberChangeListener);
-	}
-	public void addGroupMemberChangeListener(List<OnGroupMemberChangeListener> groupMemberChangeListeners)
-	{
-		this.groupMemberChangeListeners.addAll(groupMemberChangeListeners);
-	}
-	public void addMessageSendListener(OnMessageSendListener messageSendListener)
-	{
-		this.messageSendListeners.add(messageSendListener);
-	}
-	public void addMessageSendListener(List<OnMessageSendListener> messageSendListeners)
-	{
-		this.messageSendListeners.addAll(messageSendListeners);
 	}
 }

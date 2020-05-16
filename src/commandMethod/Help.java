@@ -8,11 +8,13 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
+import commandPointer.annotations.AuxiliaryClass;
 import commandPointer.annotations.RegistListener;
 import surveillance.Log;
 import tools.GetJarResources;
 import tools.XMLDocument;
 
+@AuxiliaryClass
 public class Help extends Father
 {
 

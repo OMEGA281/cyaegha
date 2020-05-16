@@ -18,11 +18,13 @@ import org.meowy.cqp.jcq.entity.CQImage;
 import org.meowy.cqp.jcq.message.CQCode;
 import org.meowy.cqp.jcq.util.DigestUtils;
 
+import commandPointer.annotations.AuxiliaryClass;
 import connection.CQSender;
 import global.UniversalConstantsTable;
 import global.authorizer.AuthirizerUser;
 import global.authorizer.MinimumAuthority;
 
+@AuxiliaryClass
 public class ShowImage extends Father
 {
 

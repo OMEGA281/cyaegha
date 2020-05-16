@@ -6,10 +6,12 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import commandPointer.annotations.AuxiliaryClass;
 import global.UniversalConstantsTable;
 import net.sourceforge.jeval.EvaluationException;
 import net.sourceforge.jeval.Evaluator;
 
+@AuxiliaryClass
 public class ERPG extends Father 
 {
 	private final String SAME_STRING="samestring";

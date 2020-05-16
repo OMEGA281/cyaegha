@@ -7,10 +7,12 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 import commandMethod.register.OnMessageReceiveListener;
+import commandPointer.annotations.AuxiliaryClass;
 import connection.ReceiveMessageType;
 import global.authorizer.AuthirizerUser;
 import global.authorizer.MinimumAuthority;
 
+@AuxiliaryClass
 public class PhraseListener extends Father 
 {
 	private static final String Split="##";
