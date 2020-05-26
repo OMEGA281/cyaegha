@@ -33,7 +33,7 @@ public class XMLDocument
 	 * @param creat 如果文件不存在，是否创建一个空XML<br>
 	 * 新建的XML文件只有一个root的根元素
 	 * @throws JDOMException 文件不符合XML规范
-	 * @throws IOException 文件不存在
+	 * @throws IOException 文件读写错误
 	 */
 	public static Document getDocument(String url,boolean creat) throws JDOMException, IOException
 	{
