@@ -1,4 +1,4 @@
-package commandPointer.authorizer;
+package commandPointer;
 
 import java.io.File;
 import java.io.IOException;

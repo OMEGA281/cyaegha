@@ -1,4 +1,4 @@
-package commandPointer.authorizer;
+package commandPointer;
 
 import java.util.HashMap;
 
@@ -21,7 +21,7 @@ public class AuthirizerListBook
 		return authirizerListBook;
 	}
 	
-	public void addNewAuthirizerList(String className,String authirizerListName)
+	protected void addNewAuthirizerList(String className,String authirizerListName)
 	{
 		if(classListMap.containsKey(className))
 			Log.e("已存在该类，将刷新");

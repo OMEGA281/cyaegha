@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import commandPointer.annotations.AuxiliaryClass;
 import commandPointer.annotations.RegistCommand;
+import commandPointer.annotations.UseAuthirizerList;
 import commandPointer.annotations.RegistListener.FriendAddListener;
 import commandPointer.annotations.RegistListener.GroupAddListener;
 import commandPointer.annotations.RegistListener.GroupBanListener;
@@ -26,6 +27,13 @@ public class ClassLoader
 		this.clazz=clazz;
 		if(clazz.getAnnotation(AuxiliaryClass.class)!=null)
 			return;
+		UseAuthirizerList authirizerList=clazz.getAnnotation(UseAuthirizerList.class);
+		String defaultAuthirizerList;
+		if(authirizerList==null)
+			defaultAuthirizerList=clazz.getName();
+		else
+			defaultAuthirizerList=authirizerList.AuthirizerListName();
+		AuthirizerListBook.getAuthirizerListBook().addNewAuthirizerList(clazz.getName(), defaultAuthirizerList);
 		try
 		{
 			object=clazz.newInstance();

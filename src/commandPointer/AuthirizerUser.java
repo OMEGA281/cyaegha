@@ -1,4 +1,4 @@
-package commandPointer.authorizer;
+package commandPointer;
 
 /**
  * 预置权限枚举，内含从SOP到禁止用户<br>
