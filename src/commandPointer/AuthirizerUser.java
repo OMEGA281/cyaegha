@@ -33,7 +33,7 @@ public enum AuthirizerUser
 		authorityValue=i;
 	}
 	/**
-	 * 比较获得该用户的权限是否可以得到
+	 * 比较获得该用户的权限是否足够
 	 * @param clientAuthirizer 用户的权限
 	 * @return
 	 */

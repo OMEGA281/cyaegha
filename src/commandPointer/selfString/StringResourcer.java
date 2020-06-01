@@ -1,4 +1,4 @@
-package commandPointer;
+package commandPointer.selfString;
 
 import org.jdom2.Document;
 import org.jdom2.Element;

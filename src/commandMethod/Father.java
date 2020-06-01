@@ -4,10 +4,6 @@ import java.io.File;
 import java.io.StringReader;
 
 import commandMethod.dataExchanger.DataExchanger;
-import commandMethod.register.OnGroupMemberChangeListener;
-import commandMethod.register.OnMessageReceiveListener;
-import commandMethod.register.OnMessageSendListener;
-import commandMethod.register.Register;
 import commandPointer.annotations.AuxiliaryClass;
 import connection.CQSender;
 import connection.ReceiveMessageType;
@@ -82,18 +78,6 @@ public abstract class Father
 		if(!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;
-	}
-	public void addMessageReceiveListener(OnMessageReceiveListener messageReceiveListener)
-	{
-		Register.getRegister().messageReceiveListeners.add(messageReceiveListener);
-	}
-	public void addGroupMemberChangeListener(OnGroupMemberChangeListener groupMemberChangeListener)
-	{
-		Register.getRegister().groupMemberChangeListeners.add(groupMemberChangeListener);
-	}
-	public void addMessageSendListener(OnMessageSendListener messageSendListener)
-	{
-		Register.getRegister().messageSendListeners.add(messageSendListener);
 	}
 	/**若是由命令调用，则一定会更新，若是以listener调用，则需手动更新<code>receiveMessageType</code>*/
 	public void sendBackMsg(String string)

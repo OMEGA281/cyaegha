@@ -130,7 +130,7 @@ public class Switch extends Father
 					if(receiveMessageType.getMsg().replaceAll(" ", "").equals(".boton")
 							||receiveMessageType.getMsg().replaceAll(" ", "").equals(".boton"))
 					{
-						if(AuthirizerUser.GROUP_MANAGER.ifAccessible(CQSender.getAuthirizer(receiveMessageType)))
+						if(AuthirizerUser.GROUP_MANAGER.ifAccessible(CQSender.getNormalAuthirizer(receiveMessageType)))
 							bot_on();
 						else
 							sendBackMsg("权限不足");

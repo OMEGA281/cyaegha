@@ -3,12 +3,10 @@ package life_controller;
 import org.meowy.cqp.jcq.entity.CoolQ;
 
 import commandMethod.register.Register;
-import commandPointer.Matcher;
 import connection.CQSender;
 import global.UniversalConstantsTable;
 import surveillance.Log;
 import transceiver.EventTrigger;
-import transceiver.Receiver;
 import transceiver.Transmitter;
 
 class LifeCycleController 
@@ -30,9 +28,7 @@ class LifeCycleController
     	new Register();
     	new EventTrigger();
     	
-		Receiver.getReceiver();
 		Transmitter.getTransmitter();
-		Matcher.getMatcher();
 		new CQSender(CQ);
 		Log.d("初始化完毕");
 		status=Status.DISABLED;
@@ -40,18 +36,15 @@ class LifeCycleController
 	protected void enabled()
 	{
 		Register.getRegister().reloadAllClass();
-    	Receiver.getReceiver().startThread();
     	Transmitter.getTransmitter().startThread();
     	status=Status.RUNNING;
 	}
 	protected void disabled()
 	{
-		Receiver.getReceiver().endThread();
 		status=Status.DISABLED;
 	}
 	protected void exit()
 	{
-		Receiver.getReceiver().endThread();
 		Transmitter.getTransmitter().endThread();
 		status=Status.NOT_RUNNING;
 	}

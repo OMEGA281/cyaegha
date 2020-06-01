@@ -18,7 +18,7 @@ public class AuthirizerList
 	
 	String listPath;
 	Document document;
-	Element rootElement=document.getRootElement();
+	Element rootElement;
 	
 	ArrayList<Long> WhiteList=new ArrayList<Long>();
 	ArrayList<Long> BlackList=new ArrayList<Long>();
@@ -32,6 +32,7 @@ public class AuthirizerList
 			try
 			{
 				document=XMLDocument.getDocument(listPath, true);
+				rootElement=document.getRootElement();
 				document.getRootElement().addContent(new Element(Text_BlackList));
 				document.getRootElement().addContent(new Element(Text_WhiteList));
 			} catch (JDOMException | IOException e)
@@ -44,18 +45,27 @@ public class AuthirizerList
 			try
 			{
 				document=XMLDocument.getDocument(listPath, false);
+				rootElement=document.getRootElement();
 			} catch (JDOMException | IOException e)
 			{
 				Log.e("在读取权限表的时候出现错误！");
 			}
 		try
 		{
-			String[] x=rootElement.getChild(Text_WhiteList).getText().split(";");
-			for (String string : x)
-				WhiteList.add(Long.parseLong(string));
-			x=rootElement.getChild(Text_BlackList).getText().split(";");
-			for (String string : x)
-				BlackList.add(Long.parseLong(string));
+			Element e=rootElement.getChild(Text_WhiteList);
+			if(e!=null)
+			{
+				String[] x=e.getText().split(";");
+				for (String string : x)
+					WhiteList.add(Long.parseLong(string));
+			}
+			e=rootElement.getChild(Text_BlackList);
+			if(e!=null)
+			{
+				String[] x=e.getText().split(";");
+				for (String string : x)
+					BlackList.add(Long.parseLong(string));
+			}
 		} catch (NumberFormatException e)
 		{
 			Log.e("在读取权限表的时候出现了无法识别为号码的错误！");

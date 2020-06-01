@@ -2,6 +2,8 @@ package commandPointer;
 
 import java.util.HashMap;
 
+import commandPointer.annotations.AuthirizerListNeed;
+import commandPointer.annotations.MinimumAuthority;
 import connection.CQSender;
 import global.UniversalConstantsTable;
 import surveillance.Log;
@@ -32,17 +34,18 @@ public class AuthirizerListBook
 			map.put(authirizerListName, new AuthirizerList(
 					UniversalConstantsTable.ROOTPATH+UniversalConstantsTable.PLUGIN_AUTHORITYPATH+authirizerListName));
 	}
-	public AuthirizerUser getNormalAuthirizerLevel(MessageReceiveEvent event)
+	private AuthirizerUser getNormalAuthirizerLevel(MessageReceiveEvent event)
 	{
 		int type=event.getMsgType();
 		long groupNum=event.getFromGroup();
 		long num=event.getFromQQ();
 		return getNormalAuthirizerLevel(type, groupNum, num);
 	}
-	public AuthirizerUser getNormalAuthirizerLevel(int type,long groupNum,long num)
+	private AuthirizerUser getNormalAuthirizerLevel(int type,long groupNum,long num)
 	{
 		switch (type)
 		{
+//		FIXME:这里后来要加上避免不存在的人或群的查询
 		case UniversalConstantsTable.MSGTYPE_PERSON:
 			return AuthirizerUser.PERSON_CLIENT;
 		case UniversalConstantsTable.MSGTYPE_GROUP:
@@ -65,28 +68,11 @@ public class AuthirizerListBook
 		}
 	}
 	/**
-	 * 检测在权限表上是否是白名单<br>
-	 * 注意：本方法是直接检测的默认的权限表，指定权限表使用同名方法
-	 * @param num 号码
-	 * @return
-	 */
-	public boolean isWhite(Class<?> fromClass,long num)
-	{
-		String name=fromClass.getName();
-		String listName=classListMap.get(name);
-		if(listName==null)
-		{
-			Log.e("请求了不存在的类："+listName);
-			return false;
-		}
-		return isWhite(listName, num);
-	}
-	/**
 	 * 检测指定权限表上是否是白名单
 	 * @param num 号码
 	 * @return
 	 */
-	public boolean isWhite(String listName,long num)
+	private boolean isWhite(String listName,long num)
 	{
 		AuthirizerList authirizerList=map.get(listName);
 		if(authirizerList==null)
@@ -95,30 +81,13 @@ public class AuthirizerListBook
 			return false;
 		}
 		return authirizerList.isWhite(num);
-	}
-	/**
-	 * 检测在权限表上是否是黑名单<br>
-	 * 注意：本方法是直接检测的默认的权限表，指定权限表使用同名方法
-	 * @param num 号码
-	 * @return
-	 */
-	public boolean isBlack(Class<?> fromClass,long num)
-	{
-		String name=fromClass.getName();
-		String listName=classListMap.get(name);
-		if(listName==null)
-		{
-			Log.e("请求了不存在的类："+listName);
-			return false;
-		}
-		return isWhite(listName, num);
 	}
 	/**
 	 * 检测指定权限表上是否是黑名单
 	 * @param num 号码
 	 * @return
 	 */
-	public boolean isBlack(String listName,long num)
+	private boolean isBlack(String listName,long num)
 	{
 		AuthirizerList authirizerList=map.get(listName);
 		if(authirizerList==null)
@@ -127,5 +96,52 @@ public class AuthirizerListBook
 			return false;
 		}
 		return authirizerList.isWhite(num);
+	}
+	public boolean isAccessible(MinimumAuthority authority,int type,long groupNum,long num)
+	{
+		if(authority==null)
+		{
+			AuthirizerUser user=getNormalAuthirizerLevel(type, groupNum, num);
+//			FIXME:这里后来要加上受到默认的影响的方式
+			return AuthirizerUser.GROUP_MEMBER.ifAccessible(user);
+		}
+		else
+		{
+			AuthirizerUser askLevel=authority.authirizerUser();
+			AuthirizerUser user=getNormalAuthirizerLevel(type, groupNum, num);
+			return askLevel.ifAccessible(user);
+		}
+	}
+	public boolean isAccessible(AuthirizerListNeed authirizer,long num,Class<?> clazz)
+	{
+		if(authirizer==null)
+			return true;
+		else
+		{
+			String listName=authirizer.AuthirizerList();
+			if(listName.isEmpty())
+			{
+				listName=classListMap.get(clazz.getName());
+			}
+			if(listName==null)
+			{
+				Log.e("找不到该类所在的权限表！");
+				return false;
+			}
+			if(isWhite(listName, num)==true)
+				if(authirizer.WhiteList_Accessible()==true)
+					return true;
+				else
+					return false;
+			if(isBlack(listName, num)==true)
+				if(authirizer.BlackList_Accessible()==true)
+					return true;
+				else
+					return false;
+			if(authirizer.Normal_Accessible()==true)
+				return true;
+			else
+				return false;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package commandPointer;
+package commandPointer.selfString;
 
 import tools.DoubleMap;
 

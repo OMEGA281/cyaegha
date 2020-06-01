@@ -1,33 +1,16 @@
 package connection;
 
 import org.meowy.cqp.jcq.entity.*;
-import org.meowy.cqp.jcq.entity.enumerate.Authority;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
-import org.meowy.cqp.jcq.message.CQCode;
-import org.meowy.cqp.jcq.message.CQMsg;
-import org.meowy.cqp.jcq.message.CoolQMsg;
-
-import commandMethod.ERPG;
-import commandMethod.register.OnGroupMemberChangeListener;
-import commandMethod.register.Register;
 import commandPointer.CommandControler;
-import commandPointer.Matcher;
 import global.UniversalConstantsTable;
-import global.authorizer.AppAuthirizerList;
-import global.authorizer.AuthorizerListGetter;
 import life_controller.SwitchBox;
-import surveillance.Log;
-import tools.TimeSimpleTool;
 import transceiver.EventTrigger;
-import transceiver.Receiver;
-import transceiver.Transmitter;
 import transceiver.event.FriendAddEvent;
 import transceiver.event.GroupAddEvent;
 import transceiver.event.GroupBanEvent;
 import transceiver.event.GroupMemberChangeEvent;
 import transceiver.event.MessageReceiveEvent;
-
-import java.util.Scanner;
 
 import javax.swing.*;
 
@@ -114,17 +97,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 //    用于加载后启动的测试方法，打包前需去除
 	private void testmethod()
 	{
-		AuthorizerListGetter.init();
-		System.out.println(AuthorizerListGetter.getAppAuthirizerList("text") == null);
-		AuthorizerListGetter.addNewAuthirizerList("text");
-		AppAuthirizerList authirizerList = AuthorizerListGetter.getAppAuthirizerList("text");
-		System.out.println(authirizerList == null);
-		authirizerList.addDiscussWhiteList("check", 123456);
-		System.out.println(authirizerList.getDiscussPermission("check", 123456));
-		authirizerList.addGroupDetialedWhiteList("check", 123456, 654321);
-		System.out.println(authirizerList.getGroupDetialedPermission("check", 123456, 654321));
-		System.out.println(authirizerList.getGroupDetialedPermission("check", 123456, 123456));
-		System.out.println(authirizerList.hasGroupDetailedPermission("check", 123456, 123456));
+		
 	}
 
 	/**

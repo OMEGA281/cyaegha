@@ -1,13 +1,13 @@
 package connection;
 
+import org.meowy.cqp.jcq.entity.CQStatus;
 import org.meowy.cqp.jcq.entity.CoolQ;
 import org.meowy.cqp.jcq.entity.Member;
 import org.meowy.cqp.jcq.entity.QQInfo;
 import org.meowy.cqp.jcq.entity.enumerate.Authority;
 
 import global.UniversalConstantsTable;
-import global.authorizer.AuthirizerUser;
-import global.authorizer.AuthorizerListGetter;
+import commandPointer.AuthirizerUser;
 import surveillance.Log;
 
 public class CQSender 
@@ -39,79 +39,6 @@ public class CQSender
 			member=CQ.getGroupMemberInfo(GroupNum, QQ, true);
 		return CQ.getGroupMemberInfo(GroupNum, QQ);
 	}
-	/**
-	 * 获取这条信息发出者所在环境的权限
-	 * @param messageType 信息包
-	 * @return 权限情况
-	 */
-	public static AuthirizerUser getAuthirizer(ReceiveMessageType messageType)
-	{
-		int msgType=messageType.MsgType;
-		
-		long client=messageType.getfromQQ();
-		if(AuthorizerListGetter.getCoreAuthirizerList().isSOP(client))
-			return AuthirizerUser.SUPER_OP;
-		if(AuthorizerListGetter.getCoreAuthirizerList().isOP(client))
-			return AuthirizerUser.OP;
-		
-//		FIXME:这里是之后加入处理匿名者的代码
-		if(messageType.getfromAnonymous()!=null)
-			if(messageType.getfromAnonymous()!="")
-				return AuthirizerUser.BANNED_USER;
-		
-		
-		switch(msgType)
-		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-			return AuthirizerUser.PERSON_CLIENT;
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			return AuthirizerUser.DISCUSS_MEMBER;
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-			long QQ=messageType.getfromQQ();
-			long GroupNum=messageType.getfromGroup();
-			Authority i=getQQInfoInGroup(QQ, GroupNum).getAuthority();
-			switch(i)
-			{
-			case ADMIN:
-				return AuthirizerUser.GROUP_MANAGER;
-			case MEMBER:
-				return AuthirizerUser.GROUP_MEMBER;
-			case OWNER:
-				return AuthirizerUser.GROUP_OWNER;
-			}
-		}
-		return AuthirizerUser.BANNED_USER;
-	}
-	
-	/**
-	 * 获得某群内某人的权限<br>
-	 * @param groupNum 群号
-	 * @param num QQ号
-	 * @return
-	 */
-	public static AuthirizerUser getAuthirizer(long groupNum,long num)
-	{
-		
-		long client=num;
-		if(AuthorizerListGetter.getCoreAuthirizerList().isSOP(client))
-			return AuthirizerUser.SUPER_OP;
-		if(AuthorizerListGetter.getCoreAuthirizerList().isOP(client))
-			return AuthirizerUser.OP;
-		
-		Member member=getQQInfoInGroup(num, groupNum);
-		if(member==null)
-			return AuthirizerUser.BANNED_USER;
-		switch(member.getAuthority())
-		{
-		case ADMIN:
-			return AuthirizerUser.GROUP_MANAGER;
-		case MEMBER:
-			return AuthirizerUser.GROUP_MEMBER;
-		case OWNER:
-			return AuthirizerUser.GROUP_OWNER;
-		}
-		return AuthirizerUser.BANNED_USER;
-	}
 	
 	public static String getMyName()
 	{
@@ -123,21 +50,22 @@ public class CQSender
 		return CQ.getLoginQQ();
 	}
 	
-	public static void dismissGroup(long l)
+	public static boolean dismissGroup(long l)
 	{
-		AuthirizerUser authirizerUser=getAuthirizer(l, getMyQQ());
-		if(authirizerUser!=AuthirizerUser.GROUP_OWNER&&
-				authirizerUser!=AuthirizerUser.GROUP_MEMBER&&authirizerUser!=AuthirizerUser.GROUP_MANAGER)
+		Member member=CQ.getGroupMemberInfo(l, getMyQQ());
+		if(member==null)
 		{
-			Log.e("异常的退群操作！中止本次操作！群号："+l);
-			return;
+			Log.e("不存在于该群，群号："+l);
+			return false;
 		}
-		CQ.setGroupLeave(l, authirizerUser==AuthirizerUser.GROUP_OWNER?true:false);
+		int status=CQ.setGroupLeave(l, member.getAuthority()==Authority.OWNER?true:false);
+		return CQStatus.getStatus(status).isSuccess();
 	}
 	
-	public static void dismissDiscuss(long l)
+	public static boolean dismissDiscuss(long l)
 	{
-		CQ.setDiscussLeave(l);
+		int status=CQ.setDiscussLeave(l);
+		return CQStatus.getStatus(status).isSuccess();
 	}
 	
 	public CQSender(CoolQ CQ) 
