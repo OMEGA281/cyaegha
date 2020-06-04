@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 
-import commandPointer.SelfStartMethod;
+import pluginHelper.SelfStartMethod;
 import surveillance.Log;
 import transceiver.event.FriendAddEvent;
 import transceiver.event.GroupAddEvent;

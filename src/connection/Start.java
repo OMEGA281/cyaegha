@@ -2,9 +2,10 @@ package connection;
 
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
-import commandPointer.CommandControler;
+
 import global.UniversalConstantsTable;
 import life_controller.SwitchBox;
+import pluginHelper.CommandControler;
 import transceiver.EventTrigger;
 import transceiver.event.FriendAddEvent;
 import transceiver.event.GroupAddEvent;

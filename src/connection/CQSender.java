@@ -7,7 +7,7 @@ import org.meowy.cqp.jcq.entity.QQInfo;
 import org.meowy.cqp.jcq.entity.enumerate.Authority;
 
 import global.UniversalConstantsTable;
-import commandPointer.AuthirizerUser;
+import pluginHelper.AuthirizerUser;
 import surveillance.Log;
 
 public class CQSender 
