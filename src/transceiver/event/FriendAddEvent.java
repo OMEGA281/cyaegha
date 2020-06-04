@@ -1,6 +1,5 @@
 package transceiver.event;
 
-import global.UniversalConstantsTable;
 import tools.TimeSimpleTool;
 
 /**
@@ -11,15 +10,12 @@ import tools.TimeSimpleTool;
  */
 public class FriendAddEvent extends Event
 {
-	long sendTime;
 	String msg;
 	String responseFlag;
 	public FriendAddEvent(long userNum, String msg, String responseFlag)
 	{
-		type=UniversalConstantsTable.MSGTYPE_PERSON;
-		this.userNum=userNum;
+		super(SourceType.PERSON, userNum, 0, TimeSimpleTool.getNowTimeStamp());
 		
-		this.sendTime=TimeSimpleTool.getNowTimeStamp();
 		this.msg=msg;
 		this.responseFlag=responseFlag;
 	}

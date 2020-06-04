@@ -4,11 +4,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.meowy.cqp.jcq.message.CQCode;
-import org.meowy.cqp.jcq.message.CQMsg;
 import org.meowy.cqp.jcq.message.CoolQMsg;
 
+import com.alibaba.fastjson.JSONObject;
+
 import connection.CQSender;
-import global.UniversalConstantsTable;
 import tools.TimeSimpleTool;
 
 /**
@@ -22,7 +22,6 @@ public class MessageReceiveEvent extends Event
 	int MsgID;
 	String fromAnonymous;
 	String Msg;
-	long time;
 	boolean shouldRespone;
 	/**收到消息时的通用包形式
 	 * @param MsgType 消息类型，常量池中有
@@ -33,18 +32,15 @@ public class MessageReceiveEvent extends Event
 	 * @param fromAnonymous 来源匿名者
 	 * @param Msg 消息内容
 	 */
-	public MessageReceiveEvent(int MsgType,int subType,int MsgID,long userNum,long groupNum,String fromAnonymous,String Msg) 
+	public MessageReceiveEvent(SourceType MsgType,int subType,int MsgID,long userNum,long groupNum,String fromAnonymous,String Msg) 
 	{
-		type=MsgType;
-		this.userNum=userNum;
-		this.groupNum=groupNum;
+		super(MsgType, userNum, groupNum, TimeSimpleTool.getNowTimeStamp());
 		
 		this.SubType=subType;
 		this.MsgID=MsgID;
 		this.fromAnonymous=fromAnonymous;
 		this.Msg=Msg.trim();
 		formatMsg();
-		time=TimeSimpleTool.getNowTimeStamp();
 	}
 	private void formatMsg()
 	{
@@ -91,29 +87,21 @@ public class MessageReceiveEvent extends Event
 	@Override
 	public String toString()
 	{
-		StringBuilder stringBuilder=new StringBuilder();
-		stringBuilder.append("{\"来源\":"+type);
-		stringBuilder.append(",\"来源人\":"+userNum);
-		switch (type)
+		JSONObject jsonObject=new JSONObject();
+		jsonObject.put("来源", type);
+		jsonObject.put("来源人", userNum);
+		if(type!=SourceType.PERSON)
 		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-			break;
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			stringBuilder.append(",\"群组\":"+groupNum);
-			break;
-		default:
-			break;
+			jsonObject.put("群组", groupNum);
 		}
 		if(!shouldRespone)
-			stringBuilder.append(",\"响应\":"+shouldRespone);
-		stringBuilder.append(",\"时间\":"+time);
-		stringBuilder.append(",\"序号\":"+MsgID);
-		stringBuilder.append(",\"信息\":\""+Msg+"\"");
-		stringBuilder.append("}");
-		return stringBuilder.toString();
+			jsonObject.put("响应",shouldRespone);
+		jsonObject.put("时间",time);
+		jsonObject.put("序号",MsgID);
+		jsonObject.put("信息",Msg);
+		return jsonObject.toJSONString();
 	}
-	public int getMsgType()
+	public SourceType getMsgType()
 	{
 		return type;
 	}

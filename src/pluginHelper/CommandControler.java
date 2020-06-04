@@ -1,14 +1,16 @@
 package pluginHelper;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
-import connection.ReceiveMessageType;
 import pluginHelper.annotations.AuthirizerListNeed;
 import pluginHelper.annotations.MinimumAuthority;
 import pluginHelper.annotations.RegistCommand;
 import surveillance.Log;
+import transceiver.IdentitySymbol.SourceType;
+import transceiver.event.Event;
 import transceiver.event.MessageReceiveEvent;
 
 public class CommandControler
@@ -31,7 +33,6 @@ public class CommandControler
 		Object[] params;
 		public CommandPackage(String name,String help,SelfStartMethod method) 
 		{
-			// TODO Auto-generated constructor stub
 			this.commandhead=name;
 			this.help=help;
 			this.method=method;
@@ -42,19 +43,21 @@ public class CommandControler
 		@Override
 		public String toString() 
 		{
-			// TODO Auto-generated method stub
 			return commandhead+" "+help+" "+" "+method;
 		}
-		public Object invoke()
+		public Object invoke(Event event)
 		{
-			if(paramsType.length==0)
-				return method.startMethod();
-			if(params.length!=paramsType.length)
+			if(paramsType.length==1)
+				return method.startMethod(event);
+			if(params.length!=paramsType.length-1)
 			{
 				Log.e("参数数量不符合");
 				return null;
 			}
-			return method.startMethod(params);
+			List<Object> $arrayList=Arrays.asList(params);
+			ArrayList<Object> arrayList=new ArrayList<>($arrayList);
+			arrayList.add(0, event);
+			return method.startMethod(arrayList.toArray(new Object[0]));
 		}
 		/**
 		 * 将长短的字符串拆分成方法要求的参数
@@ -65,13 +68,23 @@ public class CommandControler
 		private Object[] paramsDivide(String longParams) throws Exception
 		{
 			if(paramsType.length==0)
-				if(longParams.length()==0)
-					return null;
-				else
+				throw new Exception("自定义方法中第一个事件变量不存在！");
+			if(paramsType[0]!=MessageReceiveEvent.class)
+				throw new Exception("自定义方法中第一个不是事件变量！");
+			if(longParams==null)
+				return null;
+			if(longParams.isEmpty())
+				return null;
+			if(paramsType.length==1)
+			{
+				if(!longParams.isEmpty())
 					throw new Exception("输入参数不符合正常要求");
+				else
+					return null;
+			}
 			StringBuffer regex=new StringBuffer();
 			Class<?> lastClass=null;
-			for (int i=0;i<paramsType.length;i++)
+			for (int i=1;i<paramsType.length;i++)
 			{
 				Class<?> class1 = paramsType[i];
 				if(i!=0)
@@ -83,9 +96,9 @@ public class CommandControler
 				}
 				if(class1==String.class)
 					regex.append("(\\D+)");
-				else if(class1==int.class)
+				else if(class1==Integer.class)
 					regex.append("(\\d+)");
-				else if (class1==boolean.class)
+				else if (class1==Boolean.class)
 					regex.append("((?i)false|(?i)true)");
 				else if(class1==Object.class)
 					regex.append("(.)+");
@@ -96,16 +109,16 @@ public class CommandControler
 			java.util.regex.Matcher matcher=pattern.matcher(longParams);
 			if(matcher.find())
 			{
-				Object[] objects=new Object[paramsType.length];
+				Object[] objects=new Object[paramsType.length-1];
 				for(int i=1;i<=matcher.groupCount();i++)
 				{
-					if(paramsType[i-1]==String.class)
+					if(paramsType[i]==String.class)
 						objects[i-1]=matcher.group(i);
-					else if(paramsType[i-1]==int.class)
+					else if(paramsType[i]==Integer.class)
 						objects[i-1]=Integer.parseInt(matcher.group(i));
-					else if (paramsType[i-1]==boolean.class)
+					else if (paramsType[i]==Boolean.class)
 						objects[i-1]=Boolean.parseBoolean(matcher.group(i));
-					else if(paramsType[i-1]==Object.class)
+					else if(paramsType[i]==Object.class)
 						objects[i-1]=matcher.group(i);
 				}
 				return objects;
@@ -186,12 +199,12 @@ public class CommandControler
 			if(accessible(commandPackage.method.getAnnotation(MinimumAuthority.class), 
 					commandPackage.method.getAnnotation(AuthirizerListNeed.class)
 					, event.getMsgType(), event.getUserNum(), event.getGroupNum(), commandPackage.method.getParentClass()))
-			return commandPackage.invoke();
+			return commandPackage.invoke(event);
 		}
 		return null;
 	}
 	/**
-	 * 检测一长串字符串是否是命令
+	 * 检测一长串字符串是否可能是命令，仅检查是不是在前面有个点
 	 * @param string
 	 * @return
 	 */
@@ -209,7 +222,7 @@ public class CommandControler
 		return $startCommand(messageType);
 	}
 	private boolean accessible(MinimumAuthority minimumAuthority,AuthirizerListNeed authirizerList,
-			int type,long userNum,long groupNum,Class<?> className)
+			SourceType type,long userNum,long groupNum,Class<?> className)
 	{
 		if(!AuthirizerListBook.getAuthirizerListBook().isAccessible(minimumAuthority, type, groupNum, userNum))
 			return false;

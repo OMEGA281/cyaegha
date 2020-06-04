@@ -17,6 +17,7 @@ import global.UniversalConstantsTable;
 import global.authorizer.AuthirizerUser;
 import global.authorizer.MinimumAuthority;
 import pluginHelper.annotations.AuxiliaryClass;
+import pluginHelper.annotations.RegistCommand;
 import surveillance.Log;
 import tools.FileSimpleIO;
 import tools.GetJarResources;
@@ -59,64 +60,21 @@ public class Draw extends Father
 		builder.deleteCharAt(builder.length()-1);
 		return builder.toString();
 	}
-	public void draw(ArrayList<String> arrayList)
+	@RegistCommand(CommandString = "draw",Help = "抽牌")
+	public void draw(String name,int time)
 	{
-		String cardName=arrayList.get(0);
-		int time;
-		if(arrayList.size()>1)
-		{
-			String times=arrayList.get(1);
-			try
-			{
-				time=Integer.parseInt(times);
-			}catch (NumberFormatException e)
-			{
-				sendBackMsg("输入的次数不合法");
-				return;
-			}
-		}
-		else
-		{
-			Pattern pattern=Pattern.compile(".*[0-9]");
-			if(pattern.matcher(cardName).matches())
-			{
-				String num="";
-				for(;;)
-				{
-					if(cardName.isEmpty())
-						break;
-					char c=cardName.charAt(cardName.length()-1);
-					if(Pattern.matches("[0-9]", Character.toString(c)))
-					{
-						num=c+num;
-						cardName=cardName.substring(0,cardName.length()-1);
-					}
-					else
-						break;
-				}
-				time=Integer.parseInt(num);
-			}
-			else
-				time=1;
-		}
-		String back;
-		if(cardName.isEmpty())
-		{
-			back=drawCard(time);
-		}
-		else
-		{
-			back=drawCard(cardName, time);
-		}
-		sendBackMsg(back);
+		
 	}
+	@RegistCommand(CommandString = "draw",Help = "抽牌")
+	public void draw(int time)
+	{
+		
+	}
+	@RegistCommand(CommandString = "draw",Help = "抽牌")
 	public void draw()
 	{
-		String s=drawCard(1);
-		if(s!=null)
-			sendBackMsg(s);
+		draw(1);
 	}
-	
 	private String drawCard(String cardPoolFile)
 	{
 		if(!cardPoolFile.endsWith(".xml"))

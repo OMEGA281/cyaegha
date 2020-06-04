@@ -12,20 +12,20 @@ import pluginHelper.ClassLoader;
 import surveillance.Log;
 import tools.ClassUtils;
 import transceiver.EventTrigger;
-import transceiver.Transmitter;
 
-class LifeCycleController 
+class LifeCycleController
 {
 	class checkSOP extends Thread
 	{
 		long SOP;
+
 		@Override
 		public void run()
 		{
-			for(;;)
+			for (;;)
 			{
-				SOP=AuthirizerListBook.getSOP();
-				if(SOP==0)
+				SOP = AuthirizerListBook.getSOP();
+				if (SOP == 0)
 					try
 					{
 						Thread.sleep(20);
@@ -38,29 +38,37 @@ class LifeCycleController
 			}
 		}
 	}
-	protected enum Status{NOT_RUNNING,DISABLED,RUNNING}
-	private Status status=Status.NOT_RUNNING;
+
+	protected enum Status
+	{
+		NOT_RUNNING, DISABLED, RUNNING
+	}
+
+	private Status status = Status.NOT_RUNNING;
+
 	protected Status getStatus()
 	{
 		return status;
 	}
+
 	protected void initialize(CoolQ CQ)
 	{
 		// 获取应用数据目录(无需储存数据时，请将此行注释)
-        // 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
-        // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
+		// 返回如：D:\CoolQ\data\app\org.meowy.cqp.jcq\data\app\com.example.demo\
+		// 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
 		Log.i("初始化中……");
-		UniversalConstantsTable.ROOTPATH=CQ.getAppDirectory()+"\\"+CQ.getLoginQQ()+"\\";
-		UniversalConstantsTable.PLUGIN_DATAPATH=UniversalConstantsTable.ROOTPATH+"data\\";
-		UniversalConstantsTable.PLUGIN_AUTHORITYPATH=UniversalConstantsTable.ROOTPATH+"authority\\";
-		
+		UniversalConstantsTable.ROOTPATH = CQ.getAppDirectory() + "\\" + CQ.getLoginQQ() + "\\";
+		UniversalConstantsTable.PLUGIN_DATAPATH = UniversalConstantsTable.ROOTPATH + "data\\";
+		UniversalConstantsTable.PLUGIN_AUTHORITYPATH = UniversalConstantsTable.ROOTPATH + "authority\\";
+
+		new CQSender(CQ);
 		new AuthirizerListBook();
 		new EventTrigger();
-    	
-		long SOP=AuthirizerListBook.getSOP();
-		if(SOP==0)
+
+		long SOP = AuthirizerListBook.getSOP();
+		if (SOP == 0)
 		{
-			checkSOP thread=new checkSOP();
+			checkSOP thread = new checkSOP();
 			thread.start();
 			ReadDisclaimer.start();
 			try
@@ -70,39 +78,38 @@ class LifeCycleController
 			{
 				e.printStackTrace();
 			}
-			SOP=thread.SOP;
-			
+			SOP = thread.SOP;
+
 		}
-		
-    	Set<String> className=ClassUtils.getClassName("plugin", false);
-    	for (String string : className)
+
+		Set<String> className = ClassUtils.getClassName("plugin", false);
+		for (String string : className)
 		{
 			try
 			{
 				new ClassLoader(Class.forName(string)).reloadClass();
 			} catch (ClassNotFoundException e)
 			{
-				Log.e("找不到类："+string);
+				Log.e("找不到类：" + string);
 			}
 		}
-    	
-		Transmitter.getTransmitter();
-		new CQSender(CQ);
+
 		Log.d("初始化完毕");
-		status=Status.DISABLED;
+		status = Status.DISABLED;
 	}
+
 	protected void enabled()
 	{
-    	Transmitter.getTransmitter().startThread();
-    	status=Status.RUNNING;
+		status = Status.RUNNING;
 	}
+
 	protected void disabled()
 	{
-		status=Status.DISABLED;
+		status = Status.DISABLED;
 	}
+
 	protected void exit()
 	{
-		Transmitter.getTransmitter().endThread();
-		status=Status.NOT_RUNNING;
+		status = Status.NOT_RUNNING;
 	}
 }

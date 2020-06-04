@@ -1,6 +1,5 @@
 package transceiver.event;
 
-import global.UniversalConstantsTable;
 import tools.TimeSimpleTool;
 
 /**
@@ -13,16 +12,12 @@ public class GroupBanEvent extends Event
 {
 	boolean banType;
 	long opQQNum;
-	long time;
 	long duration;
-	public GroupBanEvent(int subType, long fromGroup, long fromQQ, long beingOperateQQ, long duration)
+	public GroupBanEvent(int subType, long groupNum, long userNum, long beingOperateQQ, long duration)
 	{
-		type=UniversalConstantsTable.MSGTYPE_GROUP;
-		userNum=fromQQ;
-		groupNum=fromGroup;
+		super(SourceType.GROUP, userNum, groupNum, TimeSimpleTool.getNowTimeStamp());
 		
 		banType=subType==1;
-		time=TimeSimpleTool.getNowTimeStamp();
 		opQQNum=beingOperateQQ;
 		this.duration=duration;
 	}

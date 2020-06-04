@@ -6,13 +6,12 @@ import org.meowy.cqp.jcq.entity.Member;
 import org.meowy.cqp.jcq.entity.QQInfo;
 import org.meowy.cqp.jcq.entity.enumerate.Authority;
 
-import global.UniversalConstantsTable;
-import pluginHelper.AuthirizerUser;
 import surveillance.Log;
+import transceiver.IdentitySymbol;
+import transceiver.event.MessageSendEvent;
 
 public class CQSender 
 {
-	static CQSender cqSender;
 	static CoolQ CQ;
 	
 	public static QQInfo getQQInfo(long QQ)
@@ -70,39 +69,40 @@ public class CQSender
 	
 	public CQSender(CoolQ CQ) 
 	{
-		if(cqSender==null)
-		{
-			this.CQ=CQ;
-			cqSender=this;
-			Log.d("初始化发信器");
-		}
+			CQSender.CQ=CQ;
 	}
-	public static CQSender getSender()
+	public static void sendMsg(MessageSendEvent event)
 	{
-		if (cqSender!=null) 
+		int re = 0;
+		switch (event.type) 
 		{
-			return cqSender;
+		case PERSON:
+			re=CQ.sendPrivateMsg(event.userNum,event.Msg);
+			break;
+		case GROUP:
+			re=CQ.sendGroupMsg(event.groupNum, event.Msg);
+			break;
+		case DISCUSS:
+			re=CQ.sendDiscussMsg(event.groupNum, event.Msg);
+			break;
 		}
-		Log.e("发信部件尚未启动");
-		return null;
-	}
-	public void sendMsg(SendMessageType sendMessageType)
-	{
-		switch (sendMessageType.getType()) 
+		if(re<0)
 		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-			CQ.sendPrivateMsg(sendMessageType.toQQ, sendMessageType.Msg);
-			break;
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-			CQ.sendGroupMsg(sendMessageType.toGroup, sendMessageType.Msg);
-			break;
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			CQ.sendDiscussMsg(sendMessageType.toGroup, sendMessageType.Msg);
-			break;
+			Log.e("发信失败！"+event.toString());
+		}
+		Log.d(event.toString());
+	}
+	public static String getNickorCard(IdentitySymbol symbol)
+	{
+		switch (symbol.type)
+		{
+		case PERSON:
+		case DISCUSS:
+			return CQ.getStrangerInfo(symbol.userNum).getNick();
+		case GROUP:
+			CQ.getGroupMemberInfo(symbol.groupNum, symbol.userNum).getCard();
 		default:
-			Log.e("未发现发送信息的类型");
-			break;
+				return null;
 		}
-		Log.d("发送了",sendMessageType.toString());
 	}
 }

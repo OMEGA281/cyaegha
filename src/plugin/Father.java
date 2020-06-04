@@ -1,134 +1,54 @@
 package plugin;
 
 import java.io.File;
-import java.io.StringReader;
-
-import connection.CQSender;
-import connection.ReceiveMessageType;
-import connection.SendMessageType;
 import global.UniversalConstantsTable;
 import plugin.dataExchanger.DataExchanger;
 import pluginHelper.annotations.AuxiliaryClass;
 import tools.FileSimpleIO;
-import transceiver.Transmitter;
+import transceiver.EventTrigger;
+import transceiver.IdentitySymbol;
+import transceiver.event.Event;
+import transceiver.event.MessageSendEvent;
 
 @AuxiliaryClass
-public abstract class Father 
+public abstract class Father
 {
-	/**若是由命令调用，则一定会更新本变量，若是以listener调用，则需手动更新*/
-	ReceiveMessageType receiveMessageType;
 	private DataExchanger dataExchanger;
-	
-	public Father() 
+
+	public Father()
 	{
 		// TODO Auto-generated constructor stub
-		
+
 	}
-//	/**
-//	 * 用于初始化时加载字符串文件，一般来说加载之后不会再次通过方法内再次调用
-//	 * @return
-//	 */
-//	public boolean getStringResourcer()
-//	{
-//		
-//	}
-	/**
-	 * 本方法仅在命令调用时可以保持实时信息
-	 * @return 当前消息发送者的昵称
-	 */
-	public String getMessageSenderName()
-	{
-		switch(getMsgType())
-		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			return CQSender.getQQInfo(receiveMessageType.getfromQQ()).getNick();
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-			return CQSender.getQQInfoInGroup(receiveMessageType.getfromQQ(), receiveMessageType.getfromGroup()).getCard();
-		}
-		return "";
-	}
-	/**
-	 * 获得消息的类型，来源于群或是好友等等
-	 * 本方法仅在命令调用时可以保持实时信息
-	 * @return 消息的类型
-	 */
-	public int getMsgType()
-	{
-		return receiveMessageType.getMsgType();
-	}
-	public void setReceiveMessageType(ReceiveMessageType receiveMessageType) 
-	{
-		this.receiveMessageType = receiveMessageType;
-	}
-	/**初始化时启动的方法，所有的监听器全放在此处*/
-	public abstract void initialize();
-	/**获取本方法数据储存文件夹*/
+
+	/** 获取本方法数据储存文件夹 */
 	public String getPluginDataFloder()
 	{
-		String path=UniversalConstantsTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+"\\";
-		if(!new File(path).exists())
+		String path = UniversalConstantsTable.PLUGIN_DATAPATH + this.getClass().getSimpleName() + "\\";
+		if (!new File(path).exists())
 			FileSimpleIO.createFolder(path);
 		return path;
 	}
-	/**若是由命令调用，则一定会更新，若是以listener调用，则需手动更新<code>receiveMessageType</code>*/
-	public void sendBackMsg(String string)
+
+	/** 若是由命令调用，则一定会更新，若是以listener调用，则需手动更新<code>receiveMessageType</code> */
+	public void sendMsg(Event event, String msg)
 	{
-		if(string==null)
-			return;
-		if(string.endsWith("\n"))
-			string=string.substring(0, string.length()-1);
-		if(string.isEmpty())
-			return;
-		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				receiveMessageType.getMsgType(), receiveMessageType.getfromQQ()
-				, receiveMessageType.getfromGroup(), string));
+		sendMsg(event.getIdentitySymbol(), msg);
 	}
-	public void sendPrivateMsg(long QQ,String string)
+
+	public void sendMsg(IdentitySymbol symbol, String msg)
 	{
-		if(string==null)
-			return;
-		if(string.endsWith("\n"))
-			string=string.substring(0, string.length()-1);
-		if(string.isEmpty())
-			return;
-		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				UniversalConstantsTable.MSGTYPE_PERSON, QQ, 0, string));
+		EventTrigger.getEventTrigger().messageSend(new MessageSendEvent(symbol, msg));
 	}
-	public void sendGroupMsg(long group,long QQ,String string)
-	{
-		if(string==null)
-			return;
-		if(string.endsWith("\n"))
-			string=string.substring(0, string.length()-1);
-		if(string.isEmpty())
-			return;
-		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				UniversalConstantsTable.MSGTYPE_GROUP, QQ, group, string));
-	}
-	public void sendDiscussMsg(long group,long QQ,String string)
-	{
-		if(string==null)
-			return;
-		if(string.endsWith("\n"))
-			string=string.substring(0, string.length()-1);
-		if(string.isEmpty())
-			return;
-		Transmitter.getTransmitter().addMsg(new SendMessageType(
-				UniversalConstantsTable.MSGTYPE_DISCUSS, QQ, group, string));
-	}
+
 	/**
 	 * 获得数据交换器，用于储存数据<br>
 	 */
 	public DataExchanger getDataExchanger()
 	{
-		if(dataExchanger==null)
-			dataExchanger=new DataExchanger(UniversalConstantsTable.PLUGIN_DATAPATH+this.getClass().getSimpleName()+".xml");
+		if (dataExchanger == null)
+			dataExchanger = new DataExchanger(
+					UniversalConstantsTable.PLUGIN_DATAPATH + this.getClass().getSimpleName() + ".xml");
 		return dataExchanger;
 	}
-	
-//	public String replaceString(String index,String...strings)
-//	{
-//		
-//	}
 }

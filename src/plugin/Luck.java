@@ -6,10 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import connection.CQSender;
-import pluginHelper.annotations.AuxiliaryClass;
+import pluginHelper.annotations.RegistCommand;
 
-@AuxiliaryClass
 public class Luck extends Father
 {
 
@@ -19,7 +17,7 @@ public class Luck extends Father
 		// TODO Auto-generated method stub
 		
 	}
-	
+	@RegistCommand(CommandString = "jrrp",Help = "今日人品")
 	public void jrrp()
 	{
 //		获取群名片（昵称）

@@ -3,10 +3,10 @@ package connection;
 import org.meowy.cqp.jcq.entity.*;
 import org.meowy.cqp.jcq.event.JcqAppAbstract;
 
-import global.UniversalConstantsTable;
 import life_controller.SwitchBox;
 import pluginHelper.CommandControler;
 import transceiver.EventTrigger;
+import transceiver.IdentitySymbol.SourceType;
 import transceiver.event.FriendAddEvent;
 import transceiver.event.GroupAddEvent;
 import transceiver.event.GroupBanEvent;
@@ -89,7 +89,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		// 以下是收尾触发函数
 		// demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
 
-		demo.privateMsg(1, 34, 1304554598, ".test测试60", 0);
+		demo.privateMsg(1, 34, 1304554598, ".coc 5", 0);
 
 //        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
 //        demo.privateMsg(1, 34, 1304554598, ".rsc", 0);
@@ -98,7 +98,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 //    用于加载后启动的测试方法，打包前需去除
 	private void testmethod()
 	{
-		
+
 	}
 
 	/**
@@ -197,10 +197,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	{
 		// 这里处理消息
 //        CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
-		MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_PERSON,
-				subType, msgId, fromQQ, 0, null, msg);
-		boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
-		if(accessible&&CommandControler.isCommand(msg))
+		MessageReceiveEvent event = new MessageReceiveEvent(SourceType.PERSON, subType, msgId, fromQQ, 0, null, msg);
+		boolean accessible = EventTrigger.getEventTrigger().messageReceive(event);
+		if (accessible && CommandControler.isCommand(msg))
 		{
 			CommandControler.getCommandControler().startCommand(event);
 		}
@@ -227,19 +226,19 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		{
 			// 将匿名用户信息放到 anonymous 变量中
 			Anonymous anonymous = CQ.getAnonymous(fromAnonymous);
-			MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_GROUP,
-					subType, msgId, 80000000L, fromGroup, fromAnonymous, msg);
-			boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
-			if(accessible&&CommandControler.isCommand(msg))
+			MessageReceiveEvent event = new MessageReceiveEvent(SourceType.GROUP, subType, msgId, 80000000L, fromGroup,
+					fromAnonymous, msg);
+			boolean accessible = EventTrigger.getEventTrigger().messageReceive(event);
+			if (accessible && CommandControler.isCommand(msg))
 			{
 				CommandControler.getCommandControler().startCommand(event);
 			}
 		} else
 		{
-			MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_GROUP,
-					subType, msgId, fromQQ, fromGroup, null, msg);
-			boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
-			if(accessible&&CommandControler.isCommand(msg))
+			MessageReceiveEvent event = new MessageReceiveEvent(SourceType.GROUP, subType, msgId, fromQQ, fromGroup,
+					null, msg);
+			boolean accessible = EventTrigger.getEventTrigger().messageReceive(event);
+			if (accessible && CommandControler.isCommand(msg))
 			{
 				CommandControler.getCommandControler().startCommand(event);
 			}
@@ -278,10 +277,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int discussMsg(int subType, int msgId, long fromDiscuss, long fromQQ, String msg, int font)
 	{
 		// 这里处理消息
-		MessageReceiveEvent event=new MessageReceiveEvent(UniversalConstantsTable.MSGTYPE_DISCUSS,
-				subType, msgId, fromQQ, fromDiscuss, null, msg);
-		boolean accessible=EventTrigger.getEventTrigger().messageReceive(event);
-		if(accessible&&CommandControler.isCommand(msg))
+		MessageReceiveEvent event = new MessageReceiveEvent(SourceType.DISCUSS, subType, msgId, fromQQ, fromDiscuss,
+				null, msg);
+		boolean accessible = EventTrigger.getEventTrigger().messageReceive(event);
+		if (accessible && CommandControler.isCommand(msg))
 		{
 			CommandControler.getCommandControler().startCommand(event);
 		}
@@ -340,9 +339,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	 */
 	public int groupMemberDecrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ)
 	{
-		GroupMemberChangeEvent groupMemberChangeEvent=new GroupMemberChangeEvent(false, subtype, fromGroup, fromQQ, beingOperateQQ);
+		GroupMemberChangeEvent groupMemberChangeEvent = new GroupMemberChangeEvent(false, subtype, fromGroup, fromQQ,
+				beingOperateQQ);
 		EventTrigger.getEventTrigger().groupMemberChange(groupMemberChangeEvent);
-		
+
 		// 这里处理消息
 //		for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners)
 //		{
@@ -366,9 +366,10 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	 */
 	public int groupMemberIncrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ)
 	{
-		GroupMemberChangeEvent groupMemberChangeEvent=new GroupMemberChangeEvent(true, subtype, fromGroup, fromQQ, beingOperateQQ);
+		GroupMemberChangeEvent groupMemberChangeEvent = new GroupMemberChangeEvent(true, subtype, fromGroup, fromQQ,
+				beingOperateQQ);
 		EventTrigger.getEventTrigger().groupMemberChange(groupMemberChangeEvent);
-		
+
 		// 这里处理消息
 //		for (OnGroupMemberChangeListener groupMemberChangeListener : Register.getRegister().groupMemberChangeListeners)
 //		{
@@ -394,9 +395,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int groupBan(int subType, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ, long duration)
 	{
 		// 这里处理消息
-		GroupBanEvent banEvent=new GroupBanEvent(subType, fromGroup, fromQQ, beingOperateQQ, duration);
+		GroupBanEvent banEvent = new GroupBanEvent(subType, fromGroup, fromQQ, beingOperateQQ, duration);
 		EventTrigger.getEventTrigger().groupBan(banEvent);
-		
+
 		return 0;
 	}
 
@@ -412,7 +413,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int friendAdd(int subtype, int sendTime, long fromQQ)
 	{
 		// 这里处理消息
-		
+
 		return MSG_IGNORE;
 	}
 
@@ -435,9 +436,9 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		 * REQUEST_ADOPT 通过 REQUEST_REFUSE 拒绝
 		 */
 
-		FriendAddEvent friendAddEvent=new FriendAddEvent(fromQQ, msg, responseFlag);
+		FriendAddEvent friendAddEvent = new FriendAddEvent(fromQQ, msg, responseFlag);
 		EventTrigger.getEventTrigger().friendAdd(friendAddEvent);
-		
+
 		// CQ.setFriendAddRequest(responseFlag, REQUEST_ADOPT, null); // 同意好友添加请求
 		return MSG_IGNORE;
 	}
@@ -457,13 +458,13 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 	public int requestAddGroup(int subtype, int sendTime, long fromGroup, long fromQQ, String msg, String responseFlag)
 	{
 		// 这里处理消息
-		
-		if(subtype==2)
+
+		if (subtype == 2)
 		{
-			GroupAddEvent groupAddEvent=new GroupAddEvent(fromGroup, fromQQ, responseFlag);
+			GroupAddEvent groupAddEvent = new GroupAddEvent(fromGroup, fromQQ, responseFlag);
 			EventTrigger.getEventTrigger().groupAdd(groupAddEvent);
 		}
-		
+
 		/**
 		 * REQUEST_ADOPT 通过 REQUEST_REFUSE 拒绝 REQUEST_GROUP_ADD 群添加 REQUEST_GROUP_INVITE
 		 * 群邀请

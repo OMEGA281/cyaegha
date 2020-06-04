@@ -1,6 +1,5 @@
 package transceiver.event;
 
-import global.UniversalConstantsTable;
 import tools.TimeSimpleTool;
 
 /**
@@ -13,17 +12,13 @@ public class GroupMemberChangeEvent extends Event
 {
 	boolean increase;
 	boolean byAdmin;
-	long time;
 	long adminNum;
 	public GroupMemberChangeEvent(boolean ifIncrease, int subtype, long groupNum, long userNum, long beingOperateQQ) 
 	{
-		type=UniversalConstantsTable.MSGTYPE_GROUP;
-		this.userNum=userNum;
-		this.groupNum=groupNum;
+		super(SourceType.GROUP, userNum, groupNum, TimeSimpleTool.getNowTimeStamp());
 		
 		increase=ifIncrease;
 		byAdmin=subtype==1;
-		time=TimeSimpleTool.getNowTimeStamp();
 		adminNum=beingOperateQQ;
 	}
 }
