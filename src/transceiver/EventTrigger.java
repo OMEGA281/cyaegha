@@ -5,7 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 
+import pluginHelper.AuthirizerUser;
+import pluginHelper.AuthirizerListBook;
+import pluginHelper.MainAuthirizerList;
 import pluginHelper.SelfStartMethod;
+import pluginHelper.annotations.AuthirizerListNeed;
+import pluginHelper.annotations.MinimumAuthority;
 import surveillance.Log;
 import transceiver.event.FriendAddEvent;
 import transceiver.event.GroupAddEvent;
@@ -85,7 +90,7 @@ public class EventTrigger
 				{
 					FriendAddEvent event=friendAddEventsQueue.poll();
 					code_0:for (SelfStartMethod selfStartMethod : friendAddEvents)
-					{
+					{						
 						EventResult result=(EventResult) selfStartMethod.startMethod(event);
 						switch (result)
 						{
@@ -191,6 +196,13 @@ public class EventTrigger
 //					先执行触发器，然后执行命令器
 					code_0:for (SelfStartMethod selfStartMethod : messageReceiveEvents)
 					{
+						boolean b=accessible(selfStartMethod.getAnnotation(MinimumAuthority.class), 
+								selfStartMethod.getAnnotation(AuthirizerListNeed.class), 
+								event.getMsgType(), event.getUserNum(), event.getGroupNum(), selfStartMethod.getParentClass());
+						if(!b)
+							if(!(AuthirizerListBook.isOP(event.getUserNum())||AuthirizerListBook.getSOP()==event.getUserNum()))
+								continue;
+						
 						EventResult result=(EventResult) selfStartMethod.startMethod(event);
 						switch (result)
 						{
@@ -358,7 +370,7 @@ public class EventTrigger
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
-				Log.d("好友添加请求处理后被拦截，拦截者："+method.getParentName());
+				Log.d("好友添加请求处理后被拦截，拦截者："+method.getParentClass().getSimpleName());
 				return false;
 			}
 		}
@@ -372,7 +384,7 @@ public class EventTrigger
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
-				Log.d("群添加请求处理后被拦截，拦截者："+method.getParentName());
+				Log.d("群添加请求处理后被拦截，拦截者："+method.getParentClass().getSimpleName());
 				return false;
 			}
 		}
@@ -386,7 +398,7 @@ public class EventTrigger
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
-				Log.d("群被禁言请求处理后被拦截，拦截者："+method.getParentName());
+				Log.d("群被禁言请求处理后被拦截，拦截者："+method.getParentClass().getSimpleName());
 				return false;
 			}
 		}
@@ -400,7 +412,7 @@ public class EventTrigger
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
-				Log.d("群人数增减请求处理后被拦截，拦截者："+method.getParentName());
+				Log.d("群人数增减请求处理后被拦截，拦截者："+method.getParentClass().getSimpleName());
 				return false;
 			}
 		}
@@ -414,7 +426,7 @@ public class EventTrigger
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
-				Log.d("消息接受请求处理后被拦截，拦截者："+method.getParentName());
+				Log.d("消息接受请求处理后被拦截，拦截者："+method.getParentClass().getSimpleName());
 				return false;
 			}
 		}
@@ -429,10 +441,32 @@ public class EventTrigger
 			EventResult result=(EventResult)method.startMethod(addEvent);
 			if(result==EventResult.STOP)
 			{
-				Log.d("消息发出请求处理后被拦截，拦截者："+method.getParentName());
+				Log.d("消息发出请求处理后被拦截，拦截者："+method.getParentClass().getSimpleName());
 				return false;
 			}
 		}
+		return true;
+	}
+	
+	private boolean accessible(MinimumAuthority minimumAuthority,AuthirizerListNeed authirizerList
+			,int type,long userNum,long groupNum,Class<?> className)
+	{
+		if(!AuthirizerListBook.getAuthirizerListBook().isAccessible(minimumAuthority, type, groupNum, userNum))
+			return false;
+		if(!AuthirizerListBook.getAuthirizerListBook().isAccessible(authirizerList, userNum, className))
+			return false;
+		return true;
+	}
+	private boolean accessible(AuthirizerListNeed authirizerList,long num,Class<?> className)
+	{
+		if(!AuthirizerListBook.getAuthirizerListBook().isAccessible(authirizerList, num, className))
+			return false;
+		return true;
+	}
+	private boolean accessible(MinimumAuthority minimumAuthority,int type,long userNum,long groupNum)
+	{
+		if(!AuthirizerListBook.getAuthirizerListBook().isAccessible(minimumAuthority, type, groupNum, userNum))
+			return false;
 		return true;
 	}
 }

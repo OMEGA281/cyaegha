@@ -11,13 +11,15 @@ import connection.CQSender;
 import global.UniversalConstantsTable;
 import tools.TimeSimpleTool;
 
+/**
+ * 当受到信息的时候会触发该事件
+ * @author GuoJiaCheng
+ *
+ */
 public class MessageReceiveEvent extends Event
 {
-	int MsgType;
 	int SubType;
 	int MsgID;
-	long fromQQ;
-	long fromGroup;
 	String fromAnonymous;
 	String Msg;
 	long time;
@@ -26,19 +28,19 @@ public class MessageReceiveEvent extends Event
 	 * @param MsgType 消息类型，常量池中有
 	 * @param subType 子类型，常量池中有
 	 * @param MsgID 消息的ID
-	 * @param fromQQ 来源QQ
-	 * @param fromGroup 来源群号或讨论组号
+	 * @param userNum 来源QQ
+	 * @param groupNum 来源群号或讨论组号
 	 * @param fromAnonymous 来源匿名者
 	 * @param Msg 消息内容
 	 */
-	public MessageReceiveEvent(int MsgType,int subType,int MsgID,long fromQQ,long fromGroup,String fromAnonymous,String Msg) 
+	public MessageReceiveEvent(int MsgType,int subType,int MsgID,long userNum,long groupNum,String fromAnonymous,String Msg) 
 	{
-		// TODO Auto-generated constructor stub
-		this.MsgType=MsgType;
+		type=MsgType;
+		this.userNum=userNum;
+		this.groupNum=groupNum;
+		
 		this.SubType=subType;
 		this.MsgID=MsgID;
-		this.fromQQ=fromQQ;
-		this.fromGroup=fromGroup;
 		this.fromAnonymous=fromAnonymous;
 		this.Msg=Msg.trim();
 		formatMsg();
@@ -90,32 +92,30 @@ public class MessageReceiveEvent extends Event
 	public String toString()
 	{
 		StringBuilder stringBuilder=new StringBuilder();
-		stringBuilder.append("[来源：");
-		switch (MsgType)
+		stringBuilder.append("{\"来源\":"+type);
+		stringBuilder.append(",\"来源人\":"+userNum);
+		switch (type)
 		{
 		case UniversalConstantsTable.MSGTYPE_PERSON:
-			stringBuilder.append("私聊→"+fromQQ);
 			break;
 		case UniversalConstantsTable.MSGTYPE_GROUP:
-			stringBuilder.append("群→"+fromGroup+"；来源人："+fromQQ);
-			break;
 		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			stringBuilder.append("讨论组→"+fromGroup+"；来源人："+fromQQ);
+			stringBuilder.append(",\"群组\":"+groupNum);
 			break;
 		default:
 			break;
 		}
-		stringBuilder.append("]");
 		if(!shouldRespone)
-			stringBuilder.append("[未被指定处理]");
-		stringBuilder.append("[时间："+TimeSimpleTool.getTime(time, "yyyy-MM-dd HH:mm:ss")+"]");
-		stringBuilder.append("[序号："+MsgID+"]");
-		stringBuilder.append(Msg);
+			stringBuilder.append(",\"响应\":"+shouldRespone);
+		stringBuilder.append(",\"时间\":"+time);
+		stringBuilder.append(",\"序号\":"+MsgID);
+		stringBuilder.append(",\"信息\":\""+Msg+"\"");
+		stringBuilder.append("}");
 		return stringBuilder.toString();
 	}
 	public int getMsgType()
 	{
-		return MsgType;
+		return type;
 	}
 	public int getSubType()
 	{
@@ -129,13 +129,13 @@ public class MessageReceiveEvent extends Event
 	{
 		return time;
 	}
-	public long getFromQQ()
+	public long getUserNum()
 	{
-		return fromQQ;
+		return userNum;
 	}
-	public long getFromGroup()
+	public long getGroupNum()
 	{
-		return fromGroup;
+		return groupNum;
 	}
 	public String getFromAnonymous()
 	{

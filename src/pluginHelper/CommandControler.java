@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import connection.ReceiveMessageType;
+import pluginHelper.annotations.AuthirizerListNeed;
+import pluginHelper.annotations.MinimumAuthority;
 import pluginHelper.annotations.RegistCommand;
 import surveillance.Log;
 import transceiver.event.MessageReceiveEvent;
@@ -167,8 +169,9 @@ public class CommandControler
 	{
 		list.add(new CommandPackage(command.CommandString(), command.Help(), method));
 	}
-	private Object startCommand(String string)
+	private Object $startCommand(MessageReceiveEvent event)
 	{
+		String string=event.getMsg().substring(1);
 		CommandPackage commandPackage = null;
 		int i=0;
 		for (CommandPackage p : list)
@@ -179,7 +182,12 @@ public class CommandControler
 					i=p.commandLength();
 				}
 		if(commandPackage!=null)
+		{
+			if(accessible(commandPackage.method.getAnnotation(MinimumAuthority.class), 
+					commandPackage.method.getAnnotation(AuthirizerListNeed.class)
+					, event.getMsgType(), event.getUserNum(), event.getGroupNum(), commandPackage.method.getParentClass()))
 			return commandPackage.invoke();
+		}
 		return null;
 	}
 	/**
@@ -198,6 +206,15 @@ public class CommandControler
 			Log.e("非命令！");
 			return null;
 		}
-		return startCommand(messageType.getMsg().substring(1));
+		return $startCommand(messageType);
+	}
+	private boolean accessible(MinimumAuthority minimumAuthority,AuthirizerListNeed authirizerList,
+			int type,long userNum,long groupNum,Class<?> className)
+	{
+		if(!AuthirizerListBook.getAuthirizerListBook().isAccessible(minimumAuthority, type, groupNum, userNum))
+			return false;
+		if(!AuthirizerListBook.getAuthirizerListBook().isAccessible(authirizerList, userNum, className))
+			return false;
+		return true;
 	}
 }

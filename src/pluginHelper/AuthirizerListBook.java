@@ -44,14 +44,7 @@ public class AuthirizerListBook
 			map.put(authirizerListName, new AuthirizerList(UniversalConstantsTable.PLUGIN_AUTHORITYPATH
 					+authirizerListName.substring(authirizerListName.lastIndexOf('.')+1)+".xml"));
 	}
-	private AuthirizerUser getNormalAuthirizerLevel(MessageReceiveEvent event)
-	{
-		int type=event.getMsgType();
-		long groupNum=event.getFromGroup();
-		long num=event.getFromQQ();
-		return getNormalAuthirizerLevel(type, groupNum, num);
-	}
-	private AuthirizerUser getNormalAuthirizerLevel(int type,long groupNum,long num)
+	private static AuthirizerUser getNormalAuthirizerLevel(int type,long groupNum,long num)
 	{
 		switch (type)
 		{

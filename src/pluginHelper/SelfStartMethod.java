@@ -68,9 +68,9 @@ public class SelfStartMethod
 	{
 		return method.getParameterTypes();
 	}
-	public String getParentName()
+	public Class<?> getParentClass()
 	{
-		return obj.getClass().getName();
+		return obj.getClass();
 	}
 	public Class<?> getReturnType()
 	{

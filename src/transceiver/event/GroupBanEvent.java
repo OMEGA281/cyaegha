@@ -1,22 +1,29 @@
 package transceiver.event;
 
+import global.UniversalConstantsTable;
 import tools.TimeSimpleTool;
 
+/**
+ * 当群中有人被禁言的时候会触发该事件<br>
+ * 本事件设定权限是没有意义的
+ * @author GuoJiaCheng
+ *
+ */
 public class GroupBanEvent extends Event
 {
-	boolean type;
-	long time;
-	long QQNum;
+	boolean banType;
 	long opQQNum;
-	long GroupNum;
+	long time;
 	long duration;
 	public GroupBanEvent(int subType, long fromGroup, long fromQQ, long beingOperateQQ, long duration)
 	{
-		type=subType==1;
+		type=UniversalConstantsTable.MSGTYPE_GROUP;
+		userNum=fromQQ;
+		groupNum=fromGroup;
+		
+		banType=subType==1;
 		time=TimeSimpleTool.getNowTimeStamp();
-		QQNum=fromQQ;
 		opQQNum=beingOperateQQ;
-		GroupNum=fromGroup;
 		this.duration=duration;
 	}
 }

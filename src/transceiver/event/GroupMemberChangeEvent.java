@@ -1,23 +1,29 @@
 package transceiver.event;
 
+import global.UniversalConstantsTable;
 import tools.TimeSimpleTool;
 
+/**
+ * 当群内人员发生变化的时候将触发该事件<br>
+ * 本事件设定权限是没有意义的
+ * @author GuoJiaCheng
+ *
+ */
 public class GroupMemberChangeEvent extends Event
 {
-	boolean Increase;
+	boolean increase;
 	boolean byAdmin;
 	long time;
-	long GroupNum;
-	long QQNum;
-	long AdminNum;
-	public GroupMemberChangeEvent(boolean ifIncrease, int subtype, long fromGroup, long fromQQ, long beingOperateQQ) 
+	long adminNum;
+	public GroupMemberChangeEvent(boolean ifIncrease, int subtype, long groupNum, long userNum, long beingOperateQQ) 
 	{
-		// TODO Auto-generated constructor stub
-		Increase=ifIncrease;
+		type=UniversalConstantsTable.MSGTYPE_GROUP;
+		this.userNum=userNum;
+		this.groupNum=groupNum;
+		
+		increase=ifIncrease;
 		byAdmin=subtype==1;
 		time=TimeSimpleTool.getNowTimeStamp();
-		GroupNum=fromGroup;
-		QQNum=fromQQ;
-		AdminNum=beingOperateQQ;
+		adminNum=beingOperateQQ;
 	}
 }
