@@ -1,51 +1,33 @@
 package plugin;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.MessageDigest;
-
-import javax.net.ssl.HttpsURLConnection;
-
 import org.meowy.cqp.jcq.entity.CQImage;
 import org.meowy.cqp.jcq.message.CQCode;
 import org.meowy.cqp.jcq.util.DigestUtils;
 
 import connection.CQSender;
-import global.UniversalConstantsTable;
-import global.authorizer.AuthirizerUser;
-import global.authorizer.MinimumAuthority;
-import pluginHelper.annotations.AuxiliaryClass;
+import pluginHelper.AuthirizerUser;
+import pluginHelper.annotations.MinimumAuthority;
+import pluginHelper.annotations.RegistCommand;
+import transceiver.IdentitySymbol;
+import transceiver.event.MessageReceiveEvent;
 
-@AuxiliaryClass
 public class ShowImage extends Father
 {
-
-	@Override
-	public void initialize()
-	{
-		// TODO Auto-generated method stub
-
-	}
-	
-	public void image() throws IOException
+	@RegistCommand(CommandString = "image",Help = "抽一张图片")
+	public void image(MessageReceiveEvent event) throws IOException
 	{
 		if(!CQSender.canSendImage())
 		{
-			sendBackMsg("哎呀……图片发不出去……");
+			sendMsg(event,"哎呀……图片发不出去……");
 			return;
 		}
-		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark()));
+		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
 		if(!access)
 		{
-			sendBackMsg("现在不行，还没有接到许可的命令");
+			sendMsg(event,"现在不行，还没有接到许可的命令");
 			return;
 		}
 //		http://www.dmoe.cc/random.php
@@ -81,49 +63,55 @@ public class ShowImage extends Father
 		
 		File realimage=new File(getPluginDataFloder()+md5+".jpg");
 		image.renameTo(realimage);
-		sendBackMsg(new CQCode().image(realimage));
+		sendMsg(event,new CQCode().image(realimage));
 	}
-	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
-	public void image_off()
+	@MinimumAuthority(AuthirizerUser.GROUP_MANAGER)
+	public void image_off(MessageReceiveEvent event)
 	{
-		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark()));
+		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
 		if(!access)
 		{
-			sendBackMsg("停止的命令已经下达了……");
+			sendMsg(event,"停止的命令已经下达了……");
 			return;
 		}
 		access=!access;
-		getDataExchanger().addItem(mark(), Boolean.toString(access));
-		sendBackMsg("了解了……我会安静会");
+		getDataExchanger().addItem(mark(event), Boolean.toString(access));
+		sendMsg(event,"了解了……我会安静会");
 		return;
 	}
-	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
-	public void image_on()
+	@MinimumAuthority(AuthirizerUser.GROUP_MANAGER)
+	public void image_on(MessageReceiveEvent event)
 	{
-		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark()));
+		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
 		if(access)
 		{
-			sendBackMsg("我在工作啊……");
+			sendMsg(event,"我在工作啊……");
 			return;
 		}
 		access=!access;
-		getDataExchanger().addItem(mark(), Boolean.toString(access));
-		sendBackMsg("了解了……那就开始吧");
+		getDataExchanger().addItem(mark(event), Boolean.toString(access));
+		sendMsg(event,"了解了……那就开始吧");
 		return;
 	}
-	private String mark()
+	private String mark(IdentitySymbol symbol)
 	{
-		switch (receiveMessageType.getMsgType())
+		switch (symbol.type)
 		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-			return "P"+receiveMessageType.getfromQQ();
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-			return "G"+receiveMessageType.getfromGroup();
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			return "D"+receiveMessageType.getfromGroup();
+		case PERSON:
+			return "P"+symbol.userNum;
+		case GROUP:
+			return "G"+symbol.groupNum;
+		case DISCUSS:
+			return "D"+symbol.groupNum;
 
 		default:
 			return null;
 		}
+	}
+	@Override
+	public void init()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

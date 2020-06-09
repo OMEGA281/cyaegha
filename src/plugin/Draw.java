@@ -1,175 +1,175 @@
 package plugin;
 
-
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
 import connection.CQSender;
-import global.UniversalConstantsTable;
-import global.authorizer.AuthirizerUser;
-import global.authorizer.MinimumAuthority;
-import pluginHelper.annotations.AuxiliaryClass;
+import pluginHelper.AuthirizerUser;
+import pluginHelper.annotations.MinimumAuthority;
 import pluginHelper.annotations.RegistCommand;
-import surveillance.Log;
-import tools.FileSimpleIO;
-import tools.GetJarResources;
 import tools.XMLDocument;
+import transceiver.IdentitySymbol;
+import transceiver.event.MessageReceiveEvent;
 
-@AuxiliaryClass
 public class Draw extends Father
 {
 	public static String CARDPOOL_PATH;
 
-	@Override
-	public void initialize() {
-		// TODO Auto-generated method stub
-		CARDPOOL_PATH=getPluginDataFloder();
-	}
-	private String drawCard(int time)
+	public Draw()
 	{
-		String defaultCardPool=getDataExchanger().getItem(getMark());
-		if(defaultCardPool==null)
-		{
-			sendBackMsg("您尚未定义默认牌库，您可以使用.draw set …来设置默认牌库");
-			return null;
-		}
-		return drawCard(defaultCardPool, time);
+		CARDPOOL_PATH = getPluginDataFloder();
 	}
-	private String drawCard(String cardPool,int time)
-	{
-		if(time==0)
-			return null;
-		if(time>10)
-			return "抽取次数过多";
-		StringBuilder builder=new StringBuilder(receiveMessageType.getNick()+"抽到了这些：\n");
-		for(int i=1;i<=time;i++)
-		{
-			String sigleCard=drawCard(cardPool);
-			if(sigleCard==null)
-				return null;
-			builder.append(drawCard(cardPool)+"\n");
-		}
-		builder.deleteCharAt(builder.length()-1);
-		return builder.toString();
-	}
+
 	@RegistCommand(CommandString = "draw",Help = "抽牌")
-	public void draw(String name,int time)
+	public void draw(MessageReceiveEvent e, String name, int time)
 	{
-		
+		ArrayList<String> pool;
+		try
+		{
+			pool = getDraw(name);
+		} catch (Exception e1)
+		{
+			sendMsg(e.getIdentitySymbol(), e1.getMessage());
+			return;
+		}
+		StringBuilder builder = new StringBuilder(CQSender.getNickorCard(e.getIdentitySymbol()) + "抽到了：\n");
+		for (int i = 1; i <= time; i++)
+		{
+			builder.append(drawCard(pool) + "\n");
+		}
 	}
+
 	@RegistCommand(CommandString = "draw",Help = "抽牌")
-	public void draw(int time)
+	public void draw(MessageReceiveEvent e, int time)
 	{
-		
+		try
+		{
+			draw(e, getDefaultDrawName(e.getIdentitySymbol()), time);
+		} catch (Exception e1)
+		{
+			sendMsg(e.getIdentitySymbol(), e1.getMessage());
+			return;
+		}
 	}
+
 	@RegistCommand(CommandString = "draw",Help = "抽牌")
-	public void draw()
+	public void draw(MessageReceiveEvent e)
 	{
-		draw(1);
+		draw(e, 1);
 	}
-	private String drawCard(String cardPoolFile)
+
+	@RegistCommand(CommandString = "draw list",Help = "列出所有牌库")
+	public void drawlist(MessageReceiveEvent e)
 	{
-		if(!cardPoolFile.endsWith(".xml"))
-			cardPoolFile=cardPoolFile+".xml";
-		Document document=null;
-		if(new FileSimpleIO(CARDPOOL_PATH+cardPoolFile).exists())
+		ArrayList<String> arrayList = list();
+		StringBuilder stringBuilder = new StringBuilder("目前存在着如下牌库：\n");
+		for (String string : arrayList)
 		{
-			try {
-				document=XMLDocument.getDocument(CARDPOOL_PATH+cardPoolFile,false);
-			} catch (JDOMException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			stringBuilder.append(string + "/");
 		}
-		else if(new GetJarResources(cardPoolFile).exist())
-		{
-			try {
-				document=XMLDocument.getDocument(
-						new GetJarResources(cardPoolFile).getJarResources());
-			} catch (JDOMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else
-		{
-			Log.i("未查询到牌库：",cardPoolFile);
-			sendBackMsg("未查询到牌库:"+cardPoolFile);
-			return null;
-		}
-		List<Element> element=document.getRootElement().getChildren();
-		Random random=new Random();
-		int x=random.nextInt(element.size());
-		return element.get(x).getText();
+		if (stringBuilder.length() > 0)
+			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+		sendMsg(e, stringBuilder.toString());
 	}
-	public void drawlist()
+
+	@MinimumAuthority(AuthirizerUser.GROUP_MANAGER)
+	@RegistCommand(CommandString = "draw set",Help = "在本环境里设置默认牌库")
+	public void drawset(MessageReceiveEvent event, String string)
 	{
-		File[] files=new File(getPluginDataFloder()).listFiles();
-		StringBuilder stringBuilder=new StringBuilder("目前存在着如下牌库：\n");
+		ArrayList<String> arrayList = list();
+		if (!arrayList.contains(string))
+		{
+			sendMsg(event, "未查询到牌库：" + string);
+			return;
+		}
+		getDataExchanger().addItem(getMark(event.getIdentitySymbol()), string);
+		sendMsg(event, "将" + string + "设置为默认牌库");
+	}
+
+	private String drawCard(ArrayList<String> pool)
+	{
+		Random random = new Random();
+		return pool.get(random.nextInt(pool.size()));
+	}
+
+	private ArrayList<String> list()
+	{
+		File[] files = new File(getPluginDataFloder()).listFiles();
+		ArrayList<String> arrayList = new ArrayList<String>();
 		for (File file : files)
 		{
-			if(file.getName().endsWith(".xml"))
+			if (file.getName().endsWith(".xml"))
 			{
-				String filename=file.getName();
-				stringBuilder.append(filename.substring(0, filename.length()-4));
-				stringBuilder.append("/");
+				String filename = file.getName();
+				String simpleName = filename.substring(0, filename.length() - 4);
+				arrayList.add(simpleName);
 			}
 		}
-		if(stringBuilder.length()>0)
-			stringBuilder.deleteCharAt(stringBuilder.length()-1);
-		sendBackMsg(stringBuilder.toString());
+		return arrayList;
 	}
-	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
-	public void drawset()
+
+	private ArrayList<String> getDraw(String name) throws Exception
 	{
-		sendBackMsg(getDataExchanger().deleteItem(getMark())?"删除了默认牌库":"还未设置默认牌库");
-	}
-	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
-	public void drawset(ArrayList<String> arrayList)
-	{
-		String card=arrayList.get(0);
-		if(!card.endsWith("\\.xml"))
-			card+=".xml";
-		if(!new File(CARDPOOL_PATH+card).exists())
-			sendBackMsg("未查询到牌库："+card);
-		else
+		String file = CARDPOOL_PATH + name + ".xml";
+		Document document;
+		try
 		{
-			getDataExchanger().addItem(getMark(), card);
-			sendBackMsg("将"+card+"设置为默认牌库");
+			document = XMLDocument.getDocument(file, false);
+		} catch (JDOMException e)
+		{
+			throw new Exception("读取出现错误！");
+		} catch (IOException e)
+		{
+			throw new FileNotFoundException("找不到牌库：" + name);
 		}
+		List<Element> es = document.getRootElement().getChildren();
+		ArrayList<String> ss = new ArrayList<String>();
+		for (Element element : es)
+			ss.add(element.getText());
+		return ss;
 	}
-	private String getMark()
+
+	private String getDefaultDrawName(IdentitySymbol symbol) throws Exception
+	{
+		String mark = getMark(symbol);
+		String name = getDataExchanger().getItem(mark);
+		if (name == null)
+			throw new Exception("没有设置默认牌库");
+		return name;
+	}
+
+	private String getMark(IdentitySymbol symbol)
 	{
 		String string;
-		switch (receiveMessageType.getMsgType())
+		switch (symbol.type)
 		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-			string="P"+receiveMessageType.getfromQQ();
+		case PERSON:
+			string = "P" + symbol.userNum;
 			break;
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-			string="G"+receiveMessageType.getfromGroup();
+		case GROUP:
+			string = "G" + symbol.groupNum;
 			break;
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			string="D"+receiveMessageType.getfromGroup();
+		case DISCUSS:
+			string = "D" + symbol.groupNum;
 			break;
 		default:
-			string=null;
+			string = null;
 			break;
 		}
 		return string;
+	}
+
+	@Override
+	public void init()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

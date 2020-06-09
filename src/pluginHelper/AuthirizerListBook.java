@@ -1,5 +1,6 @@
 package pluginHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,12 +28,21 @@ public class AuthirizerListBook
 
 	public AuthirizerListBook()
 	{
-		String mainPath = UniversalConstantsTable.PLUGIN_AUTHORITYPATH + "MAIN.xml";
-		mainAuthirizerList = new MainAuthirizerList(mainPath);
+		File pfile = new File(UniversalConstantsTable.PLUGIN_AUTHORITYPATH);
+		File[] files = pfile.listFiles();
+		for (File file : files)
+			if (file.isFile() && file.getName().endsWith(".xml"))
+				if (file.getName().equals("MAIN.xml"))
+					mainAuthirizerList = new MainAuthirizerList(file.getAbsolutePath());
+				else
+					map.put(file.getName().split("\\.")[0], new AuthirizerList(file.getAbsolutePath()));
+		if(mainAuthirizerList==null)
+			mainAuthirizerList = new MainAuthirizerList(pfile.getAbsolutePath()+"\\MAIN.xml");
+
 		authirizerListBook = this;
 	}
 
-	protected void addNewAuthirizerList(String className, String authirizerListName)
+	protected void connectClassWithAuthirizerList(String className, String authirizerListName)
 	{
 		if (classListMap.containsKey(className))
 			Log.e("已存在该类，将刷新");
@@ -43,7 +53,20 @@ public class AuthirizerListBook
 			map.put(authirizerListName, new AuthirizerList(UniversalConstantsTable.PLUGIN_AUTHORITYPATH
 					+ authirizerListName.substring(authirizerListName.lastIndexOf('.') + 1) + ".xml"));
 	}
-
+	
+	protected boolean createNewAuthirizerList(String name)
+	{
+		if(map.containsKey(name))
+			return false;
+		else
+		{
+			String file=UniversalConstantsTable.PLUGIN_AUTHORITYPATH+name+".xml";
+			AuthirizerList authirizerList=new AuthirizerList(file);
+			map.put(name, authirizerList);
+			return true;
+		}
+	}
+	
 	private static AuthirizerUser getNormalAuthirizerLevel(SourceType type, long groupNum, long num)
 	{
 		switch (type)
@@ -62,12 +85,12 @@ public class AuthirizerListBook
 				return AuthirizerUser.GROUP_MEMBER;
 
 			default:
-				return AuthirizerUser.ERROR;
+				return AuthirizerUser.ALL;
 			}
 		case DISCUSS:
 			return AuthirizerUser.DISCUSS_MEMBER;
 		default:
-			return AuthirizerUser.ERROR;
+			return AuthirizerUser.ALL;
 		}
 	}
 
@@ -77,7 +100,7 @@ public class AuthirizerListBook
 	 * @param num 号码
 	 * @return
 	 */
-	private boolean isWhite(String listName, long num)
+	public boolean isWhite(String listName, long num)
 	{
 		AuthirizerList authirizerList = map.get(listName);
 		if (authirizerList == null)
@@ -94,7 +117,7 @@ public class AuthirizerListBook
 	 * @param num 号码
 	 * @return
 	 */
-	private boolean isBlack(String listName, long num)
+	public boolean isBlack(String listName, long num)
 	{
 		AuthirizerList authirizerList = map.get(listName);
 		if (authirizerList == null)
@@ -102,7 +125,109 @@ public class AuthirizerListBook
 			Log.e("请求了不存在的权限表：" + listName);
 			return false;
 		}
-		return authirizerList.isWhite(num);
+		return authirizerList.isBlack(num);
+	}
+	
+	/**
+	 * 设置白名单
+	 * 
+	 * @param num 号码
+	 * @return
+	 */
+	public boolean setWhite(String listName, long num)
+	{
+		AuthirizerList authirizerList = map.get(listName);
+		if (authirizerList == null)
+		{
+			Log.e("请求了不存在的权限表：" + listName);
+			return false;
+		}
+		return authirizerList.setWhite(num);
+	}
+
+	/**
+	 * 设置黑名单
+	 * 
+	 * @param num 号码
+	 * @return
+	 */
+	public boolean setBlack(String listName, long num)
+	{
+		AuthirizerList authirizerList = map.get(listName);
+		if (authirizerList == null)
+		{
+			Log.e("请求了不存在的权限表：" + listName);
+			return false;
+		}
+		return authirizerList.setBlack(num);
+	}
+	
+	/**
+	 * 去除白名单
+	 * 
+	 * @param num 号码
+	 * @return
+	 */
+	public boolean removeWhite(String listName, long num)
+	{
+		AuthirizerList authirizerList = map.get(listName);
+		if (authirizerList == null)
+		{
+			Log.e("请求了不存在的权限表：" + listName);
+			return false;
+		}
+		return authirizerList.setBlack(num);
+	}
+
+	/**
+	 * 去除黑名单
+	 * 
+	 * @param num 号码
+	 * @return
+	 */
+	public boolean removeBlack(String listName, long num)
+	{
+		AuthirizerList authirizerList = map.get(listName);
+		if (authirizerList == null)
+		{
+			Log.e("请求了不存在的权限表：" + listName);
+			return false;
+		}
+		return authirizerList.deleteBlack(num);
+	}
+	
+	/**
+	 * 获得所有白名单号码
+	 * 
+	 * @param num 号码
+	 * @return
+	 */
+	public long[] getAllWhite(String listName)
+	{
+		AuthirizerList authirizerList = map.get(listName);
+		if (authirizerList == null)
+		{
+			Log.e("请求了不存在的权限表：" + listName);
+			return new long[0];
+		}
+		return authirizerList.getAllWhite();
+	}
+
+	/**
+	 * 获得所有黑名单号码
+	 * 
+	 * @param num 号码
+	 * @return
+	 */
+	public long[] getAllBlack(String listName)
+	{
+		AuthirizerList authirizerList = map.get(listName);
+		if (authirizerList == null)
+		{
+			Log.e("请求了不存在的权限表：" + listName);
+			return new long[0];
+		}
+		return authirizerList.getAllBlack();
 	}
 
 	public boolean isAccessible(MinimumAuthority authority, SourceType type, long groupNum, long num)
@@ -114,7 +239,7 @@ public class AuthirizerListBook
 			return AuthirizerUser.GROUP_MEMBER.ifAccessible(user);
 		} else
 		{
-			AuthirizerUser askLevel = authority.authirizerUser();
+			AuthirizerUser askLevel = authority.value();
 			AuthirizerUser user = getNormalAuthirizerLevel(type, groupNum, num);
 			return askLevel.ifAccessible(user);
 		}

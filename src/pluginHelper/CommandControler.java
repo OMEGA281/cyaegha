@@ -89,19 +89,19 @@ public class CommandControler
 				Class<?> class1 = paramsType[i];
 				if(i!=0)
 				{
-					if(class1==lastClass)
+					if(class1==lastClass||lastClass==Object.class)
 						regex.append("[ ]+");
 					else 
 						regex.append("[ ]*");
 				}
 				if(class1==String.class)
 					regex.append("(\\D+)");
-				else if(class1==Integer.class)
+				else if(class1==Integer.class||class1==Long.class)
 					regex.append("(\\d+)");
 				else if (class1==Boolean.class)
 					regex.append("((?i)false|(?i)true)");
 				else if(class1==Object.class)
-					regex.append("(.)+");
+					regex.append("(.+)");
 				lastClass=class1;
 			}
 			
@@ -116,6 +116,8 @@ public class CommandControler
 						objects[i-1]=matcher.group(i);
 					else if(paramsType[i]==Integer.class)
 						objects[i-1]=Integer.parseInt(matcher.group(i));
+					else if(paramsType[i]==Long.class)
+						objects[i-1]=Long.parseLong(matcher.group(i));
 					else if (paramsType[i]==Boolean.class)
 						objects[i-1]=Boolean.parseBoolean(matcher.group(i));
 					else if(paramsType[i]==Object.class)

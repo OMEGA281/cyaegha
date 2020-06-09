@@ -19,5 +19,5 @@ import pluginHelper.AuthirizerUser;
 @Documented
 public @interface MinimumAuthority
 {
-	AuthirizerUser authirizerUser() default AuthirizerUser.GROUP_MEMBER;
+	AuthirizerUser value() default AuthirizerUser.GROUP_MEMBER;
 }

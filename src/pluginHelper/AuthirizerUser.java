@@ -23,7 +23,7 @@ public enum AuthirizerUser
 	/**群成员权限*/
 	GROUP_MEMBER(30),
 	/**错误*/
-	ERROR(0);
+	ALL(0);
 
 	private int authorityValue;
 	

@@ -1,5 +1,6 @@
 package life_controller;
 
+import java.io.File;
 import java.util.Set;
 
 import org.meowy.cqp.jcq.entity.CoolQ;
@@ -60,6 +61,10 @@ class LifeCycleController
 		UniversalConstantsTable.ROOTPATH = CQ.getAppDirectory() + "\\" + CQ.getLoginQQ() + "\\";
 		UniversalConstantsTable.PLUGIN_DATAPATH = UniversalConstantsTable.ROOTPATH + "data\\";
 		UniversalConstantsTable.PLUGIN_AUTHORITYPATH = UniversalConstantsTable.ROOTPATH + "authority\\";
+		
+		new File(UniversalConstantsTable.ROOTPATH).mkdirs();
+		new File(UniversalConstantsTable.PLUGIN_DATAPATH).mkdirs();
+		new File(UniversalConstantsTable.PLUGIN_AUTHORITYPATH).mkdirs();
 
 		new CQSender(CQ);
 		new AuthirizerListBook();

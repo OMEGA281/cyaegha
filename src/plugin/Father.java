@@ -1,8 +1,12 @@
 package plugin;
 
 import java.io.File;
+
+import connection.CQSender;
 import global.UniversalConstantsTable;
 import plugin.dataExchanger.DataExchanger;
+import pluginHelper.AuthirizerListBook;
+import pluginHelper.AuthirizerUser;
 import pluginHelper.annotations.AuxiliaryClass;
 import tools.FileSimpleIO;
 import transceiver.EventTrigger;
@@ -21,6 +25,8 @@ public abstract class Father
 
 	}
 
+	public abstract void init();
+	
 	/** 获取本方法数据储存文件夹 */
 	public String getPluginDataFloder()
 	{
@@ -50,5 +56,66 @@ public abstract class Father
 			dataExchanger = new DataExchanger(
 					UniversalConstantsTable.PLUGIN_DATAPATH + this.getClass().getSimpleName() + ".xml");
 		return dataExchanger;
+	}
+	public boolean isWhite(String name,long num)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().isWhite(name, num);
+	}
+	public boolean isBlack(String name,long num)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().isBlack(name, num);
+	}
+	public boolean setWhite(String name,long num)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().setWhite(name, num);
+	}
+	public boolean setBlack(String name,long num)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().setBlack(name, num);
+	}
+	public boolean removeWhite(String name,long num)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().removeWhite(name, num);
+	}
+	public boolean removeBlack(String name,long num)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().removeBlack(name, num);
+	}
+	public long[] getAllWhite(String name)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().getAllWhite(name);
+	}
+	public long[] getAllBlack(String name)
+	{
+		return AuthirizerListBook.getAuthirizerListBook().getAllBlack(name);
+	}
+	public AuthirizerUser getNormalAuthirizer(IdentitySymbol symbol)
+	{
+		if(symbol.userNum==AuthirizerListBook.getSOP())
+			return AuthirizerUser.SUPER_OP;
+		for (long op : AuthirizerListBook.getOP())
+			if(op==symbol.userNum)
+				return AuthirizerUser.OP;
+		switch (symbol.type)
+		{
+		case PERSON:
+			return AuthirizerUser.PERSON_CLIENT;
+		case GROUP:
+			switch (CQSender.getQQInfoInGroup(symbol.userNum, symbol.groupNum).getAuthority())
+			{
+			case OWNER:
+				return AuthirizerUser.GROUP_OWNER;
+			case ADMIN:
+				return AuthirizerUser.GROUP_MANAGER;
+			case MEMBER:
+				return AuthirizerUser.GROUP_MEMBER;
+			default:
+				return AuthirizerUser.ALL;
+			}
+		case DISCUSS:
+			return AuthirizerUser.DISCUSS_MEMBER;
+		default:
+			return AuthirizerUser.ALL;
+		}
 	}
 }

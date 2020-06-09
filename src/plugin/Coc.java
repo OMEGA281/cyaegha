@@ -78,4 +78,10 @@ public class Coc extends Father
 		}
 		return num;
 	}
+	@Override
+	public void init()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

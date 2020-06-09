@@ -1,88 +1,97 @@
 package plugin;
 
-import java.util.ArrayList;
-
-import connection.GroupChangeType;
-import connection.ReceiveMessageType;
-import global.UniversalConstantsTable;
-import global.authorizer.AuthirizerUser;
-import global.authorizer.MinimumAuthority;
-import plugin.register.OnGroupMemberChangeListener;
+import pluginHelper.AuthirizerUser;
 import pluginHelper.annotations.AuxiliaryClass;
+import pluginHelper.annotations.MinimumAuthority;
+import pluginHelper.annotations.RegistCommand;
+import pluginHelper.annotations.RegistListener.GroupMemberChangeListener;
+import transceiver.EventTrigger.EventResult;
+import transceiver.IdentitySymbol;
+import transceiver.event.GroupMemberChangeEvent;
+import transceiver.event.MessageReceiveEvent;
 
 @AuxiliaryClass
 public class Welcome extends Father
 {
 	
 	@Override
-	public void initialize() 
+	public void init() 
 	{
-		// TODO Auto-generated method stub
-		OnGroupMemberChangeListener groupMemberChangeListener=new OnGroupMemberChangeListener() {
-			@Override
-			public int run(GroupChangeType groupChangeType) {
-				// TODO Auto-generated method stub
-				if(groupChangeType.getCreaseType()==GroupChangeType.GROUP_MUMBER_CREASE)
-				{
-					String welcome=getString(groupChangeType.getGroupNum());
-					if(welcome!=null)
-						sendGroupMsg(groupChangeType.getGroupNum(), groupChangeType.getQQNum(), welcome);
-				}
-				return RETURN_PASS;
-			}
-		};
-		groupMemberChangeListener.priority=30;
-		addGroupMemberChangeListener(groupMemberChangeListener);
+		
 	}
-	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
-	public void welcome()
+	
+	@GroupMemberChangeListener
+	public EventResult welcomeSender(GroupMemberChangeEvent event)
 	{
-		deleteString();
-		sendBackMsg("删除成功");
+		String s=getString(event);
+		if(s!=null)
+			sendMsg(event, s);
+		return EventResult.PASS;
 	}
-	@MinimumAuthority(authirizerUser = AuthirizerUser.GROUP_MANAGER)
-	public void welcome(ArrayList<String> arrayList)
+	
+	@MinimumAuthority(AuthirizerUser.GROUP_MANAGER)
+	@RegistCommand(CommandString = "删除群成员入群欢迎词")
+	public void welcome(MessageReceiveEvent event)
 	{
-		setString(arrayList.get(0));
-		sendBackMsg("设置成功");
+		deleteString(event);
+		sendMsg(event,"删除成功");
 	}
-	private void setString(String string)
+	@MinimumAuthority(AuthirizerUser.GROUP_MANAGER)
+	@RegistCommand(CommandString = "设置群成员入群欢迎词")
+	public void welcome(MessageReceiveEvent event,Object object)
+	{
+		setString(event,(String)object);
+		sendMsg(event,"设置成功");
+	}
+	private void setString(IdentitySymbol symbol,String string)
 	{
 		String name = null;
-		switch(receiveMessageType.getMsgType())
+		switch(symbol.type)
 		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-			name="P"+receiveMessageType.getfromQQ();
+		case PERSON:
+			name="P"+symbol.userNum;
 			break;
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-			name="G"+receiveMessageType.getfromGroup();
+		case GROUP:
+			name="G"+symbol.groupNum;
 			break;
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			name="D"+receiveMessageType.getfromGroup();
+		case DISCUSS:
+			name="D"+symbol.groupNum;
 			break;
 		}
 		getDataExchanger().addItem(name, string);
 	}
-	private String getString(long GroupNum)
-	{
-		String name = "G"+GroupNum;
-		return getDataExchanger().getItem(name);
-	}
-	private void deleteString()
+	private void deleteString(IdentitySymbol symbol)
 	{
 		String name = null;
-		switch(receiveMessageType.getMsgType())
+		switch(symbol.type)
 		{
-		case UniversalConstantsTable.MSGTYPE_PERSON:
-			name="P"+receiveMessageType.getfromQQ();
+		case PERSON:
+			name="P"+symbol.userNum;
 			break;
-		case UniversalConstantsTable.MSGTYPE_GROUP:
-			name="G"+receiveMessageType.getfromGroup();
+		case GROUP:
+			name="G"+symbol.groupNum;
 			break;
-		case UniversalConstantsTable.MSGTYPE_DISCUSS:
-			name="D"+receiveMessageType.getfromGroup();
+		case DISCUSS:
+			name="D"+symbol.groupNum;
 			break;
 		}
 		getDataExchanger().deleteItem(name);
+	}
+	private String getString(IdentitySymbol symbol)
+	{
+		String name = null;
+		switch(symbol.type)
+		{
+		case PERSON:
+			name="P"+symbol.userNum;
+			break;
+		case GROUP:
+			name="G"+symbol.groupNum;
+			break;
+		case DISCUSS:
+			name="D"+symbol.groupNum;
+			break;
+		}
+		return getDataExchanger().getItem(name);
 	}
 }

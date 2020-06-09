@@ -6,22 +6,18 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import connection.CQSender;
 import pluginHelper.annotations.RegistCommand;
+import transceiver.event.MessageReceiveEvent;
 
 public class Luck extends Father
 {
 
-	@Override
-	public void initialize()
-	{
-		// TODO Auto-generated method stub
-		
-	}
 	@RegistCommand(CommandString = "jrrp",Help = "今日人品")
-	public void jrrp()
+	public void jrrp(MessageReceiveEvent event)
 	{
 //		获取群名片（昵称）
-		String name=receiveMessageType.getNick();
+		String name=CQSender.getNickorCard(event);
 //		获取日期
 		Date date=new Date(System.currentTimeMillis());
 		int luck=getNum(date, name);
@@ -90,7 +86,7 @@ public class Luck extends Father
 			break;
 		}
 //		发送信息
-		sendBackMsg(builder.toString());
+		sendMsg(event,builder.toString());
 	}
 	
 	private int getNum(Date date,String name)
@@ -117,5 +113,12 @@ public class Luck extends Father
 //		取字符串中索引位置及其下两个的数字
 		String place=string.substring(index, index+2);
 		return Integer.parseInt(place);
+	}
+
+	@Override
+	public void init()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

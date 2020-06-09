@@ -1,9 +1,11 @@
 package pluginHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import pluginHelper.annotations.AuxiliaryClass;
+import pluginHelper.annotations.NewAuthirizerList;
 import pluginHelper.annotations.RegistCommand;
 import pluginHelper.annotations.UseAuthirizerList;
 import pluginHelper.annotations.RegistListener.FriendAddListener;
@@ -27,13 +29,20 @@ public class ClassLoader
 		this.clazz=clazz;
 		if(clazz.getAnnotation(AuxiliaryClass.class)!=null)
 			return;
+		NewAuthirizerList newAuthirizerList=clazz.getAnnotation(NewAuthirizerList.class);
+		if(newAuthirizerList!=null)
+		{
+			String[] list=newAuthirizerList.value();
+			for (String string : list)
+				AuthirizerListBook.getAuthirizerListBook().createNewAuthirizerList(string);
+		}
 		UseAuthirizerList authirizerList=clazz.getAnnotation(UseAuthirizerList.class);
 		String defaultAuthirizerList;
 		if(authirizerList==null)
 			defaultAuthirizerList=clazz.getName();
 		else
-			defaultAuthirizerList=authirizerList.AuthirizerListName();
-		AuthirizerListBook.getAuthirizerListBook().addNewAuthirizerList(clazz.getName(), defaultAuthirizerList);
+			defaultAuthirizerList=authirizerList.value();
+		AuthirizerListBook.getAuthirizerListBook().connectClassWithAuthirizerList(clazz.getName(), defaultAuthirizerList);
 		try
 		{
 			object=clazz.newInstance();
@@ -42,6 +51,17 @@ public class ClassLoader
 			// TODO Auto-generated catch block
 			Log.e("无法实例化类"+clazz);
 		}
+		
+		try
+		{
+			Method init=clazz.getMethod("init", null);
+			init.invoke(object);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Method[] methods=clazz.getMethods();
 		for (Method method : methods)
 		{

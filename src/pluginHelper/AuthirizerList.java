@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -121,18 +120,20 @@ public class AuthirizerList
 		{
 			Element e = rootElement.getChild(Text_WhiteList);
 			if (e != null)
-			{
-				String[] x = e.getText().split(";");
-				for (String string : x)
-					WhiteList.add(Long.parseLong(string));
-			}
+				if (!e.getText().isEmpty())
+				{
+					String[] x = e.getText().split(";");
+					for (String string : x)
+						WhiteList.add(Long.parseLong(string));
+				}
 			e = rootElement.getChild(Text_BlackList);
 			if (e != null)
-			{
-				String[] x = e.getText().split(";");
-				for (String string : x)
-					BlackList.add(Long.parseLong(string));
-			}
+				if (!e.getText().isEmpty())
+				{
+					String[] x = e.getText().split(";");
+					for (String string : x)
+						BlackList.add(Long.parseLong(string));
+				}
 		} catch (NumberFormatException e)
 		{
 			Log.e("在读取权限表的时候出现了无法识别为号码的错误！");
@@ -181,5 +182,21 @@ public class AuthirizerList
 		boolean re = BlackList.remove(l);
 		save();
 		return re;
+	}
+
+	protected long[] getAllWhite()
+	{
+		long[] x = new long[WhiteList.size()];
+		for (int i = 0; i < x.length; i++)
+			x[i] = WhiteList.get(i);
+		return x;
+	}
+
+	protected long[] getAllBlack()
+	{
+		long[] x = new long[BlackList.size()];
+		for (int i = 0; i < x.length; i++)
+			x[i] = BlackList.get(i);
+		return x;
 	}
 }

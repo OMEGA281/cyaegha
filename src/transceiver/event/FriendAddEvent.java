@@ -1,5 +1,8 @@
 package transceiver.event;
 
+import org.meowy.cqp.jcq.entity.IRequest;
+
+import connection.CQSender;
 import tools.TimeSimpleTool;
 
 /**
@@ -11,12 +14,22 @@ import tools.TimeSimpleTool;
 public class FriendAddEvent extends Event
 {
 	String msg;
-	String responseFlag;
+	public String responseFlag;
+	public int hasProcessed=-1;
 	public FriendAddEvent(long userNum, String msg, String responseFlag)
 	{
 		super(SourceType.PERSON, userNum, 0, TimeSimpleTool.getNowTimeStamp());
 		
 		this.msg=msg;
 		this.responseFlag=responseFlag;
+	}
+	public boolean deal(boolean accept)
+	{
+		if(hasProcessed>0)
+			return false;
+		boolean i=CQSender.setFriendAddRequest(this, accept);
+		if(i)
+			hasProcessed=accept?IRequest.REQUEST_ADOPT:IRequest.REQUEST_REFUSE;
+		return i;
 	}
 }

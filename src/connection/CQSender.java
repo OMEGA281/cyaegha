@@ -2,15 +2,18 @@ package connection;
 
 import org.meowy.cqp.jcq.entity.CQStatus;
 import org.meowy.cqp.jcq.entity.CoolQ;
+import org.meowy.cqp.jcq.entity.IRequest;
 import org.meowy.cqp.jcq.entity.Member;
 import org.meowy.cqp.jcq.entity.QQInfo;
 import org.meowy.cqp.jcq.entity.enumerate.Authority;
 
 import surveillance.Log;
 import transceiver.IdentitySymbol;
+import transceiver.event.FriendAddEvent;
+import transceiver.event.GroupAddEvent;
 import transceiver.event.MessageSendEvent;
 
-public class CQSender 
+public class CQSender implements IRequest
 {
 	static CoolQ CQ;
 	
@@ -104,5 +107,15 @@ public class CQSender
 		default:
 				return null;
 		}
+	}
+	public static boolean setGroupAddRequest(GroupAddEvent event,boolean accept)
+	{
+		int status=CQ.setGroupAddRequest(event.responseFlag, REQUEST_GROUP_INVITE, accept?REQUEST_ADOPT:REQUEST_REFUSE, null);
+		return CQStatus.getStatus(status).isSuccess();
+	}
+	public static boolean setFriendAddRequest(FriendAddEvent event,boolean accept)
+	{
+		int status=CQ.setFriendAddRequest(event.responseFlag, accept?REQUEST_ADOPT:REQUEST_REFUSE, null);
+		return CQStatus.getStatus(status).isSuccess();
 	}
 }
