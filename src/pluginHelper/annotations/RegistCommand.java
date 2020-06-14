@@ -7,9 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 将该方法注册成命令反射器
- * 命令反射器的优先级要比最低的监听器还要低
- * 重量级的方法建议注册成命令，大量的监听器会加重负担以及误识别的问题
+ * 将该方法注册成命令反射器 命令反射器的优先级要比最低的监听器还要低 重量级的方法建议注册成命令，大量的监听器会加重负担以及误识别的问题
+ * 
  * @author GuoJiaCheng
  *
  */
@@ -28,16 +27,21 @@ public @interface RegistCommand
 	 * 		help file</code><br>
 	 * 后来命令会自动归类显示<br>
 	 * 为了您开发和维护方便请尽量将监听用字符串和方法名称设为一致（看着方便）
+	 * 
 	 * @return
 	 */
 	String CommandString();
+
 	/**
 	 * 帮助内容，说明本命令的帮助内容，不建议省略
+	 * 
 	 * @return
 	 */
 	String Help() default "";
+
 	/**
 	 * 命令是否一般可见，默认可见
+	 * 
 	 * @return
 	 */
 	boolean visiable() default true;

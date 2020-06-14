@@ -60,7 +60,8 @@ public class ReadDisclaimer extends JDialog
 		{
 			final JCheckBox chckbxNewCheckBox = new JCheckBox("我已认真阅读并同意上述条款");
 			chckbxNewCheckBox.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(ActionEvent e)
+				{
 					okButton.setEnabled(chckbxNewCheckBox.isSelected());
 				}
 			});
@@ -74,7 +75,8 @@ public class ReadDisclaimer extends JDialog
 				okButton = new JButton("下一步");
 				okButton.setEnabled(false);
 				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e)
+					{
 						SetSOP.start();
 						dispose();
 					}
@@ -86,7 +88,8 @@ public class ReadDisclaimer extends JDialog
 			{
 				JButton cancelButton = new JButton("退出");
 				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e)
+					{
 						dispose();
 					}
 				});

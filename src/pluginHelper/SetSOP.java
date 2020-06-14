@@ -93,21 +93,22 @@ public class SetSOP extends JDialog
 			JPanel buttonPane = new JPanel();
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			buttonPane.setLayout(new BorderLayout(0, 0));
-			
+
 			final JLabel lblNewLabel_1 = new JLabel("");
 			lblNewLabel_1.setForeground(Color.RED);
 			buttonPane.add(lblNewLabel_1, BorderLayout.WEST);
-			
+
 			{
 				JButton okButton = new JButton("确定");
 				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						String s=textField.getText();
+					public void actionPerformed(ActionEvent arg0)
+					{
+						String s = textField.getText();
 						long SOP;
 						long[] OPs;
 						try
 						{
-							SOP=Long.parseLong(s);
+							SOP = Long.parseLong(s);
 						} catch (NumberFormatException e)
 						{
 							lblNewLabel_1.setText("请输入正确的SOP号码");
@@ -115,15 +116,14 @@ public class SetSOP extends JDialog
 						}
 						try
 						{
-							if(!textArea.getText().isEmpty())
+							if (!textArea.getText().isEmpty())
 							{
-								String[] ops=textArea.getText().split(";");
-								OPs=new long[ops.length];
-								for (int i=0;i<ops.length;i++)
-									OPs[i]=Long.parseLong(ops[i]);
-							}
-							else
-								OPs=new long[0];
+								String[] ops = textArea.getText().split(";");
+								OPs = new long[ops.length];
+								for (int i = 0; i < ops.length; i++)
+									OPs[i] = Long.parseLong(ops[i]);
+							} else
+								OPs = new long[0];
 						} catch (NumberFormatException e)
 						{
 							lblNewLabel_1.setText("请输入正确的OP号码");

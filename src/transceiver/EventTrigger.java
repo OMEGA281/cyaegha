@@ -443,6 +443,8 @@ public class EventTrigger
 
 	public boolean messageReceive(MessageReceiveEvent addEvent)
 	{
+		if (!addEvent.shouldRespone)
+			return false;
 		for (int i = 0; i < messageReceiveEvents.size(); i++)
 		{
 			SelfStartMethod method = messageReceiveEvents.get(i);

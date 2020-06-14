@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * 声明这是一个辅助类，辅助类不会被加载
+ * 
  * @author GuoJiaCheng
  *
  */
@@ -16,5 +17,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AuxiliaryClass
 {
-	
+
 }

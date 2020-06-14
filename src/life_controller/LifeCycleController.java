@@ -61,7 +61,7 @@ class LifeCycleController
 		UniversalConstantsTable.ROOTPATH = CQ.getAppDirectory() + "\\" + CQ.getLoginQQ() + "\\";
 		UniversalConstantsTable.PLUGIN_DATAPATH = UniversalConstantsTable.ROOTPATH + "data\\";
 		UniversalConstantsTable.PLUGIN_AUTHORITYPATH = UniversalConstantsTable.ROOTPATH + "authority\\";
-		
+
 		new File(UniversalConstantsTable.ROOTPATH).mkdirs();
 		new File(UniversalConstantsTable.PLUGIN_DATAPATH).mkdirs();
 		new File(UniversalConstantsTable.PLUGIN_AUTHORITYPATH).mkdirs();

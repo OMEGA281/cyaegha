@@ -8,8 +8,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * 本注释代表方法使用哪一张权限表
- * 如果不使用该注释，或者默认则使用主权限表
+ * 本注释代表方法使用哪一张权限表 如果不使用该注释，或者默认则使用主权限表
+ * 
  * @author GuoJiaCheng
  *
  */

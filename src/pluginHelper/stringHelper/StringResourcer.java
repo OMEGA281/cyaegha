@@ -7,11 +7,13 @@ public class StringResourcer
 {
 	private Document document;
 	private Element rootElement;
+
 	public StringResourcer(Document document)
 	{
-		this.document=document;
-		rootElement=document.getRootElement();
+		this.document = document;
+		rootElement = document.getRootElement();
 	}
+
 	public String getString(String name)
 	{
 		return rootElement.getChildText(name);

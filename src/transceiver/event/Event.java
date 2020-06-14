@@ -5,17 +5,20 @@ import transceiver.IdentitySymbol;
 public class Event extends IdentitySymbol
 {
 	public long time;
+
 	private Event(SourceType type, long userNum, long groupNum)
 	{
 		super(type, userNum, groupNum);
 	}
-	public Event(SourceType type, long userNum, long groupNum,long time)
+
+	public Event(SourceType type, long userNum, long groupNum, long time)
 	{
 		this(type, userNum, groupNum);
-		this.time=time;
+		this.time = time;
 	}
+
 	public IdentitySymbol getIdentitySymbol()
 	{
-		return new IdentitySymbol(type,userNum,groupNum);
+		return new IdentitySymbol(type, userNum, groupNum);
 	}
 }

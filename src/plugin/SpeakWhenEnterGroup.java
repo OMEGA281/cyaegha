@@ -1,10 +1,16 @@
 package plugin;
 
-import org.meowy.cqp.jcq.entity.IRequest;
-
 import pluginHelper.annotations.RegistCommand;
 import pluginHelper.annotations.RegistListener.GroupAddListener;
+import pluginHelper.annotations.RegistListener.GroupMemberChangeListener;
 import transceiver.EventTrigger.EventResult;
+import transceiver.IdentitySymbol;
+import transceiver.IdentitySymbol.SourceType;
+
+import org.meowy.cqp.jcq.entity.IRequest;
+
+import connection.CQSender;
+import transceiver.event.GroupMemberChangeEvent;
 import transceiver.event.GroupAddEvent;
 import transceiver.event.MessageReceiveEvent;
 
@@ -15,19 +21,19 @@ public class SpeakWhenEnterGroup extends Father
 	public void init()
 	{
 		if (getDataExchanger().getItem("switch") == null)
-			getDataExchanger().addItem("switch", Boolean.toString(true));
+			getDataExchanger().setItem("switch", Boolean.toString(true));
 	}
 
 	@GroupAddListener
 	public EventResult speak(GroupAddEvent event)
 	{
-		if(event.hasProcessed==IRequest.REQUEST_ADOPT)
-			if(Boolean.parseBoolean(getDataExchanger().getItem("switch")))
+		if (event.hasProcessed == IRequest.REQUEST_ADOPT)
+			if (Boolean.parseBoolean(getDataExchanger().getItem("switch")))
 			{
-				String s=getDataExchanger().getItem("word");
-				if(s!=null)
+				String s = getDataExchanger().getItem("word");
+				if (s != null)
 				{
-					Thread thread=new Thread() {
+					Thread thread = new Thread() {
 						@Override
 						public void run()
 						{
@@ -50,7 +56,45 @@ public class SpeakWhenEnterGroup extends Father
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					sendMsg(event, s);
+					sendMsg(new IdentitySymbol(SourceType.GROUP, 0, event.groupNum), s);
+				}
+			}
+		return EventResult.PASS;
+	}
+
+	@GroupMemberChangeListener
+	public EventResult speak(GroupMemberChangeEvent event)
+	{
+		if (event.increase && event.userNum == CQSender.getMyQQ())
+			if (Boolean.parseBoolean(getDataExchanger().getItem("switch")))
+			{
+				String s = getDataExchanger().getItem("word");
+				if (s != null)
+				{
+					Thread thread = new Thread() {
+						@Override
+						public void run()
+						{
+							try
+							{
+								sleep(2000);
+							} catch (InterruptedException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					};
+					thread.start();
+					try
+					{
+						thread.join();
+					} catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					sendMsg(new IdentitySymbol(SourceType.GROUP, 0, event.groupNum), s);
 				}
 			}
 		return EventResult.PASS;
@@ -66,21 +110,21 @@ public class SpeakWhenEnterGroup extends Father
 	@RegistCommand(CommandString = "group enter speak",Help = "设置入群广播")
 	public void enterSpeak(MessageReceiveEvent event, Object object)
 	{
-		getDataExchanger().addItem("word", (String) object);
+		getDataExchanger().setItem("word", (String) object);
 		sendMsg(event, "设置了入群广播");
 	}
 
 	@RegistCommand(CommandString = "group enter speak on",Help = "开启入群广播")
 	public void on(MessageReceiveEvent event)
 	{
-		getDataExchanger().addItem("switch", Boolean.toString(true));
+		getDataExchanger().setItem("switch", Boolean.toString(true));
 		sendMsg(event, "入群广播开启");
 	}
 
 	@RegistCommand(CommandString = "group enter speak off",Help = "关闭入群广播")
 	public void off(MessageReceiveEvent event)
 	{
-		getDataExchanger().addItem("switch", Boolean.toString(false));
+		getDataExchanger().setItem("switch", Boolean.toString(false));
 		sendMsg(event, "入群广播关闭");
 	}
 }

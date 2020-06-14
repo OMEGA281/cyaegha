@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * 添加事件监听器
+ * 
  * @author GuoJiaCheng
  *
  */
@@ -19,57 +20,79 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface RegistListener
 {
-	public static final Class<?>[] ListenerList= {MessageReceiveListener.class,GroupMemberChangeListener.class,
-			MessageSendListener.class,GroupBanListener.class,FriendAddListener.class,GroupAddListener.class};
+
+	public static final Class<?>[] ListenerList = { MessageReceiveListener.class, GroupMemberChangeListener.class,
+			MessageSendListener.class, GroupBanListener.class, FriendAddListener.class, GroupAddListener.class };
+
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface MessageReceiveListener
 	{
 		public int priority() default PRIORITY_NORMAL;
+
+		public String help() default "";
 	}
+
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface GroupMemberChangeListener
 	{
 		public int priority() default PRIORITY_NORMAL;
+
+		public String help() default "";
 	}
+
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface MessageSendListener
 	{
 		public int priority() default PRIORITY_NORMAL;
+
+		public String help() default "";
 	}
+
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface GroupBanListener
 	{
 		public int priority() default PRIORITY_NORMAL;
+
+		public String help() default "";
 	}
+
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface FriendAddListener
 	{
 		public int priority() default PRIORITY_NORMAL;
+
+		public String help() default "";
 	}
+
 	@Documented
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public @interface GroupAddListener
 	{
 		public int priority() default PRIORITY_NORMAL;
+
+		public String help() default "";
 	}
-	int PRIORITY_MAX=100;
-	int PRIORITY_HIGH=75;
-	int PRIORITY_NORMAL=50;
-	int PRIORITY_LOW=25;
-	int PRIORITY_MIN=0;
-	/**监听器帮助文件，建议填写*/
+
+	int PRIORITY_MAX = 100;
+	int PRIORITY_HIGH = 75;
+	int PRIORITY_NORMAL = 50;
+	int PRIORITY_LOW = 25;
+	int PRIORITY_MIN = 0;
+
+	/** 监听器帮助文件，建议填写 */
 	public String help() default "";
-	/**监听器优先级*/
+
+	/** 监听器优先级 */
 	public int priority() default PRIORITY_NORMAL;
 }

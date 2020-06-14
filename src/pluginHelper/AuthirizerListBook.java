@@ -36,8 +36,8 @@ public class AuthirizerListBook
 					mainAuthirizerList = new MainAuthirizerList(file.getAbsolutePath());
 				else
 					map.put(file.getName().split("\\.")[0], new AuthirizerList(file.getAbsolutePath()));
-		if(mainAuthirizerList==null)
-			mainAuthirizerList = new MainAuthirizerList(pfile.getAbsolutePath()+"\\MAIN.xml");
+		if (mainAuthirizerList == null)
+			mainAuthirizerList = new MainAuthirizerList(pfile.getAbsolutePath() + "\\MAIN.xml");
 
 		authirizerListBook = this;
 	}
@@ -53,22 +53,26 @@ public class AuthirizerListBook
 			map.put(authirizerListName, new AuthirizerList(UniversalConstantsTable.PLUGIN_AUTHORITYPATH
 					+ authirizerListName.substring(authirizerListName.lastIndexOf('.') + 1) + ".xml"));
 	}
-	
+
 	protected boolean createNewAuthirizerList(String name)
 	{
-		if(map.containsKey(name))
+		if (map.containsKey(name))
 			return false;
 		else
 		{
-			String file=UniversalConstantsTable.PLUGIN_AUTHORITYPATH+name+".xml";
-			AuthirizerList authirizerList=new AuthirizerList(file);
+			String file = UniversalConstantsTable.PLUGIN_AUTHORITYPATH + name + ".xml";
+			AuthirizerList authirizerList = new AuthirizerList(file);
 			map.put(name, authirizerList);
 			return true;
 		}
 	}
-	
+
 	private static AuthirizerUser getNormalAuthirizerLevel(SourceType type, long groupNum, long num)
 	{
+		if (num == getSOP())
+			return AuthirizerUser.SUPER_OP;
+		if (isOP(num))
+			return AuthirizerUser.OP;
 		switch (type)
 		{
 //		FIXME:这里后来要加上避免不存在的人或群的查询
@@ -127,7 +131,7 @@ public class AuthirizerListBook
 		}
 		return authirizerList.isBlack(num);
 	}
-	
+
 	/**
 	 * 设置白名单
 	 * 
@@ -161,7 +165,7 @@ public class AuthirizerListBook
 		}
 		return authirizerList.setBlack(num);
 	}
-	
+
 	/**
 	 * 去除白名单
 	 * 
@@ -195,7 +199,7 @@ public class AuthirizerListBook
 		}
 		return authirizerList.deleteBlack(num);
 	}
-	
+
 	/**
 	 * 获得所有白名单号码
 	 * 

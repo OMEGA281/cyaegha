@@ -1,5 +1,8 @@
 package plugin;
 
+import org.meowy.cqp.jcq.entity.IRequest;
+
+import connection.CQSender;
 import pluginHelper.AuthirizerListBook;
 import pluginHelper.AuthirizerUser;
 import pluginHelper.annotations.MinimumAuthority;
@@ -7,6 +10,7 @@ import pluginHelper.annotations.NewAuthirizerList;
 import pluginHelper.annotations.RegistCommand;
 import pluginHelper.annotations.RegistListener.FriendAddListener;
 import pluginHelper.annotations.RegistListener.GroupAddListener;
+import pluginHelper.annotations.RegistListener.GroupMemberChangeListener;
 import pluginHelper.annotations.RegistListener.MessageReceiveListener;
 import pluginHelper.annotations.UseAuthirizerList;
 import surveillance.Log;
@@ -15,6 +19,7 @@ import transceiver.IdentitySymbol;
 import transceiver.IdentitySymbol.SourceType;
 import transceiver.event.FriendAddEvent;
 import transceiver.event.GroupAddEvent;
+import transceiver.event.GroupMemberChangeEvent;
 import transceiver.event.MessageReceiveEvent;
 
 @NewAuthirizerList({ "monitor_person", "monitor_group", "monitor_discuss" })
@@ -82,7 +87,7 @@ public class Switch extends Father
 			AgreeWhenBlackListUserInvite = m;
 			DefaultOn = n;
 		}
-		
+
 		/**
 		 * 将文字格式化为状态
 		 * 
@@ -101,73 +106,89 @@ public class Switch extends Father
 			return ABNORMAL;
 		}
 	}
-	
+
 	@MessageReceiveListener(priority = 100)
 	@MinimumAuthority(AuthirizerUser.ALL)
 	public EventResult messageInterceptor(MessageReceiveEvent event)
 	{
-		if(!accessibie(event))
+		if (!accessibie(event))
 			return EventResult.STOP;
-		if(event.getMsg().toLowerCase().replaceAll(" ", "").equals(".boton")
-				||event.getMsg().toLowerCase().replaceAll(" ", "").equals("。boton"))
-			if(AuthirizerUser.GROUP_MANAGER.ifAccessible(getNormalAuthirizer(event)))
+		if (event.getMsg().toLowerCase().replaceAll(" ", "").equals(".boton")
+				|| event.getMsg().toLowerCase().replaceAll(" ", "").equals("。boton"))
+			if (AuthirizerUser.GROUP_MANAGER.ifAccessible(getNormalAuthirizer(event)))
 			{
 				bot_on(event);
 				return EventResult.STOP;
 			}
-		if(event.getMsg().toLowerCase().replaceAll(" ", "").equals(".botoff")
-				||event.getMsg().toLowerCase().replaceAll(" ", "").equals("。botoff"))
-			if(AuthirizerUser.GROUP_MANAGER.ifAccessible(getNormalAuthirizer(event)))
+		if (event.getMsg().toLowerCase().replaceAll(" ", "").equals(".botoff")
+				|| event.getMsg().toLowerCase().replaceAll(" ", "").equals("。botoff"))
+			if (AuthirizerUser.GROUP_MANAGER.ifAccessible(getNormalAuthirizer(event)))
 			{
 				bot_off(event);
 				return EventResult.STOP;
 			}
-		String string= getDataExchanger().getItem(getMark(event));
+		String string = getDataExchanger().getItem(getMark(event));
 		if (string == null)
 		{
-			string=Boolean.toString(mode.DefaultOn);
-			getDataExchanger().addItem(getMark(event), string);
+			string = Boolean.toString(mode.DefaultOn);
+			getDataExchanger().setItem(getMark(event), string);
 		}
-		return Boolean.parseBoolean(string)?EventResult.PASS:EventResult.STOP;
+		return Boolean.parseBoolean(string) ? EventResult.PASS : EventResult.STOP;
 	}
-	
-	@MinimumAuthority(AuthirizerUser.ALL)
+
 	@GroupAddListener(priority = 100)
 	public EventResult groupAddInterceptor(GroupAddEvent event)
 	{
-		if(event.hasProcessed>0)
+		if (event.hasProcessed > 0)
 			return EventResult.PASS;
 		boolean result;
-		if(mode.AgreeWhenWhiteListUserInvite&&isWhite("monitor_person", event.userNum))
-			result=event.deal(true);
-		else if(mode.AgreeWhenBlackListUserInvite&&isBlack("monitor_person", event.userNum))
-			result=event.deal(true);
-		else if(mode.AgreeWhenNormalUserInvite)
-			result=event.deal(true);
+		if (mode.AgreeWhenWhiteListUserInvite && isWhite("monitor_person", event.userNum))
+			result = event.deal(true);
+		else if (mode.AgreeWhenBlackListUserInvite && isBlack("monitor_person", event.userNum))
+			result = event.deal(true);
+		else if (mode.AgreeWhenNormalUserInvite)
+			result = event.deal(true);
 		else
-			result=event.deal(false);
-		if(!result)
+			result = event.deal(false);
+		if (!result)
 			Log.e("处理群添加时出现问题！");
+
+		if (result && event.hasProcessed == IRequest.REQUEST_ADOPT)
+			getDataExchanger().setItem(getMark(event), String.valueOf(mode.DefaultOn));
+
 		return EventResult.PASS;
 	}
-	
+
+	@GroupMemberChangeListener
+	public EventResult groupAddInterceptor(GroupMemberChangeEvent event)
+	{
+		if (event.increase && event.userNum == CQSender.getMyQQ())
+			getDataExchanger().setItem(getMark(event), String.valueOf(mode.DefaultOn));
+
+		return EventResult.PASS;
+	}
+
 	@MinimumAuthority(AuthirizerUser.ALL)
 	@FriendAddListener(priority = 100)
 	public EventResult friendAddInterceptor(FriendAddEvent event)
 	{
-		if(event.hasProcessed>0)
+		if (event.hasProcessed > 0)
 			return EventResult.PASS;
 		boolean result;
-		if(mode.AgreeWhenWhiteListUserInvite&&isWhite("monitor_person", event.userNum))
-			result=event.deal(true);
-		else if(mode.AgreeWhenBlackListUserInvite&&isBlack("monitor_person", event.userNum))
-			result=event.deal(true);
-		else if(mode.AgreeWhenNormalUserInvite)
-			result=event.deal(true);
+		if (mode.AgreeWhenWhiteListUserInvite && isWhite("monitor_person", event.userNum))
+			result = event.deal(true);
+		else if (mode.AgreeWhenBlackListUserInvite && isBlack("monitor_person", event.userNum))
+			result = event.deal(true);
+		else if (mode.AgreeWhenNormalUserInvite)
+			result = event.deal(true);
 		else
-			result=event.deal(false);
-		if(!result)
+			result = event.deal(false);
+		if (!result)
 			Log.e("处理好友添加时出现问题！");
+
+		if (result && event.hasProcessed == IRequest.REQUEST_ADOPT)
+			getDataExchanger().setItem(getMark(event), String.valueOf(mode.DefaultOn));
+
 		return EventResult.PASS;
 	}
 
@@ -215,7 +236,7 @@ public class Switch extends Father
 	public void addPW(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.PERSON, true, true, num);
-		sendMsg(event, "添加"+(hasW?"成功":"未执行"));
+		sendMsg(event, "添加" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -223,7 +244,7 @@ public class Switch extends Father
 	public void addGW(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.GROUP, true, true, num);
-		sendMsg(event, "添加"+(hasW?"成功":"未执行"));
+		sendMsg(event, "添加" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -231,7 +252,7 @@ public class Switch extends Father
 	public void addDW(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.DISCUSS, true, true, num);
-		sendMsg(event, "添加"+(hasW?"成功":"未执行"));
+		sendMsg(event, "添加" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -239,7 +260,7 @@ public class Switch extends Father
 	public void addPB(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.PERSON, true, false, num);
-		sendMsg(event, "添加"+(hasW?"成功":"未执行"));
+		sendMsg(event, "添加" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -247,7 +268,7 @@ public class Switch extends Father
 	public void addGB(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.GROUP, true, false, num);
-		sendMsg(event, "添加"+(hasW?"成功":"未执行"));
+		sendMsg(event, "添加" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -255,7 +276,7 @@ public class Switch extends Father
 	public void addDB(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.DISCUSS, true, false, num);
-		sendMsg(event, "添加"+(hasW?"成功":"未执行"));
+		sendMsg(event, "添加" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -263,7 +284,7 @@ public class Switch extends Father
 	public void removePW(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.PERSON, false, true, num);
-		sendMsg(event, "移除"+(hasW?"成功":"未执行"));
+		sendMsg(event, "移除" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -271,7 +292,7 @@ public class Switch extends Father
 	public void removeGW(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.GROUP, false, true, num);
-		sendMsg(event, "移除"+(hasW?"成功":"未执行"));
+		sendMsg(event, "移除" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -279,7 +300,7 @@ public class Switch extends Father
 	public void removeDW(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.DISCUSS, false, true, num);
-		sendMsg(event, "移除"+(hasW?"成功":"未执行"));
+		sendMsg(event, "移除" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -287,7 +308,7 @@ public class Switch extends Father
 	public void removePB(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.PERSON, false, false, num);
-		sendMsg(event, "移除"+(hasW?"成功":"未执行"));
+		sendMsg(event, "移除" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -295,7 +316,7 @@ public class Switch extends Father
 	public void removeGB(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.GROUP, false, false, num);
-		sendMsg(event, "移除"+(hasW?"成功":"未执行"));
+		sendMsg(event, "移除" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
@@ -303,14 +324,14 @@ public class Switch extends Father
 	public void removeDB(MessageReceiveEvent event, Long num)
 	{
 		boolean hasW = addOrRemoveWhiteOrBlackList(SourceType.DISCUSS, false, false, num);
-		sendMsg(event, "移除"+(hasW?"成功":"未执行"));
+		sendMsg(event, "移除" + (hasW ? "成功" : "未执行"));
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.OP)
 	@RegistCommand(CommandString = "monitor list person whitelist",Help = "列出个人白名单")
 	public void listPW(MessageReceiveEvent event)
 	{
-		long[] ls=getAllList(SourceType.PERSON, true);
+		long[] ls = getAllList(SourceType.PERSON, true);
 		StringBuilder result = new StringBuilder("名单如下：\n");
 		for (int i = 0; i < ls.length; i++)
 		{
@@ -327,7 +348,7 @@ public class Switch extends Father
 	@RegistCommand(CommandString = "monitor list group whitelist",Help = "列出群组白名单")
 	public void listGW(MessageReceiveEvent event)
 	{
-		long[] ls=getAllList(SourceType.GROUP, true);
+		long[] ls = getAllList(SourceType.GROUP, true);
 		StringBuilder result = new StringBuilder("名单如下：\n");
 		for (int i = 0; i < ls.length; i++)
 		{
@@ -344,7 +365,7 @@ public class Switch extends Father
 	@RegistCommand(CommandString = "monitor list discuss whitelist",Help = "列出讨论组白名单")
 	public void listDW(MessageReceiveEvent event)
 	{
-		long[] ls=getAllList(SourceType.DISCUSS, true);
+		long[] ls = getAllList(SourceType.DISCUSS, true);
 		StringBuilder result = new StringBuilder("名单如下：\n");
 		for (int i = 0; i < ls.length; i++)
 		{
@@ -361,7 +382,7 @@ public class Switch extends Father
 	@RegistCommand(CommandString = "monitor list person blacklist",Help = "列出个人黑名单")
 	public void listPB(MessageReceiveEvent event)
 	{
-		long[] ls=getAllList(SourceType.PERSON, false);
+		long[] ls = getAllList(SourceType.PERSON, false);
 		StringBuilder result = new StringBuilder("名单如下：\n");
 		for (int i = 0; i < ls.length; i++)
 		{
@@ -378,7 +399,7 @@ public class Switch extends Father
 	@RegistCommand(CommandString = "monitor list group blacklist",Help = "列出群组黑名单")
 	public void listGB(MessageReceiveEvent event)
 	{
-		long[] ls=getAllList(SourceType.GROUP, false);
+		long[] ls = getAllList(SourceType.GROUP, false);
 		StringBuilder result = new StringBuilder("名单如下：\n");
 		for (int i = 0; i < ls.length; i++)
 		{
@@ -395,7 +416,7 @@ public class Switch extends Father
 	@RegistCommand(CommandString = "monitor list discuss blacklist",Help = "列出讨论组黑名单")
 	public void listDB(MessageReceiveEvent event)
 	{
-		long[] ls=getAllList(SourceType.DISCUSS, false);
+		long[] ls = getAllList(SourceType.DISCUSS, false);
 		StringBuilder result = new StringBuilder("名单如下：\n");
 		for (int i = 0; i < ls.length; i++)
 		{
@@ -412,11 +433,11 @@ public class Switch extends Father
 	@RegistCommand(CommandString = "bot on",Help = "启动监听")
 	public void bot_on(MessageReceiveEvent event)
 	{
-		String string= getDataExchanger().getItem(getMark(event));
+		String string = getDataExchanger().getItem(getMark(event));
 		if (string == null)
 		{
-			string=Boolean.toString(mode.DefaultOn);
-			getDataExchanger().addItem(getMark(event), string);
+			string = Boolean.toString(mode.DefaultOn);
+			getDataExchanger().setItem(getMark(event), string);
 		}
 		boolean b = Boolean.parseBoolean(string);
 		if (b)
@@ -424,7 +445,7 @@ public class Switch extends Father
 			sendMsg(event, "已经处于启动模式");
 			return;
 		}
-		getDataExchanger().addItem(getMark(event), Boolean.toString(true));
+		getDataExchanger().setItem(getMark(event), Boolean.toString(true));
 		sendMsg(event, "进入启动模式");
 	}
 
@@ -432,19 +453,19 @@ public class Switch extends Father
 	@RegistCommand(CommandString = "bot off",Help = "关闭监听")
 	public void bot_off(MessageReceiveEvent event)
 	{
-		String string= getDataExchanger().getItem(getMark(event));
+		String string = getDataExchanger().getItem(getMark(event));
 		if (string == null)
 		{
-			string=Boolean.toString(mode.DefaultOn);
-			getDataExchanger().addItem(getMark(event), string);
+			string = Boolean.toString(mode.DefaultOn);
+			getDataExchanger().setItem(getMark(event), string);
 		}
 		boolean b = Boolean.parseBoolean(string);
-		if (b)
+		if (!b)
 		{
 			sendMsg(event, "已经处于休眠模式");
 			return;
 		}
-		getDataExchanger().addItem(getMark(event), Boolean.toString(true));
+		getDataExchanger().setItem(getMark(event), Boolean.toString(false));
 		sendMsg(event, "进入休眠模式");
 	}
 
@@ -466,12 +487,12 @@ public class Switch extends Father
 			return false;
 		}
 		if (isAdd)
-			return isWhite?setWhite(listName, num):setBlack(listName, num);
+			return isWhite ? setWhite(listName, num) : setBlack(listName, num);
 		else
-			return isWhite?removeWhite(listName, num):removeBlack(listName, num);
+			return isWhite ? removeWhite(listName, num) : removeBlack(listName, num);
 	}
-	
-	private long[] getAllList(SourceType type,boolean isWhite)
+
+	private long[] getAllList(SourceType type, boolean isWhite)
 	{
 		String listName;
 		switch (type)
@@ -488,7 +509,7 @@ public class Switch extends Father
 		default:
 			return new long[0];
 		}
-		return isWhite?getAllWhite(listName):getAllBlack(listName);
+		return isWhite ? getAllWhite(listName) : getAllBlack(listName);
 	}
 
 	private String getMark(IdentitySymbol symbol)
@@ -521,78 +542,78 @@ public class Switch extends Father
 			return null;
 		return ListeningMode.formant(string);
 	}
-	
+
 	private void setListeningMode(ListeningMode mode)
 	{
-		this.mode=mode;
-		getDataExchanger().addItem(LISTENMODE, mode.modeName);
+		this.mode = mode;
+		getDataExchanger().setItem(LISTENMODE, mode.name());
 	}
-	
+
 	private boolean accessibie(IdentitySymbol symbol)
 	{
-		if(AuthirizerListBook.getSOP()==symbol.userNum)
+		if (AuthirizerListBook.getSOP() == symbol.userNum)
 			return true;
 		for (long l : AuthirizerListBook.getOP())
-			if(l==symbol.userNum)
+			if (l == symbol.userNum)
 				return true;
-		boolean g=false;
-		boolean p=false;
-		
+		boolean g = false;
+		boolean p = false;
+
 		switch (symbol.type)
 		{
 		case PERSON:
-			g=true;
-			if(isWhite("monitor_person", symbol.userNum)||mode.MonitorWhiteListUser)
-				p=true;
-			else if(isBlack("monitor_person", symbol.userNum)||mode.MonitorBlackListUser)
-				p=true;
-			else if(mode.MonitorNormalUser)
-				p=true;
+			g = true;
+			if (isWhite("monitor_person", symbol.userNum) || mode.MonitorWhiteListUser)
+				p = true;
+			else if (isBlack("monitor_person", symbol.userNum) || mode.MonitorBlackListUser)
+				p = true;
+			else if (mode.MonitorNormalUser)
+				p = true;
 			break;
 		case GROUP:
-			if(isWhite("monitor_group", symbol.groupNum)||mode.MonitorWhiteListGroup)
-				g=true;
-			else if(isBlack("monitor_group", symbol.groupNum)||mode.MonitorBlackListGroup)
-				g=true;
-			else if(mode.MonitorNormalGroup)
-				g=true;
-			if(isWhite("monitor_person", symbol.userNum)||mode.MonitorWhiteListUser)
-				p=true;
-			else if(isBlack("monitor_person", symbol.userNum)||mode.MonitorBlackListUser)
-				p=true;
+			if (isWhite("monitor_group", symbol.groupNum) || mode.MonitorWhiteListGroup)
+				g = true;
+			else if (isBlack("monitor_group", symbol.groupNum) || mode.MonitorBlackListGroup)
+				g = true;
+			else if (mode.MonitorNormalGroup)
+				g = true;
+			if (isWhite("monitor_person", symbol.userNum) || mode.MonitorWhiteListUser)
+				p = true;
+			else if (isBlack("monitor_person", symbol.userNum) || mode.MonitorBlackListUser)
+				p = true;
 			else
-				p=true;
+				p = true;
 			break;
 		case DISCUSS:
-			if(isWhite("monitor_discuss", symbol.groupNum)||mode.MonitorWhiteListDiscuss)
-				g=true;
-			else if(isBlack("monitor_discuss", symbol.groupNum)||mode.MonitorBlackListDiscuss)
-				g=true;
-			else if(mode.MonitorNormalDiscuss)
-				g=true;
-			if(isWhite("monitor_person", symbol.userNum)||mode.MonitorWhiteListUser)
-				p=true;
-			else if(isBlack("monitor_person", symbol.userNum)||mode.MonitorBlackListUser)
-				p=true;
+			if (isWhite("monitor_discuss", symbol.groupNum) || mode.MonitorWhiteListDiscuss)
+				g = true;
+			else if (isBlack("monitor_discuss", symbol.groupNum) || mode.MonitorBlackListDiscuss)
+				g = true;
+			else if (mode.MonitorNormalDiscuss)
+				g = true;
+			if (isWhite("monitor_person", symbol.userNum) || mode.MonitorWhiteListUser)
+				p = true;
+			else if (isBlack("monitor_person", symbol.userNum) || mode.MonitorBlackListUser)
+				p = true;
 			else
-				p=true;
+				p = true;
 			break;
 		default:
 			break;
 		}
-		return g&&p;
+		return g && p;
 	}
 
 	@Override
 	public void init()
 	{
 		Log.d("加载消息拦截插件中……");
-		ListeningMode mode=getListeningMode();
-		if(mode==null)
+		ListeningMode mode = getListeningMode();
+		if (mode == null)
 		{
-			getDataExchanger().addItem(LISTENMODE, ListeningMode.PRIVATE.modeName);
-			mode=ListeningMode.PRIVATE;
+			getDataExchanger().setItem(LISTENMODE, ListeningMode.PRIVATE.name());
+			mode = ListeningMode.PRIVATE;
 		}
-		this.mode=mode;
+		this.mode = mode;
 	}
 }

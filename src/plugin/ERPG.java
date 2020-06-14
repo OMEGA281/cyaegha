@@ -152,136 +152,143 @@ public class ERPG extends Father
 	@RegistCommand(CommandString = "r",Help = "随机骰数字")
 	public void r(MessageReceiveEvent event)
 	{
-		r(event,new String("d"));
+		r(event, new String("d"));
 	}
+
 	@RegistCommand(CommandString = "r",Help = "随机骰数字")
-	public void r(MessageReceiveEvent event,Object object)
+	public void r(MessageReceiveEvent event, Object object)
 	{
 		long result;
 		try
 		{
-			result=transRandomString((String)object);
+			result = transRandomString((String) object);
 		} catch (Exception e)
 		{
 			sendMsg(event, "表达式格式不正确");
 			return;
 		}
-		sendMsg(event, CQSender.getNickorCard(event)+"掷出了"+(String)object+"="+result);
+		sendMsg(event, CQSender.getNickorCard(event) + "掷出了" + (String) object + "=" + result);
 	}
 
 	@RegistCommand(CommandString = "rh",Help = "进行暗骰，结果会私聊发送")
 	public void rh(MessageReceiveEvent event)
 	{
-		rh(event,"d");
+		rh(event, "d");
 	}
+
 	@RegistCommand(CommandString = "rh",Help = "进行暗骰，结果会私聊发送")
-	public void rh(MessageReceiveEvent event,Object object)
+	public void rh(MessageReceiveEvent event, Object object)
 	{
 		long result;
 		try
 		{
-			result=transRandomString((String)object);
+			result = transRandomString((String) object);
 		} catch (Exception e)
 		{
 			sendMsg(event, "表达式格式不正确");
 			return;
 		}
-		sendMsg(event, CQSender.getNickorCard(event)+"进行了一次暗骰");
-		sendMsg(new IdentitySymbol(SourceType.PERSON, event.userNum, 0)
-				, "你掷出了"+(String)object+"="+result);
+		sendMsg(event, CQSender.getNickorCard(event) + "进行了一次暗骰");
+		sendMsg(new IdentitySymbol(SourceType.PERSON, event.userNum, 0), "你掷出了" + (String) object + "=" + result);
 	}
+
 	@RegistCommand(CommandString = "rb",Help = "投掷带奖励骰的百分骰")
 	public void rb(MessageReceiveEvent event)
 	{
-		rb(event,1);
+		rb(event, 1);
 	}
+
 	@RegistCommand(CommandString = "rb",Help = "投掷带奖励骰的百分骰")
-	public void rb(MessageReceiveEvent event,Integer integer)
+	public void rb(MessageReceiveEvent event, Integer integer)
 	{
-		if(integer>10||integer<1)
+		if (integer > 10 || integer < 1)
 		{
 			sendMsg(event, "奖励骰数量错误");
+			return;
 		}
-		int[] ex=new int[integer];
-		for(int i=1;i<=integer;i++)
+		int[] ex = new int[integer];
+		for (int i = 1; i <= integer; i++)
 		{
-			ex[i-1]=getRandomNum(0, 10, 1);
+			ex[i - 1] = getRandomNum(0, 10, 1);
 		}
-		int r=getRandomNum(1, 101, 1);
-		int p=replaceByReward(r, ex);
-		StringBuilder s=new StringBuilder();
+		int r = getRandomNum(1, 101, 1);
+		int p = replaceByReward(r, ex);
+		StringBuilder s = new StringBuilder();
 		for (int i : ex)
-			s.append(i+",");
-		s.deleteCharAt(s.length()-1);
-		sendMsg(event, CQSender.getNickorCard(event)+"掷出了1d100="+r
-				+"，奖励骰：{"+s.toString()+"}，得到1d100p"+integer+"="+p);
+			s.append(i + ",");
+		s.deleteCharAt(s.length() - 1);
+		sendMsg(event, CQSender.getNickorCard(event) + "掷出了1d100=" + r + "，奖励骰：{" + s.toString() + "}，得到1d100b"
+				+ integer + "=" + p);
 	}
+
 	@RegistCommand(CommandString = "rb",Help = "投掷带惩罚骰的百分骰")
 	public void rp(MessageReceiveEvent event)
 	{
-		rp(event,1);
+		rp(event, 1);
 	}
+
 	@RegistCommand(CommandString = "rb",Help = "投掷带惩罚骰的百分骰")
-	public void rp(MessageReceiveEvent event,Integer integer)
+	public void rp(MessageReceiveEvent event, Integer integer)
 	{
-		if(integer>10||integer<1)
+		if (integer > 10 || integer < 1)
 		{
 			sendMsg(event, "惩罚骰数量错误");
+			return;
 		}
-		int[] ex=new int[integer];
-		for(int i=1;i<=integer;i++)
+		int[] ex = new int[integer];
+		for (int i = 1; i <= integer; i++)
 		{
-			ex[i-1]=getRandomNum(0, 10, 1);
+			ex[i - 1] = getRandomNum(0, 10, 1);
 		}
-		int r=getRandomNum(1, 101, 1);
-		int p=replaceByPunish(r, ex);
-		StringBuilder s=new StringBuilder();
+		int r = getRandomNum(1, 101, 1);
+		int p = replaceByPunish(r, ex);
+		StringBuilder s = new StringBuilder();
 		for (int i : ex)
-			s.append(i+",");
-		s.deleteCharAt(s.length()-1);
-		sendMsg(event, CQSender.getNickorCard(event)+"掷出了1d100="+r
-				+"，惩罚骰：{"+s.toString()+"}，得到1d100p"+integer+"="+p);
+			s.append(i + ",");
+		s.deleteCharAt(s.length() - 1);
+		sendMsg(event, CQSender.getNickorCard(event) + "掷出了1d100=" + r + "，惩罚骰：{" + s.toString() + "}，得到1d100p"
+				+ integer + "=" + p);
 	}
 
 	@RegistCommand(CommandString = "st",Help = "设置技能数值")
-	public void st(MessageReceiveEvent event,Object object)
+	public void st(MessageReceiveEvent event, Object object)
 	{
-		Pattern oper=Pattern.compile("[-+*/]");
-		Matcher m=oper.matcher((String)object);
-		if(m.find())
+		Pattern oper = Pattern.compile("[-+*/]");
+		Matcher m = oper.matcher((String) object);
+		if (m.find())
 		{
-			StringBuilder builder=new StringBuilder(((String)object).toLowerCase());
-			Pattern num=Pattern.compile("[-+*/0-9d]");
+			StringBuilder builder = new StringBuilder(((String) object).toLowerCase());
+			Pattern num = Pattern.compile("[-+*/0-9d]");
 			String mainSkill = null;
-			for(int i=0;i<builder.length();i++)
+			for (int i = 0; i < builder.length(); i++)
 			{
-				if(!num.matcher(String.valueOf(builder.charAt(i))).matches())
+				if (!num.matcher(String.valueOf(builder.charAt(i))).matches())
 				{
-					int x=i+1;
-					for(;x<builder.length();i++)
+					int x = i + 1;
+					for (; x < builder.length(); x++)
 					{
-						if(num.matcher(String.valueOf(builder.charAt(i))).matches())
+						if (num.matcher(String.valueOf(builder.charAt(x))).matches())
 							break;
 					}
-					String s=builder.substring(i, x);
-					if(mainSkill!=null)
-						if(!transToMain(mainSkill).equals(transToMain(s)))
+					String s = builder.substring(i, x);
+					if (mainSkill != null)
+						if (!transToMain(mainSkill).equals(transToMain(s)))
 						{
-						sendMsg(event, "你设置的表达式有误");
-						return;
+							sendMsg(event, "你设置的表达式有误");
+							return;
 						}
-					mainSkill=s;
-					int kn=getSkill(event, s);
-					if(kn<0)
+					mainSkill = s;
+					int kn = getSkill(event, s);
+					if (kn < 0)
 					{
 						sendMsg(event, "不存在该技能");
 						return;
 					}
 					builder.replace(i, x, Integer.toString(kn));
-					i=x;
+					i = x;
 				}
 			}
-			if(mainSkill==null)
+			if (mainSkill == null)
 			{
 				sendMsg(event, "你设置的表达式有误");
 				return;
@@ -289,69 +296,71 @@ public class ERPG extends Father
 			long l;
 			try
 			{
-				l=transRandomString(builder.toString());
+				l = transRandomString(builder.toString());
 			} catch (Exception e)
 			{
 				sendMsg(event, "你设置的表达式有误");
 				return;
 			}
-			setSkill(event, mainSkill, (int)l);
-			sendMsg(event, "把"+mainSkill+"设置成了"+l);
+			setSkill(event, mainSkill, (int) l);
+			sendMsg(event, "把" + mainSkill + "设置成了" + l);
 			return;
 		}
-		Pattern word=Pattern.compile("[\u4e00-\u9fa5A-Za-z]");
-		Pattern num=Pattern.compile("[0-9]");
-		StringBuilder s=new StringBuilder((String)object);
-		for(int i=0;i<s.length()-1;i++)
+		Pattern word = Pattern.compile("[\u4e00-\u9fa5A-Za-z]");
+		Pattern num = Pattern.compile("[0-9]");
+		StringBuilder s = new StringBuilder((String) object);
+		for (int i = 0; i < s.length() - 1; i++)
 		{
-			char c=s.charAt(i);
-			if(c==' ')
+			char c = s.charAt(i);
+			if (c == ' ')
 				continue;
-			if(num.matcher(String.valueOf(c)).matches())
+			if (num.matcher(String.valueOf(c)).matches())
 			{
-				char b=s.charAt(i+1);
-				if(b==' ')
+				char b = s.charAt(i + 1);
+				if (b == ' ')
 					continue;
-				else if(word.matcher(String.valueOf(b)).matches())
+				else if (word.matcher(String.valueOf(b)).matches())
 				{
-					s.insert(i, ' ');
+					s.insert(i + 1, ' ');
+					i++;
 					continue;
 				}
 			}
-			if(word.matcher(String.valueOf(c)).matches())
+			if (word.matcher(String.valueOf(c)).matches())
 			{
-				char b=s.charAt(i+1);
-				if(b==' ')
+				char b = s.charAt(i + 1);
+				if (b == ' ')
 					continue;
-				else if(num.matcher(String.valueOf(b)).matches())
+				else if (num.matcher(String.valueOf(b)).matches())
 				{
-					s.insert(i, ' ');
+					s.insert(i + 1, ' ');
+					i++;
 					continue;
 				}
 			}
 		}
-		String[] ss=s.toString().split(" ");
-		if(ss.length%2==1)
+		String[] ss = s.toString().split(" ");
+		if (ss.length % 2 == 1)
 		{
 			sendMsg(event, "数值格式错误");
 			return;
 		}
-		for(int i=0;i<ss.length;i=i+2)
-			setSkill(event, ss[i], Integer.parseInt(ss[i+1]));
+		for (int i = 0; i < ss.length; i = i + 2)
+			setSkill(event, ss[i], Integer.parseInt(ss[i + 1]));
 		sendMsg(event, "属性设置完毕");
 	}
 
 	@RegistCommand(CommandString = "ra",Help = "对技能进行检定")
-	public void ra(MessageReceiveEvent event,String name)
+	public void ra(MessageReceiveEvent event, String name)
 	{
-		int skillnum = getSkill(event,name);
-		if(skillnum==-1)
+		int skillnum = getSkill(event, name);
+		if (skillnum == -1)
 		{
 			sendMsg(event, "你还没有设置技能数值");
 			return;
 		}
-		CheckStatus status=numCheck(skillnum, getRandomNum(1, 101, 1));
-		StringBuilder builder=new StringBuilder();
+		CheckStatus status = numCheck(skillnum, getRandomNum(1, 101, 1));
+		StringBuilder builder = new StringBuilder();
 		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" + status.randomNum + "/"
 				+ skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
@@ -359,13 +368,13 @@ public class ERPG extends Father
 			builder.append("," + status.specialStatus.getString());
 		sendMsg(event, builder.toString());
 	}
-	
+
 	@RegistCommand(CommandString = "ra",Help = "对技能进行检定")
-	public void ra(MessageReceiveEvent event,String name,Integer num)
+	public void ra(MessageReceiveEvent event, String name, Integer num)
 	{
 		int skillnum = num;
-		CheckStatus status=numCheck(skillnum, getRandomNum(1, 101, 1));
-		StringBuilder builder=new StringBuilder();
+		CheckStatus status = numCheck(skillnum, getRandomNum(1, 101, 1));
+		StringBuilder builder = new StringBuilder();
 		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" + status.randomNum + "/"
 				+ skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
@@ -375,59 +384,60 @@ public class ERPG extends Father
 	}
 
 	@RegistCommand(CommandString = "rab",Help = "对技能进行含奖励骰的检定")
-	public void rab(MessageReceiveEvent event,String name)
+	public void rab(MessageReceiveEvent event, String name)
 	{
-		rab(event, 1,name);
+		rab(event, 1, name);
 	}
+
 	@RegistCommand(CommandString = "rab",Help = "对技能进行含奖励骰的检定")
-	public void rab(MessageReceiveEvent event,String name,Integer q)
+	public void rab(MessageReceiveEvent event, String name, Integer q)
 	{
-		rab(event, 1,name,q);
+		rab(event, 1, name, q);
 	}
-	
+
 	@RegistCommand(CommandString = "rab",Help = "对技能进行含奖励骰的检定")
-	public void rab(MessageReceiveEvent event,Integer i,String name)
+	public void rab(MessageReceiveEvent event, Integer i, String name)
 	{
-		if(i>5||i<1)
+		if (i > 5 || i < 1)
 		{
 			sendMsg(event, "奖励骰的数量异常");
 			return;
 		}
-		int[] bs=getRandomNumArr(0, 10, i);
-		int skillnum = getSkill(event,name);
-		if(skillnum==-1)
+		int[] bs = getRandomNumArr(0, 10, i);
+		int skillnum = getSkill(event, name);
+		if (skillnum == -1)
 		{
 			sendMsg(event, "你还没有设置技能数值");
 			return;
 		}
-		int rnum=getRandomNum(1, 101, 1);
-		int num=replaceByReward(rnum, bs);
-		CheckStatus status=numCheck(skillnum, num);
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" +rnum
-				+"奖励骰："+transArrToString(bs)+"="+num+ "/"+ skillnum + "\n");
+		int rnum = getRandomNum(1, 101, 1);
+		int num = replaceByReward(rnum, bs);
+		CheckStatus status = numCheck(skillnum, num);
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" + rnum + "奖励骰："
+				+ transArrToString(bs) + "=" + num + "/" + skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
 		if (status.specialStatus != null)
 			builder.append("," + status.specialStatus.getString());
 		sendMsg(event, builder.toString());
 	}
-	
+
 	@RegistCommand(CommandString = "rab",Help = "对技能进行含奖励骰的检定")
-	public void rab(MessageReceiveEvent event,Integer i,String name,Integer q)
+	public void rab(MessageReceiveEvent event, Integer i, String name, Integer q)
 	{
-		if(i>5||i<1)
+		if (i > 5 || i < 1)
 		{
 			sendMsg(event, "奖励骰的数量异常");
 			return;
 		}
-		int[] bs=getRandomNumArr(0, 10, i);
-		int skillnum =q;
-		int rnum=getRandomNum(1, 101, 1);
-		int num=replaceByReward(rnum, bs);
-		CheckStatus status=numCheck(skillnum, num);
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" +rnum
-				+"奖励骰："+transArrToString(bs)+"="+num+ "/"+ skillnum + "\n");
+		int[] bs = getRandomNumArr(0, 10, i);
+		int skillnum = q;
+		int rnum = getRandomNum(1, 101, 1);
+		int num = replaceByReward(rnum, bs);
+		CheckStatus status = numCheck(skillnum, num);
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" + rnum + "奖励骰："
+				+ transArrToString(bs) + "=" + num + "/" + skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
 		if (status.specialStatus != null)
 			builder.append("," + status.specialStatus.getString());
@@ -435,60 +445,60 @@ public class ERPG extends Father
 	}
 
 	@RegistCommand(CommandString = "rap",Help = "对技能进行含惩罚骰的检定")
-	public void rap(MessageReceiveEvent event,String name)
+	public void rap(MessageReceiveEvent event, String name)
 	{
-		rap(event, 1,name);
+		rap(event, 1, name);
 	}
-	
+
 	@RegistCommand(CommandString = "rap",Help = "对技能进行含惩罚骰的检定")
-	public void rap(MessageReceiveEvent event,String name,Integer q)
+	public void rap(MessageReceiveEvent event, String name, Integer q)
 	{
-		rap(event, 1,name,q);
+		rap(event, 1, name, q);
 	}
-	
+
 	@RegistCommand(CommandString = "rap",Help = "对技能进行含惩罚骰的检定")
-	public void rap(MessageReceiveEvent event,Integer i,String name)
+	public void rap(MessageReceiveEvent event, Integer i, String name)
 	{
-		if(i>5||i<1)
+		if (i > 5 || i < 1)
 		{
 			sendMsg(event, "惩罚骰的数量异常");
 			return;
 		}
-		int[] bs=getRandomNumArr(0, 10, i);
-		int skillnum = getSkill(event,name);
-		if(skillnum==-1)
+		int[] bs = getRandomNumArr(0, 10, i);
+		int skillnum = getSkill(event, name);
+		if (skillnum == -1)
 		{
 			sendMsg(event, "你还没有设置技能数值");
 			return;
 		}
-		int rnum=getRandomNum(1, 101, 1);
-		int num=replaceByPunish(rnum, bs);
-		CheckStatus status=numCheck(skillnum, num);
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" +rnum
-				+"惩罚骰："+transArrToString(bs)+"="+num+ "/"+ skillnum + "\n");
+		int rnum = getRandomNum(1, 101, 1);
+		int num = replaceByPunish(rnum, bs);
+		CheckStatus status = numCheck(skillnum, num);
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" + rnum + "惩罚骰："
+				+ transArrToString(bs) + "=" + num + "/" + skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
 		if (status.specialStatus != null)
 			builder.append("," + status.specialStatus.getString());
 		sendMsg(event, builder.toString());
 	}
-	
+
 	@RegistCommand(CommandString = "rap",Help = "对技能进行含惩罚骰的检定")
-	public void rap(MessageReceiveEvent event,Integer i,String name,Integer q)
+	public void rap(MessageReceiveEvent event, Integer i, String name, Integer q)
 	{
-		if(i>5||i<1)
+		if (i > 5 || i < 1)
 		{
 			sendMsg(event, "惩罚骰的数量异常");
 			return;
 		}
-		int[] bs=getRandomNumArr(0, 10, i);
-		int skillnum =q;
-		int rnum=getRandomNum(1, 101, 1);
-		int num=replaceByPunish(rnum, bs);
-		CheckStatus status=numCheck(skillnum, num);
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" +rnum
-				+"惩罚骰："+transArrToString(bs)+"="+num+ "/"+ skillnum + "\n");
+		int[] bs = getRandomNumArr(0, 10, i);
+		int skillnum = q;
+		int rnum = getRandomNum(1, 101, 1);
+		int num = replaceByPunish(rnum, bs);
+		CheckStatus status = numCheck(skillnum, num);
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "的" + name + "进行检定，掷出1d100=" + rnum + "惩罚骰："
+				+ transArrToString(bs) + "=" + num + "/" + skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
 		if (status.specialStatus != null)
 			builder.append("," + status.specialStatus.getString());
@@ -496,202 +506,210 @@ public class ERPG extends Father
 	}
 
 	@RegistCommand(CommandString = "sc",Help = "理智检定")
-	public void sc(MessageReceiveEvent event,Object object)
+	public void sc(MessageReceiveEvent event, Object object)
 	{
-		String a,b;
+		String a, b;
 		{
-			String x=(String)object;
-			String[] k=x.split("/");
-			if(k.length<2)
+			String x = (String) object;
+			String[] k = x.split("/");
+			if (k.length < 2)
 			{
 				sendMsg(event, "表达式有误");
 				return;
 			}
-			a=k[0];
-			b=k[1];
+			a = k[0];
+			b = k[1];
 		}
-		long q,p;
+		long q, p;
 		try
 		{
-			q=transRandomString(a);
-			p=transRandomString(b);
+			q = transRandomString(a);
+			p = transRandomString(b);
 		} catch (Exception e)
 		{
 			sendMsg(event, "表达式有误");
 			return;
 		}
-		int skillnum=getSkill(event, "理智");
-		if(skillnum<0)
+		int skillnum = getSkill(event, "理智");
+		if (skillnum < 0)
 		{
 			sendMsg(event, "你还没有设置理智数值");
 			return;
 		}
-		int num=getRandomNum(0, 101, 1);
-		CheckStatus status=numCheck(skillnum, num);
-		if(status.specialStatus==SpecialStatus.BIGFAILED)
+		int num = getRandomNum(0, 101, 1);
+		CheckStatus status = numCheck(skillnum, num);
+		if (status.specialStatus == SpecialStatus.BIGFAILED)
 			try
 			{
-				p=transRandomStringToMax(b);
+				p = transRandomStringToMax(b);
 			} catch (Exception e)
 			{
 //				其实这里是不可能发生的
 				sendMsg(event, "表达式有误");
 				return;
 			}
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event) + "进行理智检定，掷出1d100=" +num+ "/"+ skillnum + "\n");
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "进行理智检定，掷出1d100=" + num + "/" + skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
 		if (status.specialStatus != null)
 			builder.append("," + status.specialStatus.getString());
-		builder.append("\n理智减少了"+(status.levelStatus==LevelStatus.FAILED?p:q));
-		skillnum-=(status.levelStatus==LevelStatus.FAILED?p:q);
-		int con=getSkill(event, "意志");
-		int kk=getSkill(event, "克苏鲁知识");
-		if(con<0)
+		builder.append("\n理智减少了" + (status.levelStatus == LevelStatus.FAILED ? p : q));
+		skillnum -= (status.levelStatus == LevelStatus.FAILED ? p : q);
+		int con = getSkill(event, "意志");
+		int kk = getSkill(event, "克苏鲁知识");
+		if (con < 0)
 		{
 			sendMsg(event, "你没有意志，何来的理智？");
 			return;
 		}
-		if(kk<0)
-			kk=0;
-		if(skillnum<=0)
+		if (kk < 0)
+			kk = 0;
+		if (skillnum <= 0)
 		{
-			skillnum=0;
-			builder.append("\n你陷入了永久疯狂");
-		}
-		else if(skillnum>con-kk)
-			skillnum=con-kk;
-		else if((status.levelStatus==LevelStatus.FAILED?p:q)>5)
+			skillnum = 0;
+			builder.append("，理智归零\n你陷入了永久疯狂");
+		} else if (skillnum > con - kk)
 		{
+			skillnum = con - kk;
+			builder.append("，还剩" + skillnum);
+		} else if ((status.levelStatus == LevelStatus.FAILED ? p : q) > 5)
+		{
+			builder.append("，还剩" + skillnum);
 			builder.append("\n你临时的疯狂了");
-		}
+		} else
+			builder.append("，还剩" + skillnum);
 		setSkill(event, "理智", skillnum);
+		sendMsg(event, builder.toString());
 	}
-	
+
 	@RegistCommand(CommandString = "sc",Help = "理智检定")
-	public void sc(MessageReceiveEvent event,Object object,Integer i)
+	public void sc(MessageReceiveEvent event, Object object, Integer i)
 	{
-		String a,b;
+		String a, b;
 		{
-			String x=(String)object;
-			String[] k=x.split("/");
-			if(k.length<2)
+			String x = (String) object;
+			String[] k = x.split("/");
+			if (k.length < 2)
 			{
 				sendMsg(event, "表达式有误");
 				return;
 			}
-			a=k[0];
-			b=k[1];
+			a = k[0];
+			b = k[1];
 		}
-		long q,p;
+		long q, p;
 		try
 		{
-			q=transRandomString(a);
-			p=transRandomString(b);
+			q = transRandomString(a);
+			p = transRandomString(b);
 		} catch (Exception e)
 		{
 			sendMsg(event, "表达式有误");
 			return;
 		}
-		int skillnum=i;
-		int num=getRandomNum(0, 101, 1);
-		CheckStatus status=numCheck(skillnum, num);
-		if(status.specialStatus==SpecialStatus.BIGFAILED)
+		int skillnum = i;
+		int num = getRandomNum(0, 101, 1);
+		CheckStatus status = numCheck(skillnum, num);
+		if (status.specialStatus == SpecialStatus.BIGFAILED)
 			try
 			{
-				p=transRandomStringToMax(b);
+				p = transRandomStringToMax(b);
 			} catch (Exception e)
 			{
 //				其实这里是不可能发生的
 				sendMsg(event, "表达式有误");
 				return;
 			}
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event) + "进行理智检定，掷出1d100=" +num+ "/"+ skillnum + "\n");
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "进行理智检定，掷出1d100=" + num + "/" + skillnum + "\n");
 		builder.append("检定" + status.levelStatus.getString());
 		if (status.specialStatus != null)
 			builder.append("," + status.specialStatus.getString());
-		builder.append("\n理智减少了"+(status.levelStatus==LevelStatus.FAILED?p:q));
-		skillnum-=status.levelStatus==LevelStatus.FAILED?p:q;
-		int con=100;
-		int kk=0;
-		if(skillnum<=0)
+		builder.append("\n理智减少了" + (status.levelStatus == LevelStatus.FAILED ? p : q));
+		skillnum -= status.levelStatus == LevelStatus.FAILED ? p : q;
+		int con = 100;
+		int kk = 0;
+		if (skillnum <= 0)
 		{
-			skillnum=0;
-			builder.append("\n你陷入了永久疯狂");
-		}
-		else if(skillnum>con-kk)
-			skillnum=con-kk;
-		else if((status.levelStatus==LevelStatus.FAILED?p:q)>5)
+			skillnum = 0;
+			builder.append("，理智归零\n你陷入了永久疯狂");
+		} else if (skillnum > con - kk)
 		{
+			skillnum = con - kk;
+			builder.append("，还剩" + skillnum);
+		} else if ((status.levelStatus == LevelStatus.FAILED ? p : q) > 5)
+		{
+			builder.append("，还剩" + skillnum);
 			builder.append("\n你临时的疯狂了");
-		}
+		} else
+			builder.append("，还剩" + skillnum);
+		sendMsg(event, builder.toString());
 	}
 
 	@RegistCommand(CommandString = "en",Help = "技能增长检定")
-	public void en(MessageReceiveEvent event,String skill)
+	public void en(MessageReceiveEvent event, String skill)
 	{
-		int rnum=getSkill(event, skill);
+		int rnum = getSkill(event, skill);
 		int num;
-		if(rnum<0)
+		if (rnum < 0)
 		{
 			sendMsg(event, "你尚未设置技能值");
 			return;
 		}
-		int d=getRandomNum(1, 101, 1);
+		int d = getRandomNum(1, 101, 1);
 		int grow;
-		if(d>=rnum||(d<=100&&d>95))
-			grow=getRandomNum(1, 11, 1);
+		if (d > rnum || (d <= 100 && d > 95))
+			grow = getRandomNum(1, 11, 1);
 		else
-			grow=0;
-		num=rnum+grow;
-		
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event)+"的"+skill + "技能进行增长检定，掷出1d100=" +num+ "/"+ rnum + "\n");
-		builder.append("检定" + (grow==0?"失败":"成功"));
-		if(grow!=0)
+			grow = 0;
+		num = rnum + grow;
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "的" + skill + "技能进行增长检定，掷出1d100=" + d + "/" + rnum + "\n");
+		builder.append("检定" + (grow == 0 ? "失败" : "成功"));
+		if (grow != 0)
 		{
-			builder.append(skill+"提升了"+grow+"，变成了"+num);
-			if(rnum<90&&num>90&&!transToMain(skill).equals(transToMain("信用评级"))&&
-					!transToMain(skill).equals(transToMain("克苏鲁知识"))&&!transToMain(skill).equals(transToMain("san"))
-					&&!transToMain(skill).equals(transToMain("力量"))&&!transToMain(skill).equals(transToMain("体质"))
-					&&!transToMain(skill).equals(transToMain("体型"))&&!transToMain(skill).equals(transToMain("敏捷"))
-					&&!transToMain(skill).equals(transToMain("智力"))&&!transToMain(skill).equals(transToMain("意志"))
-					&&!transToMain(skill).equals(transToMain("教育"))&&!transToMain(skill).equals(transToMain("幸运"))
-					&&!transToMain(skill).equals(transToMain("外貌")))
-				builder.append(CQSender.getNickorCard(event)+"的"+skill +"已达精通！（可选获得2D6的理智恢复）");
+			builder.append(skill + "提升了" + grow + "，变成了" + num);
+			if (rnum < 90 && num > 90 && !transToMain(skill).equals(transToMain("信用评级"))
+					&& !transToMain(skill).equals(transToMain("克苏鲁知识"))
+					&& !transToMain(skill).equals(transToMain("san")) && !transToMain(skill).equals(transToMain("力量"))
+					&& !transToMain(skill).equals(transToMain("体质")) && !transToMain(skill).equals(transToMain("体型"))
+					&& !transToMain(skill).equals(transToMain("敏捷")) && !transToMain(skill).equals(transToMain("智力"))
+					&& !transToMain(skill).equals(transToMain("意志")) && !transToMain(skill).equals(transToMain("教育"))
+					&& !transToMain(skill).equals(transToMain("幸运")) && !transToMain(skill).equals(transToMain("外貌")))
+				builder.append("\n" + CQSender.getNickorCard(event) + "的" + skill + "已达精通！（可选获得2D6的理智恢复）");
 		}
 		setSkill(event, skill, num);
 		sendMsg(event, builder.toString());
 	}
-	
+
 	@RegistCommand(CommandString = "en",Help = "技能增长检定")
-	public void en(MessageReceiveEvent event,String skill,Integer i)
+	public void en(MessageReceiveEvent event, String skill, Integer i)
 	{
-		int rnum=i;
+		int rnum = i;
 		int num;
-		int d=getRandomNum(1, 101, 1);
+		int d = getRandomNum(1, 101, 1);
 		int grow;
-		if(d>=rnum||(d<=100&&d>95))
-			grow=getRandomNum(1, 11, 1);
+		if (d >= rnum || (d <= 100 && d > 95))
+			grow = getRandomNum(1, 11, 1);
 		else
-			grow=0;
-		num=rnum+grow;
-		
-		StringBuilder builder=new StringBuilder();
-		builder.append("对" + CQSender.getNickorCard(event)+"的"+skill + "技能进行增长检定，掷出1d100=" +num+ "/"+ rnum + "\n");
-		builder.append("检定" + (grow==0?"失败":"成功"));
-		if(grow!=0)
+			grow = 0;
+		num = rnum + grow;
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("对" + CQSender.getNickorCard(event) + "的" + skill + "技能进行增长检定，掷出1d100=" + d + "/" + rnum + "\n");
+		builder.append("检定" + (grow == 0 ? "失败" : "成功"));
+		if (grow != 0)
 		{
-			builder.append(skill+"提升了"+grow+"，变成了"+num);
-			if(rnum<90&&num>90&&!transToMain(skill).equals(transToMain("信用评级"))&&
-					!transToMain(skill).equals(transToMain("克苏鲁知识"))&&!transToMain(skill).equals(transToMain("san"))
-					&&!transToMain(skill).equals(transToMain("力量"))&&!transToMain(skill).equals(transToMain("体质"))
-					&&!transToMain(skill).equals(transToMain("体型"))&&!transToMain(skill).equals(transToMain("敏捷"))
-					&&!transToMain(skill).equals(transToMain("智力"))&&!transToMain(skill).equals(transToMain("意志"))
-					&&!transToMain(skill).equals(transToMain("教育"))&&!transToMain(skill).equals(transToMain("幸运"))
-					&&!transToMain(skill).equals(transToMain("外貌")))
-				builder.append(CQSender.getNickorCard(event)+"的"+skill +"已达精通！（可选获得2D6的理智恢复）");
+			builder.append(skill + "提升了" + grow + "，变成了" + num);
+			if (rnum < 90 && num > 90 && !transToMain(skill).equals(transToMain("信用评级"))
+					&& !transToMain(skill).equals(transToMain("克苏鲁知识"))
+					&& !transToMain(skill).equals(transToMain("san")) && !transToMain(skill).equals(transToMain("力量"))
+					&& !transToMain(skill).equals(transToMain("体质")) && !transToMain(skill).equals(transToMain("体型"))
+					&& !transToMain(skill).equals(transToMain("敏捷")) && !transToMain(skill).equals(transToMain("智力"))
+					&& !transToMain(skill).equals(transToMain("意志")) && !transToMain(skill).equals(transToMain("教育"))
+					&& !transToMain(skill).equals(transToMain("幸运")) && !transToMain(skill).equals(transToMain("外貌")))
+				builder.append("\n" + CQSender.getNickorCard(event) + "的" + skill + "已达精通！（可选获得2D6的理智恢复）");
 		}
 		sendMsg(event, builder.toString());
 	}
@@ -700,21 +718,22 @@ public class ERPG extends Father
 	public void ti(MessageReceiveEvent event)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		int type = getRandomNum(1,10, 1);
+		int type = getRandomNum(1, 10, 1);
 		stringBuilder.append(CQSender.getNickorCard(event) + "获得了疯狂症状1d10=" + type + "：\n");
 		stringBuilder.append(ShortCrazy[type - 1] + "\n");
-		stringBuilder.append("持续1d10=" + getRandomNum(1,10, 1) + "轮");
-		sendMsg(event,stringBuilder.toString());
+		stringBuilder.append("持续1d10=" + getRandomNum(1, 10, 1) + "轮");
+		sendMsg(event, stringBuilder.toString());
 	}
-	@RegistCommand(CommandString = "ti",Help = "长期疯狂")
+
+	@RegistCommand(CommandString = "li",Help = "长期疯狂")
 	public void li(MessageReceiveEvent event)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		int type = getRandomNum(1,10, 1);
+		int type = getRandomNum(1, 10, 1);
 		stringBuilder.append(CQSender.getNickorCard(event) + "获得了疯狂症状1d10=" + type + "：\n");
 		stringBuilder.append(LongCrazy[type - 1] + "\n");
-		stringBuilder.append("时间1d10=" + getRandomNum(1,10, 1) + "小时");
-		sendMsg(event,stringBuilder.toString());
+		stringBuilder.append("时间1d10=" + getRandomNum(1, 10, 1) + "小时");
+		sendMsg(event, stringBuilder.toString());
 	}
 
 //	------------------------------------------------------------------------------------------------------
@@ -745,12 +764,12 @@ public class ERPG extends Father
 		if (a == b - 1)
 			return a;
 		Random random = new Random();
-		int num=0;
-		for(int i=1;i<=time;i++)
-			num+=random.nextInt(b - a) + a;
+		int num = 0;
+		for (int i = 1; i <= time; i++)
+			num += random.nextInt(b - a) + a;
 		return num;
 	}
-	
+
 	/**
 	 * 从a（包含）~b（不包含）中抽取一个数，返回数组
 	 * 
@@ -766,11 +785,11 @@ public class ERPG extends Father
 			int x = a;
 			a = b;
 			b = x;
-		} 
+		}
 		Random random = new Random();
-		int[] x=new int[time];
-		for(int i=1;i<=time;i++)
-			x[i]=random.nextInt(b - a) + a;
+		int[] x = new int[time];
+		for (int i = 1; i <= time; i++)
+			x[i - 1] = random.nextInt(b - a) + a;
 		return x;
 	}
 
@@ -833,8 +852,7 @@ public class ERPG extends Father
 					level = LevelStatus.EX_SUCCESS;
 			}
 			ifSuccess = true;
-		} 
-		else
+		} else
 		{
 			level = LevelStatus.FAILED;
 			ifSuccess = false;
@@ -865,105 +883,106 @@ public class ERPG extends Father
 	 * 
 	 * @param string 字符串
 	 * @return 按要求的随机数
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private long transRandomString(String string) throws Exception
 	{
 		{
-			Pattern pattern=Pattern.compile("[-0-9+*/d]+");
-			Matcher matcher=pattern.matcher(string);
-			if(!matcher.matches())
+			Pattern pattern = Pattern.compile("[-0-9+*/d]+");
+			Matcher matcher = pattern.matcher(string);
+			if (!matcher.matches())
 				throw new Exception();
 		}
-		
+
 		Pattern pattern = Pattern.compile("([0-9]*)?d([0-9]*)?");
 		Matcher matcher = pattern.matcher(string.toLowerCase());
 		String resultString = new String(string);
 		while (matcher.find())
 		{
-			int start=matcher.start(0);
-			int end=matcher.end(0);
-			String $a=matcher.group(1);
-			String $b=matcher.group(2);
-			int a,b;
-			if($a.isEmpty())
-				a=1;
+			int start = matcher.start(0);
+			int end = matcher.end(0);
+			String $a = matcher.group(1);
+			String $b = matcher.group(2);
+			int a, b;
+			if ($a.isEmpty())
+				a = 1;
 			else
-				a=Integer.parseInt($a);
-			if($b.isEmpty())
-				b=100;
+				a = Integer.parseInt($a);
+			if ($b.isEmpty())
+				b = 100;
 			else
-				b=Integer.parseInt($b);
-			if(a>1000||a<1)
-				a=1;
-			if(b>10000||b<1)
-				b=100;
-			int result=getRandomNum(1, b, a);
-			string.replaceFirst(string.substring(start, end), Integer.toString(result));
+				b = Integer.parseInt($b);
+			if (a > 1000 || a < 1)
+				a = 1;
+			if (b > 10000 || b < 1)
+				b = 100;
+			int result = getRandomNum(1, b, a);
+			resultString = string.replaceFirst(string.substring(start, end), Integer.toString(result));
 		}
 		Evaluator evaluator = new Evaluator();
 		return (long) evaluator.getNumberResult(resultString);
 	}
-	
+
 	/**
 	 * 将包含有随机数的表达式计算出其最大值
 	 * 
 	 * @param string 字符串
 	 * @return 按要求的随机数
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private long transRandomStringToMax(String string) throws Exception
 	{
 		{
-			Pattern pattern=Pattern.compile("[-0-9+*/d]+");
-			Matcher matcher=pattern.matcher(string);
-			if(!matcher.matches())
+			Pattern pattern = Pattern.compile("[-0-9+*/d]+");
+			Matcher matcher = pattern.matcher(string);
+			if (!matcher.matches())
 				throw new Exception();
 		}
-		
+
 		Pattern pattern = Pattern.compile("([0-9]*)?d([0-9]*)?");
 		Matcher matcher = pattern.matcher(string.toLowerCase());
 		String resultString = new String(string);
 		while (matcher.find())
 		{
-			int start=matcher.start(0);
-			int end=matcher.end(0);
-			String $a=matcher.group(1);
-			String $b=matcher.group(2);
-			int a,b;
-			if($a.isEmpty())
-				a=1;
+			int start = matcher.start(0);
+			int end = matcher.end(0);
+			String $a = matcher.group(1);
+			String $b = matcher.group(2);
+			int a, b;
+			if ($a.isEmpty())
+				a = 1;
 			else
-				a=Integer.parseInt($a);
-			if($b.isEmpty())
-				b=100;
+				a = Integer.parseInt($a);
+			if ($b.isEmpty())
+				b = 100;
 			else
-				b=Integer.parseInt($b);
-			if(a>1000||a<1)
-				a=1;
-			if(b>10000||b<1)
-				b=100;
-			int result=a*b;
+				b = Integer.parseInt($b);
+			if (a > 1000 || a < 1)
+				a = 1;
+			if (b > 10000 || b < 1)
+				b = 100;
+			int result = a * b;
 			string.replaceFirst(string.substring(start, end), Integer.toString(result));
 		}
 		Evaluator evaluator = new Evaluator();
 		return (long) evaluator.getNumberResult(resultString);
 	}
-	
+
 	/**
 	 * 将数组变成“[,,,,]”的形式
+	 * 
 	 * @param a
 	 * @return
 	 */
 	private String transArrToString(int[] a)
 	{
-		StringBuilder builder=new StringBuilder("[");
+		StringBuilder builder = new StringBuilder("[");
 		for (int i : a)
 		{
 			builder.append(i);
 			builder.append(",");
 		}
-		builder.deleteCharAt(builder.length()-1);
+		builder.deleteCharAt(builder.length() - 1);
 		builder.append("]");
 		return builder.toString();
 	}
@@ -1008,7 +1027,7 @@ public class ERPG extends Father
 			{
 				stringBuilder.append(string + ",");
 			}
-			getDataExchanger().addListItem(SAME_STRING, SAME_STRING_LINE, stringBuilder.toString());
+			getDataExchanger().setListItem(SAME_STRING, SAME_STRING_LINE, stringBuilder.toString());
 		}
 	}
 
@@ -1166,7 +1185,7 @@ public class ERPG extends Father
 			return;
 		}
 		getDataExchanger().deleteListItem(name, mark);
-		getDataExchanger().addListItem(name, mark, Integer.toString(num));
+		getDataExchanger().setListItem(name, mark, Integer.toString(num));
 	}
 
 	/**
@@ -1174,7 +1193,7 @@ public class ERPG extends Father
 	 * 
 	 * @param name 技能名称(会自动替换成主要字符名的)
 	 */
-	private int getSkill(IdentitySymbol symbol,String name)
+	private int getSkill(IdentitySymbol symbol, String name)
 	{
 		String mark;
 		name = transToMain(name);
@@ -1204,7 +1223,7 @@ public class ERPG extends Father
 	 * 
 	 * @param name 技能名称(会自动替换成主要字符名的)
 	 */
-	private void removeSkill(IdentitySymbol symbol,String name)
+	private void removeSkill(IdentitySymbol symbol, String name)
 	{
 		String mark;
 		name = transToMain(name);
@@ -1225,10 +1244,11 @@ public class ERPG extends Father
 		}
 		getDataExchanger().deleteListItem(name, mark);
 	}
+
 	@Override
 	public void init()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

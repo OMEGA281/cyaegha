@@ -21,53 +21,55 @@ public class ClassLoader
 {
 	Class<?> clazz;
 	Object object;
-	ArrayList<SelfStartMethod> arrayList=new ArrayList<>();
-	
-	
+	ArrayList<SelfStartMethod> arrayList = new ArrayList<>();
+
 	public ClassLoader(Class<?> clazz)
 	{
-		this.clazz=clazz;
-		if(clazz.getAnnotation(AuxiliaryClass.class)!=null)
+		this.clazz = clazz;
+		if (clazz.getAnnotation(AuxiliaryClass.class) != null)
 			return;
-		NewAuthirizerList newAuthirizerList=clazz.getAnnotation(NewAuthirizerList.class);
-		if(newAuthirizerList!=null)
+		NewAuthirizerList newAuthirizerList = clazz.getAnnotation(NewAuthirizerList.class);
+		if (newAuthirizerList != null)
 		{
-			String[] list=newAuthirizerList.value();
+			String[] list = newAuthirizerList.value();
 			for (String string : list)
 				AuthirizerListBook.getAuthirizerListBook().createNewAuthirizerList(string);
 		}
-		UseAuthirizerList authirizerList=clazz.getAnnotation(UseAuthirizerList.class);
+		UseAuthirizerList authirizerList = clazz.getAnnotation(UseAuthirizerList.class);
 		String defaultAuthirizerList;
-		if(authirizerList==null)
-			defaultAuthirizerList=clazz.getName();
+		if (authirizerList == null)
+			defaultAuthirizerList = clazz.getName();
 		else
-			defaultAuthirizerList=authirizerList.value();
-		AuthirizerListBook.getAuthirizerListBook().connectClassWithAuthirizerList(clazz.getName(), defaultAuthirizerList);
+			defaultAuthirizerList = authirizerList.value();
+		AuthirizerListBook.getAuthirizerListBook().connectClassWithAuthirizerList(clazz.getName(),
+				defaultAuthirizerList);
 		try
 		{
-			object=clazz.newInstance();
+			object = clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e)
 		{
 			// TODO Auto-generated catch block
-			Log.e("无法实例化类"+clazz);
+			Log.e("无法实例化类" + clazz);
 		}
-		
+
 		try
 		{
-			Method init=clazz.getMethod("init", null);
+			Method init = clazz.getMethod("init", null);
 			init.invoke(object);
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		Method[] methods=clazz.getMethods();
+
+		Method[] methods = clazz.getMethods();
 		for (Method method : methods)
 		{
-			arrayList.add(new SelfStartMethod(method,object));
+			arrayList.add(new SelfStartMethod(method, object));
 		}
 	}
+
 	/**
 	 * 载入所有的方法，将该类中的所有方法重新注册一遍<br>
 	 * 注意：本方法不会清楚之前的方法，多次注册会重复
@@ -77,38 +79,38 @@ public class ClassLoader
 		for (SelfStartMethod selfStartMethod : arrayList)
 		{
 			{
-				FriendAddListener listener=selfStartMethod.getAnnotation(FriendAddListener.class);
-				if(listener!=null)
+				FriendAddListener listener = selfStartMethod.getAnnotation(FriendAddListener.class);
+				if (listener != null)
 					EventTrigger.getEventTrigger().addFriendAddMethod(selfStartMethod, listener.priority());
 			}
 			{
-				GroupAddListener listener=selfStartMethod.getAnnotation(GroupAddListener.class);
-				if(listener!=null)
+				GroupAddListener listener = selfStartMethod.getAnnotation(GroupAddListener.class);
+				if (listener != null)
 					EventTrigger.getEventTrigger().addGroupAddMethod(selfStartMethod, listener.priority());
 			}
 			{
-				GroupBanListener listener=selfStartMethod.getAnnotation(GroupBanListener.class);
-				if(listener!=null)
+				GroupBanListener listener = selfStartMethod.getAnnotation(GroupBanListener.class);
+				if (listener != null)
 					EventTrigger.getEventTrigger().addGroupBanMethod(selfStartMethod, listener.priority());
 			}
 			{
-				GroupMemberChangeListener listener=selfStartMethod.getAnnotation(GroupMemberChangeListener.class);
-				if(listener!=null)
+				GroupMemberChangeListener listener = selfStartMethod.getAnnotation(GroupMemberChangeListener.class);
+				if (listener != null)
 					EventTrigger.getEventTrigger().addGroupMemberChangeMethod(selfStartMethod, listener.priority());
 			}
 			{
-				MessageReceiveListener listener=selfStartMethod.getAnnotation(MessageReceiveListener.class);
-				if(listener!=null)
+				MessageReceiveListener listener = selfStartMethod.getAnnotation(MessageReceiveListener.class);
+				if (listener != null)
 					EventTrigger.getEventTrigger().addMessgeReceiveMethod(selfStartMethod, listener.priority());
 			}
 			{
-				MessageSendListener listener=selfStartMethod.getAnnotation(MessageSendListener.class);
-				if(listener!=null)
+				MessageSendListener listener = selfStartMethod.getAnnotation(MessageSendListener.class);
+				if (listener != null)
 					EventTrigger.getEventTrigger().addMessgeSendMethod(selfStartMethod, listener.priority());
 			}
 			{
-				RegistCommand command=selfStartMethod.getAnnotation(RegistCommand.class);
-				if(command!=null)
+				RegistCommand command = selfStartMethod.getAnnotation(RegistCommand.class);
+				if (command != null)
 					CommandControler.getCommandControler().addCommand(selfStartMethod, command);
 			}
 		}

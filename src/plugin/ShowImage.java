@@ -19,15 +19,15 @@ public class ShowImage extends Father
 	@RegistCommand(CommandString = "image",Help = "抽一张图片")
 	public void image(MessageReceiveEvent event) throws IOException
 	{
-		if(!CQSender.canSendImage())
+		if (!CQSender.canSendImage())
 		{
-			sendMsg(event,"哎呀……图片发不出去……");
+			sendMsg(event, "哎呀……图片发不出去……");
 			return;
 		}
-		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
-		if(!access)
+		boolean access = Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
+		if (!access)
 		{
-			sendMsg(event,"现在不行，还没有接到许可的命令");
+			sendMsg(event, "现在不行，还没有接到许可的命令");
 			return;
 		}
 //		http://www.dmoe.cc/random.php
@@ -55,63 +55,67 @@ public class ShowImage extends Father
 //            is.close();
 //        }
 //		connection.disconnect();
-		
-		CQImage cqImage=new CQImage("https://v1.alapi.cn/api/acg");
-		File image=cqImage.download(getPluginDataFloder()+"data.jpg");
-		
-		String md5=DigestUtils.md5Hex(new FileInputStream(image));
-		
-		File realimage=new File(getPluginDataFloder()+md5+".jpg");
+
+		CQImage cqImage = new CQImage("https://v1.alapi.cn/api/acg");
+		File image = cqImage.download(getPluginDataFloder() + "data.jpg");
+
+		String md5 = DigestUtils.md5Hex(new FileInputStream(image));
+
+		File realimage = new File(getPluginDataFloder() + md5 + ".jpg");
 		image.renameTo(realimage);
-		sendMsg(event,new CQCode().image(realimage));
+		sendMsg(event, new CQCode().image(realimage));
 	}
+
 	@MinimumAuthority(AuthirizerUser.GROUP_MANAGER)
 	public void image_off(MessageReceiveEvent event)
 	{
-		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
-		if(!access)
+		boolean access = Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
+		if (!access)
 		{
-			sendMsg(event,"停止的命令已经下达了……");
+			sendMsg(event, "停止的命令已经下达了……");
 			return;
 		}
-		access=!access;
-		getDataExchanger().addItem(mark(event), Boolean.toString(access));
-		sendMsg(event,"了解了……我会安静会");
+		access = !access;
+		getDataExchanger().setItem(mark(event), Boolean.toString(access));
+		sendMsg(event, "了解了……我会安静会");
 		return;
 	}
+
 	@MinimumAuthority(AuthirizerUser.GROUP_MANAGER)
 	public void image_on(MessageReceiveEvent event)
 	{
-		boolean access=Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
-		if(access)
+		boolean access = Boolean.parseBoolean(getDataExchanger().getItem(mark(event)));
+		if (access)
 		{
-			sendMsg(event,"我在工作啊……");
+			sendMsg(event, "我在工作啊……");
 			return;
 		}
-		access=!access;
-		getDataExchanger().addItem(mark(event), Boolean.toString(access));
-		sendMsg(event,"了解了……那就开始吧");
+		access = !access;
+		getDataExchanger().setItem(mark(event), Boolean.toString(access));
+		sendMsg(event, "了解了……那就开始吧");
 		return;
 	}
+
 	private String mark(IdentitySymbol symbol)
 	{
 		switch (symbol.type)
 		{
 		case PERSON:
-			return "P"+symbol.userNum;
+			return "P" + symbol.userNum;
 		case GROUP:
-			return "G"+symbol.groupNum;
+			return "G" + symbol.groupNum;
 		case DISCUSS:
-			return "D"+symbol.groupNum;
+			return "D" + symbol.groupNum;
 
 		default:
 			return null;
 		}
 	}
+
 	@Override
 	public void init()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

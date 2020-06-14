@@ -11,6 +11,7 @@ import pluginHelper.AuthirizerUser;
 /**
  * 设置使用本方法的最低权限使用者，权限参照{@link AuthirizerUser}<br>
  * 默认为{@link GROUP_MEMBER};
+ * 
  * @author GuoJiaCheng
  *
  */

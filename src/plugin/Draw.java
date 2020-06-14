@@ -28,7 +28,7 @@ public class Draw extends Father
 	}
 
 	@RegistCommand(CommandString = "draw",Help = "抽牌")
-	public void draw(MessageReceiveEvent e, String name, int time)
+	public void draw(MessageReceiveEvent e, String name, Integer time)
 	{
 		ArrayList<String> pool;
 		try
@@ -44,10 +44,18 @@ public class Draw extends Father
 		{
 			builder.append(drawCard(pool) + "\n");
 		}
+		builder.deleteCharAt(builder.length() - 1);
+		sendMsg(e, builder.toString());
 	}
 
 	@RegistCommand(CommandString = "draw",Help = "抽牌")
-	public void draw(MessageReceiveEvent e, int time)
+	public void draw(MessageReceiveEvent e, String name)
+	{
+		draw(e, name, 1);
+	}
+
+	@RegistCommand(CommandString = "draw",Help = "抽牌")
+	public void draw(MessageReceiveEvent e, Integer time)
 	{
 		try
 		{
@@ -89,7 +97,7 @@ public class Draw extends Father
 			sendMsg(event, "未查询到牌库：" + string);
 			return;
 		}
-		getDataExchanger().addItem(getMark(event.getIdentitySymbol()), string);
+		getDataExchanger().setItem(getMark(event.getIdentitySymbol()), string);
 		sendMsg(event, "将" + string + "设置为默认牌库");
 	}
 
@@ -170,6 +178,6 @@ public class Draw extends Father
 	public void init()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * 表明这个类有字符串资源文件
+ * 
  * @author GuoJiaCheng
  *
  */
@@ -19,6 +20,7 @@ public @interface StringResource
 	/**
 	 * 字符串资源文件的名称，默认为空字符串<br>
 	 * 若为默认且表明本注解则为与本类同名的文件
+	 * 
 	 * @return
 	 */
 	String resourceName() default "";
