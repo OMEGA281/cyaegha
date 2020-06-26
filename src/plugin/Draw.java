@@ -6,14 +6,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.meowy.cqp.jcq.message.CoolQMsg;
 
 import connection.CQSender;
 import pluginHelper.AuthirizerUser;
 import pluginHelper.annotations.MinimumAuthority;
 import pluginHelper.annotations.RegistCommand;
+import surveillance.Log;
 import tools.XMLDocument;
 import transceiver.IdentitySymbol;
 import transceiver.event.MessageReceiveEvent;
@@ -21,6 +26,8 @@ import transceiver.event.MessageReceiveEvent;
 public class Draw extends Father
 {
 	public static String CARDPOOL_PATH;
+
+	private int stack = 0;
 
 	public Draw()
 	{
@@ -30,22 +37,17 @@ public class Draw extends Father
 	@RegistCommand(CommandString = "draw",Help = "抽牌")
 	public void draw(MessageReceiveEvent e, String name, Integer time)
 	{
-		ArrayList<String> pool;
+		Document file;
 		try
 		{
-			pool = getDraw(name);
+			file = getDraw(name);
 		} catch (Exception e1)
 		{
-			sendMsg(e.getIdentitySymbol(), e1.getMessage());
+			sendMsg(e, e1.getMessage());
 			return;
 		}
-		StringBuilder builder = new StringBuilder(CQSender.getNickorCard(e.getIdentitySymbol()) + "抽到了：\n");
-		for (int i = 1; i <= time; i++)
-		{
-			builder.append(drawCard(pool) + "\n");
-		}
-		builder.deleteCharAt(builder.length() - 1);
-		sendMsg(e, builder.toString());
+		String string = advanceDraw(file, time, e);
+		sendMsg(e, string);
 	}
 
 	@RegistCommand(CommandString = "draw",Help = "抽牌")
@@ -123,7 +125,7 @@ public class Draw extends Father
 		return arrayList;
 	}
 
-	private ArrayList<String> getDraw(String name) throws Exception
+	private Document getDraw(String name) throws Exception
 	{
 		String file = CARDPOOL_PATH + name + ".xml";
 		Document document;
@@ -137,11 +139,7 @@ public class Draw extends Father
 		{
 			throw new FileNotFoundException("找不到牌库：" + name);
 		}
-		List<Element> es = document.getRootElement().getChildren();
-		ArrayList<String> ss = new ArrayList<String>();
-		for (Element element : es)
-			ss.add(element.getText());
-		return ss;
+		return document;
 	}
 
 	private String getDefaultDrawName(IdentitySymbol symbol) throws Exception
@@ -179,5 +177,123 @@ public class Draw extends Father
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	private String advanceDraw(Document document, int num, IdentitySymbol symbol)
+	{
+		ArrayList<String> list = new ArrayList<>();
+		int limit;
+
+		Element root = document.getRootElement();
+		Element ver = root.getChild("version");
+		Element e_limit = root.getChild("limit");
+		if (e_limit == null)
+			limit = 10;
+		try
+		{
+			limit = Integer.parseInt(e_limit.getText());
+		} catch (Exception e)
+		{
+			Log.e("读取限制数字有问题");
+			limit = 10;
+		}
+		if(num>limit)
+			num=limit;
+		int version;
+		if (ver == null)
+			version = 1;
+		else
+			try
+			{
+				version = Integer.parseInt(ver.getText());
+			} catch (NumberFormatException e)
+			{
+				return null;
+			}
+		if (version < 2)
+		{
+			list.add(CQSender.getNickorCard(symbol) + "抽到了：\n");
+			List<Element> es = document.getRootElement().getChildren();
+			ArrayList<String> ss = new ArrayList<String>();
+			for (Element element : es)
+				ss.add(element.getText());
+			for (int i = 0; i < num; i++)
+				list.add(drawCard(ss) + "\n");
+		} else
+		{
+			stack = 0;
+			Element start = root.getChild("start");
+			Element main = root.getChild("main");
+			Element end = root.getChild("end");
+			if (start != null)
+				list.add(getText(root, start.getText()));
+			if (main != null)
+				for (int i = 0; i < num; i++)
+					list.add(getText(root, main.getText()));
+			if (end != null)
+				list.add(getText(root, end.getText()));
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		for (String string : list)
+			stringBuilder.append(string);
+		return stringBuilder.toString().replaceAll("@name#", CQSender.getNickorCard(symbol))
+				.replaceAll("@at#", new CoolQMsg().at(symbol.userNum).msg())
+				.replaceAll("@me#", CQSender.getMyName());
+		
+	}
+
+	public String getText(Element root, String text)
+	{
+		stack++;
+		if (stack > 30)
+			return null;		
+		
+		if(text==null)
+			return "";
+		
+		Pattern pattern = Pattern.compile("\\{(.+?)\\}");
+		Matcher matcher = pattern.matcher(text);
+		while (matcher.find())
+		{
+			int start = matcher.start();
+			int end = matcher.end();
+			String[] part = matcher.group(1).split(",");
+			Random random = new Random();
+			String name = part[random.nextInt(part.length)];
+			String aim = getText(root, getElementText(root, name));
+			if(aim==null)
+				aim="";
+			StringBuilder builder = new StringBuilder(text);
+			builder.replace(start, end, aim);
+			text = builder.toString();
+			matcher = pattern.matcher(text);
+		}
+		stack--;
+		return text;
+	}
+
+	private String getElementText(Element root, String element)
+	{
+		Element e = root.getChild(element);
+		if (e == null)
+			return null;
+		else
+			return getElementText(e);
+	}
+
+	private String getElementText(Element element)
+	{
+		if (element.getChildren().size() == 0)
+			return element.getText();
+		Element main = element.getChild("main");
+		if (main != null)
+			return main.getText();
+		else
+		{
+			List<Element> elements = element.getChildren();
+			Random random = new Random();
+			Element choose = elements.get(random.nextInt(elements.size()));
+			return choose.getText();
+		}
 	}
 }

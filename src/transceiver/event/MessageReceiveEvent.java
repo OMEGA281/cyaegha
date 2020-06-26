@@ -69,7 +69,7 @@ public class MessageReceiveEvent extends Event
 			shouldRespone = true;
 		} else
 			shouldRespone = false;
-		this.Msg = msg.msg();
+		this.Msg = msg.msg().trim();
 	}
 
 	@Override

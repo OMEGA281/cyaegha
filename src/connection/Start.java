@@ -89,10 +89,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		// 以下是收尾触发函数
 		// demo.disable();// 实际过程中程序结束不会触发disable，只有用户关闭了此插件才会触发
 
-		demo.privateMsg(1, 34, 1304554598, "[CQ:at,qq=10001].boton", 0);
-		demo.privateMsg(1, 34, 1304554598, "[CQ:at,qq=10001].draw", 0);
-		demo.privateMsg(1, 34, 1304554598, "[CQ:at,qq=10001].botoff", 0);
-		demo.privateMsg(1, 34, 1304554598, "[CQ:at,qq=10001].draw", 0);
+		demo.groupMsg(1, 12345, 22222, 1304554598, null, ".draw替身", 0);
 
 //        demo.privateMsg(1, 34, 1304554598, ".dormant", 0);
 //        demo.privateMsg(1, 34, 1304554598, ".rsc", 0);
@@ -241,7 +238,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 			MessageReceiveEvent event = new MessageReceiveEvent(SourceType.GROUP, subType, msgId, fromQQ, fromGroup,
 					null, msg);
 			boolean accessible = EventTrigger.getEventTrigger().messageReceive(event);
-			if (accessible && CommandControler.isCommand(msg))
+			if (accessible && CommandControler.isCommand(event.getMsg()))
 			{
 				CommandControler.getCommandControler().startCommand(event);
 			}
@@ -283,7 +280,7 @@ public class Start extends JcqAppAbstract implements ICQVer, IMsg, IRequest
 		MessageReceiveEvent event = new MessageReceiveEvent(SourceType.DISCUSS, subType, msgId, fromQQ, fromDiscuss,
 				null, msg);
 		boolean accessible = EventTrigger.getEventTrigger().messageReceive(event);
-		if (accessible && CommandControler.isCommand(msg))
+		if (accessible && CommandControler.isCommand(event.getMsg()))
 		{
 			CommandControler.getCommandControler().startCommand(event);
 		}

@@ -1,5 +1,8 @@
 package plugin;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.meowy.cqp.jcq.entity.IRequest;
 
 import connection.CQSender;
@@ -14,6 +17,7 @@ import pluginHelper.annotations.RegistListener.GroupMemberChangeListener;
 import pluginHelper.annotations.RegistListener.MessageReceiveListener;
 import pluginHelper.annotations.UseAuthirizerList;
 import surveillance.Log;
+import tools.GetJarResources;
 import transceiver.EventTrigger.EventResult;
 import transceiver.IdentitySymbol;
 import transceiver.IdentitySymbol.SourceType;
@@ -427,6 +431,29 @@ public class Switch extends Father
 				result.append('\n');
 		}
 		sendMsg(event, result.toString());
+	}
+
+	@RegistCommand(CommandString = "bot",Help = "显示信息")
+	public void bot(MessageReceiveEvent event)
+	{
+		StringBuilder string = new StringBuilder();
+		try
+		{
+			InputStreamReader inputStream = new InputStreamReader(new GetJarResources("BotInfo").getJarResources(),
+					"UTF-8");
+			int by = 0;
+			while ((by = inputStream.read()) != -1)
+			{
+				string.append(String.valueOf((char) by));
+			}
+		} catch (IOException e)
+		{
+			Log.e("无法读取描述文件");
+		}
+
+		if (string.length() == 0)
+			return;
+		sendMsg(event, string.toString());
 	}
 
 	@MinimumAuthority(value = AuthirizerUser.GROUP_MANAGER)
