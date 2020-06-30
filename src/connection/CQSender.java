@@ -52,6 +52,11 @@ public class CQSender implements IRequest
 		return CQ.getLoginQQ();
 	}
 
+	/**
+	 * 解散群或退出群
+	 * @param l
+	 * @return
+	 */
 	public static boolean dismissGroup(long l)
 	{
 		Member member = CQ.getGroupMemberInfo(l, getMyQQ());
@@ -64,6 +69,11 @@ public class CQSender implements IRequest
 		return CQStatus.getStatus(status).isSuccess();
 	}
 
+	/**
+	 * 退出讨论组
+	 * @param l
+	 * @return
+	 */
 	public static boolean dismissDiscuss(long l)
 	{
 		int status = CQ.setDiscussLeave(l);

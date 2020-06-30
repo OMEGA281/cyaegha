@@ -12,20 +12,19 @@ import tools.FileSimpleIO;
 import transceiver.EventTrigger;
 import transceiver.IdentitySymbol;
 import transceiver.event.Event;
+import transceiver.event.IndividualEvents;
 import transceiver.event.MessageSendEvent;
 
 @AuxiliaryClass
-public abstract class Father
+public abstract class Father implements IndividualEvents
 {
-	private DataExchanger dataExchanger;
+	protected DataExchanger dataExchanger;
 
 	public Father()
 	{
-		// TODO Auto-generated constructor stub
-
+		dataExchanger = new DataExchanger(
+				UniversalConstantsTable.PLUGIN_DATAPATH + this.getClass().getSimpleName() + ".xml");
 	}
-
-	public abstract void init();
 
 	/** 获取本方法数据储存文件夹 */
 	public String getPluginDataFloder()
@@ -45,17 +44,6 @@ public abstract class Father
 	public void sendMsg(IdentitySymbol symbol, String msg)
 	{
 		EventTrigger.getEventTrigger().messageSend(new MessageSendEvent(symbol, msg));
-	}
-
-	/**
-	 * 获得数据交换器，用于储存数据<br>
-	 */
-	public DataExchanger getDataExchanger()
-	{
-		if (dataExchanger == null)
-			dataExchanger = new DataExchanger(
-					UniversalConstantsTable.PLUGIN_DATAPATH + this.getClass().getSimpleName() + ".xml");
-		return dataExchanger;
 	}
 
 	public boolean isWhite(String name, long num)

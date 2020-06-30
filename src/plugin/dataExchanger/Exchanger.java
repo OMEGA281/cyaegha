@@ -3,14 +3,18 @@ package plugin.dataExchanger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import org.jdom2.Attribute;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
@@ -19,12 +23,39 @@ import tools.XMLDocument;
 
 class Exchanger
 {
+	private static final String LISTELEMENTNAME = "r";
+	private static final Attribute ALLOWREPETITION = new Attribute("repetition", "true");
+	private static final Attribute FORBIDDENREPETITION = new Attribute("repetition", "false");
+
+	private enum ElementType
+	{
+		ITEM("ITEM", "http://cyaegha.item"), LIST("LIST", "http://cyaegha.list"), MAP("MAP", "http://cyaegha.map");
+
+		private String string;
+		private String uri;
+		private Namespace namespace;
+
+		ElementType(String string, String uri)
+		{
+			this.string = string;
+			this.uri = uri;
+			namespace = Namespace.getNamespace(string, uri);
+		}
+
+		@Override
+		public String toString()
+		{
+			return string;
+		}
+
+		private boolean equal(String string)
+		{
+			return string.equals(this.string);
+		}
+	}
+
 	private Document document;
 	private Element rootElement;
-	private Element itemElement;
-	private static final String itemElementName = "item";
-	private static final String listElementName = "list";
-	private Element listElement;
 	private String path;
 
 	/**
@@ -51,20 +82,9 @@ class Exchanger
 			Log.f("读取数据XML失败");
 		}
 		rootElement = document.getRootElement();
-		itemElement = rootElement.getChild(itemElementName);
-		listElement = rootElement.getChild(listElementName);
-		if (itemElement == null)
-		{
-			rootElement.addContent(new Element(itemElementName));
-			writeDocument();
-			itemElement = rootElement.getChild(itemElementName);
-		}
-		if (listElement == null)
-		{
-			rootElement.addContent(new Element(listElementName));
-			writeDocument();
-			listElement = rootElement.getChild(listElementName);
-		}
+		rootElement.setNamespace(ElementType.ITEM.namespace);
+		rootElement.setNamespace(ElementType.LIST.namespace);
+		rootElement.setNamespace(ElementType.MAP.namespace);
 	}
 
 	/**
@@ -76,16 +96,10 @@ class Exchanger
 	 */
 	protected void setItem(String name, String text)
 	{
-		Element element = itemElement.getChild(name);
+		Element element = rootElement.getChild(name, ElementType.ITEM.namespace);
 		if (element == null)
-		{
 			element = new Element(name);
-			element.setText(text);
-			itemElement.addContent(element);
-		} else
-		{
-			element.setText(text);
-		}
+		element.setText(text);
 	}
 
 	/**
@@ -96,11 +110,9 @@ class Exchanger
 	 */
 	protected String getItem(String name)
 	{
-		Element element = itemElement.getChild(name);
+		Element element = rootElement.getChild(name, ElementType.ITEM.namespace);
 		if (element == null)
-		{
 			return null;
-		}
 		return element.getText();
 	}
 
@@ -112,14 +124,16 @@ class Exchanger
 	protected HashMap<String, String> getAllItem()
 	{
 		HashMap<String, String> result = new HashMap<String, String>();
-		List<Element> sub = itemElement.getChildren();
-		if (sub.size() < 1)
-			return result;
+		List<Element> sub = rootElement.getChildren();
 		for (Element element : sub)
-		{
-			result.put(element.getName(), element.getText());
-		}
+			if (element.getNamespace().equals(ElementType.ITEM.namespace))
+				result.put(element.getName(), element.getText());
 		return result;
+	}
+
+	protected boolean hasItem(String name)
+	{
+		return rootElement.getChild(name, ElementType.ITEM.namespace) == null ? false : true;
 	}
 
 	/**
@@ -130,27 +144,57 @@ class Exchanger
 	 */
 	protected boolean deleteItem(String name)
 	{
-		return itemElement.removeChild(name);
+		return rootElement.removeChild(name, ElementType.ITEM.namespace);
+	}
+
+	protected boolean hasList(String name)
+	{
+		return rootElement.getChild(name, ElementType.LIST.namespace) == null ? false : true;
+	}
+
+	/**
+	 * 创建一个表
+	 * @param name 表名
+	 * @param allowRepetition 是否允许表中存在重复
+	 * @return
+	 */
+	public Element creatList(String name, boolean allowRepetition)
+	{
+		if (!hasList(name))
+			rootElement.addContent(new Element(name, ElementType.LIST.namespace)
+					.setAttribute(allowRepetition ? ALLOWREPETITION : FORBIDDENREPETITION));
+		return rootElement.getChild(name, ElementType.LIST.namespace);
 	}
 
 	/**
 	 * 在列表储存元素<br>
-	 * 表内的元素允许出现重复<br>
 	 * 若不存在表，则会新建一个表
 	 * 
-	 * @param listName 列表名称
-	 * @param name     表内的名称
-	 * @param text     数据内容
+	 * @param listName        列表名称
+	 * @param text            数据内容
+	 * @param allowRepetition 如果不存在该表则创建表格，设置为是否是可重复的
 	 */
-	protected void setListItem(String listName, String name, String text)
+	protected void addList(String listName, String text, boolean allowRepetition)
 	{
-		Element listElement = this.listElement.getChild(listName);
+		Element listElement = rootElement.getChild(listName, ElementType.LIST.namespace);
 		if (listElement == null)
-		{
-			this.listElement.addContent(new Element(listName));
-			listElement = this.listElement.getChild(listName);
-		}
-		listElement.addContent(new Element(name).setText(text));
+			listElement = creatList(listName, allowRepetition);
+		if (!allowRepetition)
+			if (containList(listName, text))
+				return;
+		listElement.addContent(new Element(LISTELEMENTNAME).setText(text));
+	}
+	/**
+	 * 在列表储存元素<br>
+	 * 若不存在表，则会新建一个表<br>
+	 * 表内的元素允许出现重复
+	 * 
+	 * @param listName        列表名称
+	 * @param text            数据内容
+	 */
+	public void addList(String listName, String text)
+	{
+		addList(listName, text, true);
 	}
 
 	/**
@@ -160,74 +204,55 @@ class Exchanger
 	 * @param Name     项目名称
 	 * @return
 	 */
-	protected ArrayList<String> getListItem(String listName, String Name)
+	protected ArrayList<String> getList(String listName)
 	{
-		Element listElement = this.listElement.getChild(listName);
+		Element listElement = rootElement.getChild(listName, ElementType.LIST.namespace);
 		if (listElement == null)
-		{
 			return null;
-		}
-		List<Element> element = listElement.getChildren(Name);
+		List<Element> elements = listElement.getChildren();
 		ArrayList<String> stringList = new ArrayList<>();
-		if (element == null)
-		{
-			return null;
-		}
-		if (element.size() == 0)
-		{
-			return null;
-		}
-		for (Element element2 : element)
-		{
-			stringList.add(element2.getText());
-		}
+		for (Element element : elements)
+			stringList.add(element.getText());
 		return stringList;
 	}
 
 	/**
-	 * 返回列表中的所有数值，如果不存在则返回null
+	 * 检测是否在表中存在该值
 	 * 
-	 * @param listName 列表名称
-	 * @return 索引的第零个是名称，第一个为内容
+	 * @param listName 表名
+	 * @param text     值
+	 * @return
 	 */
-	protected ArrayList<String[]> getList(String listName)
+	public boolean containList(String listName, String text)
 	{
-		Element listElement = this.listElement.getChild(listName);
-		if (listElement == null)
-		{
-			return null;
-		}
-		ArrayList<String[]> result = new ArrayList<>();
-		List<Element> subElement = listElement.getChildren();
-		for (Element element : subElement)
-		{
-			result.add(new String[] { element.getName(), element.getText() });
-		}
-		return result;
+		if (hasList(listName))
+			for (String string : getList(listName))
+				if (string.equals(text))
+					return true;
+		return false;
 	}
 
 	/**
 	 * 删除列表中的某个数据
 	 * 
 	 * @param listName 列表名称
-	 * @param name     表内的名称
 	 * @param text     内容
 	 * @return 返回是否删除了数据
 	 */
-	protected boolean deleteListItem(String listName, String name, String text)
+	protected boolean deleteList(String listName, String text)
 	{
-		Element listElement = this.listElement.getChild(listName);
+		Element listElement = rootElement.getChild(listName);
 		if (listElement == null)
 			return false;
-		List<Element> arrayList = listElement.getChildren();
-		for (int i = 0; i < arrayList.size(); i++)
-		{
-			if (arrayList.get(i).getName() == name && arrayList.get(i).getText() == text)
-			{
-				return deleteListItem(listName, i);
-			}
-		}
-		return false;
+		if(!containList(listName, text))
+			return false;
+		ArrayList<Element> deleteList=new ArrayList<Element>();
+		for (Element element : listElement.getChildren())
+			if(element.getText().equals(text))
+				deleteList.add(element);
+		for (Element element : deleteList)
+			listElement.removeContent(element);
+		return deleteList.size()!=0;
 	}
 
 	/**
