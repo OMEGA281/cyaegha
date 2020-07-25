@@ -54,7 +54,7 @@ public class ClassLoader
 
 		try
 		{
-			Method init = clazz.getMethod("init", null);
+			Method init = clazz.getMethod("initialize", null);
 			init.invoke(object);
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e)

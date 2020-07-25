@@ -82,9 +82,44 @@ public class Coc extends Father
 	}
 
 	@Override
-	public void init()
+	public void personDelete(long num)
 	{
 		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void groupDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void discussDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initialize()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchOff()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAllDate()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -16,14 +16,6 @@ import transceiver.event.MessageReceiveEvent;
 
 public class SpeakWhenEnterGroup extends Father
 {
-
-	@Override
-	public void init()
-	{
-		if (getDataExchanger().getItem("switch") == null)
-			getDataExchanger().setItem("switch", Boolean.toString(true));
-	}
-
 	@GroupAddListener
 	public EventResult speak(GroupAddEvent event)
 	{
@@ -126,5 +118,47 @@ public class SpeakWhenEnterGroup extends Father
 	{
 		getDataExchanger().setItem("switch", Boolean.toString(false));
 		sendMsg(event, "入群广播关闭");
+	}
+
+	@Override
+	public void personDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void groupDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void discussDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initialize()
+	{
+		if (getDataExchanger().getItem("switch") == null)
+			getDataExchanger().setItem("switch", Boolean.toString(true));
+	}
+
+	@Override
+	public void switchOff()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAllDate()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

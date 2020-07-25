@@ -2,6 +2,7 @@ package plugin.dataExchanger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DataExchanger extends Exchanger
 {
@@ -9,95 +10,125 @@ public class DataExchanger extends Exchanger
 	public DataExchanger(String path)
 	{
 		super(path);
-		// TODO Auto-generated constructor stub
 	}
-
 	@Override
-	public void setItem(String name, String text)
+	public boolean addList(String listName, String text)
 	{
-		// TODO Auto-generated method stub
-		super.setItem(name, text);
+		boolean b= super.addList(listName, text);
 		writeDocument();
+		return b;
 	}
-
 	@Override
-	public void setListItem(String listName, String name, String text)
+	public boolean addList(String listName, String text, boolean allowRepetition)
 	{
-		// TODO Auto-generated method stub
-		super.setListItem(listName, name, text);
+		boolean b=super.addList(listName, text, allowRepetition);
 		writeDocument();
+		return b;
 	}
-
 	@Override
-	public HashMap<String, String> getAllItem()
+	public boolean containInList(String listName, String text)
 	{
-		// TODO Auto-generated method stub
-		return super.getAllItem();
+		return super.containInList(listName, text);
 	}
-
+	@Override
+	public boolean creatList(String name, boolean allowRepetition)
+	{
+		boolean b=super.creatList(name, allowRepetition);
+		writeDocument();
+		return b;
+	}
+	@Override
+	public boolean creatMap(String name)
+	{
+		boolean b=super.creatMap(name);
+		writeDocument();
+		return b;
+	}
 	@Override
 	public boolean deleteItem(String name)
 	{
-		// TODO Auto-generated method stub
-		boolean result = super.deleteItem(name);
+		boolean b=super.deleteItem(name);
 		writeDocument();
-		return result;
+		return b;
 	}
-
 	@Override
 	public boolean deleteList(String listName)
 	{
-		// TODO Auto-generated method stub
-		boolean result = super.deleteList(listName);
+		boolean b=super.deleteList(listName);
 		writeDocument();
-		return result;
+		return b;
 	}
-
 	@Override
-	public boolean deleteListItem(String listName, int index)
+	public boolean deleteList(String listName, String text)
 	{
-		// TODO Auto-generated method stub
-		boolean result = super.deleteListItem(listName, index);
+		boolean b=super.deleteList(listName, text);
 		writeDocument();
-		return result;
+		return b;
 	}
-
 	@Override
-	public boolean deleteListItem(String listName, String name, String text)
+	public boolean deleteMap(String name)
 	{
-		// TODO Auto-generated method stub
-		boolean result = super.deleteListItem(listName, name, text);
+		boolean b=super.deleteMap(name);
 		writeDocument();
-		return result;
+		return b;
 	}
-
 	@Override
-	public boolean deleteListItem(String listName, String itemName)
+	public boolean deleteMapData(String name, String key)
 	{
-		// TODO Auto-generated method stub
-		boolean result = super.deleteListItem(listName, itemName);
+		boolean b=super.deleteMapData(name, key);
 		writeDocument();
-		return result;
+		return b;
 	}
-
+	@Override
+	public HashMap<String, String> getAllItem()
+	{
+		return super.getAllItem();
+	}
 	@Override
 	public String getItem(String name)
 	{
-		// TODO Auto-generated method stub
 		return super.getItem(name);
 	}
-
 	@Override
-	public ArrayList<String> getListItem(String listName, String Name)
+	public ArrayList<String> getList(String listName)
 	{
-		// TODO Auto-generated method stub
-		return super.getListItem(listName, Name);
-	}
-
-	@Override
-	public ArrayList<String[]> getList(String listName)
-	{
-		// TODO Auto-generated method stub
 		return super.getList(listName);
+	}
+	@Override
+	public Map<String, String> getMap(String name)
+	{
+		return super.getMap(name);
+	}
+	@Override
+	public String getMapData(String name, String key)
+	{
+		return super.getMapData(name, key);
+	}
+	@Override
+	public boolean hasItem(String name)
+	{
+		return super.hasItem(name);
+	}
+	@Override
+	public boolean hasList(String name)
+	{
+		return super.hasList(name);
+	}
+	@Override
+	public boolean hasMap(String name)
+	{
+		return super.hasMap(name);
+	}
+	@Override
+	public void setItem(String name, String text)
+	{
+		super.setItem(name, text);
+		writeDocument();
+	}
+	@Override
+	public void setMapData(String name, String key, String text)
+	{
+		super.setMapData(name, key, text);
+		writeDocument();
 	}
 }

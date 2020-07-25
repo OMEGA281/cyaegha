@@ -632,7 +632,28 @@ public class Switch extends Father
 	}
 
 	@Override
-	public void init()
+	public void personDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void groupDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void discussDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initialize()
 	{
 		Log.d("加载消息拦截插件中……");
 		ListeningMode mode = getListeningMode();
@@ -642,5 +663,19 @@ public class Switch extends Father
 			mode = ListeningMode.PRIVATE;
 		}
 		this.mode = mode;
+	}
+
+	@Override
+	public void switchOff()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAllDate()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

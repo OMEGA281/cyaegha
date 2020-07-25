@@ -14,13 +14,6 @@ import transceiver.event.MessageReceiveEvent;
 @AuxiliaryClass
 public class Welcome extends Father
 {
-
-	@Override
-	public void init()
-	{
-
-	}
-
 	@GroupMemberChangeListener
 	public EventResult welcomeSender(GroupMemberChangeEvent event)
 	{
@@ -100,5 +93,47 @@ public class Welcome extends Father
 			break;
 		}
 		return getDataExchanger().getItem(name);
+	}
+
+	@Override
+	public void personDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void groupDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void discussDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initialize()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchOff()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAllDate()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

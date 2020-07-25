@@ -3,14 +3,12 @@ package plugin.dataExchanger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom2.Attribute;
-import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -32,13 +30,11 @@ class Exchanger
 		ITEM("ITEM", "http://cyaegha.item"), LIST("LIST", "http://cyaegha.list"), MAP("MAP", "http://cyaegha.map");
 
 		private String string;
-		private String uri;
 		private Namespace namespace;
 
 		ElementType(String string, String uri)
 		{
 			this.string = string;
-			this.uri = uri;
 			namespace = Namespace.getNamespace(string, uri);
 		}
 
@@ -46,11 +42,6 @@ class Exchanger
 		public String toString()
 		{
 			return string;
-		}
-
-		private boolean equal(String string)
-		{
-			return string.equals(this.string);
 		}
 	}
 
@@ -82,13 +73,10 @@ class Exchanger
 			Log.f("读取数据XML失败");
 		}
 		rootElement = document.getRootElement();
-		rootElement.setNamespace(ElementType.ITEM.namespace);
-		rootElement.setNamespace(ElementType.LIST.namespace);
-		rootElement.setNamespace(ElementType.MAP.namespace);
 	}
 
 	/**
-	 * 添加或修改单独的数据<br>
+	 * 设置一个向量数据<br>
 	 * 在有相同名称存在的情况下会修改值
 	 * 
 	 * @param name 数据名称
@@ -98,12 +86,15 @@ class Exchanger
 	{
 		Element element = rootElement.getChild(name, ElementType.ITEM.namespace);
 		if (element == null)
-			element = new Element(name);
+		{
+			element = new Element(name,ElementType.ITEM.namespace);
+			rootElement.addContent(element);
+		}
 		element.setText(text);
 	}
 
 	/**
-	 * 获取单独的数据
+	 * 获取向量数据
 	 * 
 	 * @param name 名称
 	 * @return 数据，如果不存在则会返回null
@@ -117,9 +108,9 @@ class Exchanger
 	}
 
 	/**
-	 * 获取全部单独的数据
+	 * 获取全部向量数据
 	 * 
-	 * @return 数据，如果不存在则会返回空列表
+	 * @return 返回一个HashMap
 	 */
 	protected HashMap<String, String> getAllItem()
 	{
@@ -131,13 +122,18 @@ class Exchanger
 		return result;
 	}
 
+	/**
+	 * 检测是否存在该向量数据
+	 * @param name 名称
+	 * @return
+	 */
 	protected boolean hasItem(String name)
 	{
 		return rootElement.getChild(name, ElementType.ITEM.namespace) == null ? false : true;
 	}
 
 	/**
-	 * 删除单独的数据 如果不存在则不会操作
+	 * 删除向量数据
 	 * 
 	 * @param name 数据名称
 	 * @return 返回是否进行了删除
@@ -147,54 +143,66 @@ class Exchanger
 		return rootElement.removeChild(name, ElementType.ITEM.namespace);
 	}
 
+	/**
+	 * 检测是否存在列表数据
+	 * @param name 名称
+	 * @return
+	 */
 	protected boolean hasList(String name)
 	{
 		return rootElement.getChild(name, ElementType.LIST.namespace) == null ? false : true;
 	}
 
 	/**
-	 * 创建一个表
+	 * 创建一个列表
 	 * @param name 表名
 	 * @param allowRepetition 是否允许表中存在重复
-	 * @return
+	 * @return 是否创建成功
 	 */
-	public Element creatList(String name, boolean allowRepetition)
+	protected boolean creatList(String name, boolean allowRepetition)
 	{
 		if (!hasList(name))
+		{
 			rootElement.addContent(new Element(name, ElementType.LIST.namespace)
 					.setAttribute(allowRepetition ? ALLOWREPETITION : FORBIDDENREPETITION));
-		return rootElement.getChild(name, ElementType.LIST.namespace);
+			return true;
+		}
+		else
+			return false;
 	}
 
 	/**
-	 * 在列表储存元素<br>
+	 * 在列表中储存元素<br>
 	 * 若不存在表，则会新建一个表
 	 * 
 	 * @param listName        列表名称
 	 * @param text            数据内容
 	 * @param allowRepetition 如果不存在该表则创建表格，设置为是否是可重复的
+	 * @return 是否添加成功
 	 */
-	protected void addList(String listName, String text, boolean allowRepetition)
+	protected boolean addList(String listName, String text, boolean allowRepetition)
 	{
+		if(!hasList(listName))
+			creatList(listName, allowRepetition);
 		Element listElement = rootElement.getChild(listName, ElementType.LIST.namespace);
-		if (listElement == null)
-			listElement = creatList(listName, allowRepetition);
 		if (!allowRepetition)
-			if (containList(listName, text))
-				return;
+			if (containInList(listName, text))
+				return false;
 		listElement.addContent(new Element(LISTELEMENTNAME).setText(text));
+		return true;
 	}
 	/**
 	 * 在列表储存元素<br>
 	 * 若不存在表，则会新建一个表<br>
-	 * 表内的元素允许出现重复
+	 * 表内的元素默认允许出现重复
 	 * 
 	 * @param listName        列表名称
 	 * @param text            数据内容
+	 * @return 是否添加成功
 	 */
-	public void addList(String listName, String text)
+	protected boolean addList(String listName, String text)
 	{
-		addList(listName, text, true);
+		return addList(listName, text, true);
 	}
 
 	/**
@@ -202,13 +210,13 @@ class Exchanger
 	 * 
 	 * @param listName 列表名称
 	 * @param Name     项目名称
-	 * @return
+	 * @return 要求的列表，不存在该列表则返回null
 	 */
 	protected ArrayList<String> getList(String listName)
 	{
-		Element listElement = rootElement.getChild(listName, ElementType.LIST.namespace);
-		if (listElement == null)
+		if(!hasList(listName))
 			return null;
+		Element listElement = rootElement.getChild(listName, ElementType.LIST.namespace);
 		List<Element> elements = listElement.getChildren();
 		ArrayList<String> stringList = new ArrayList<>();
 		for (Element element : elements)
@@ -223,7 +231,7 @@ class Exchanger
 	 * @param text     值
 	 * @return
 	 */
-	public boolean containList(String listName, String text)
+	protected boolean containInList(String listName, String text)
 	{
 		if (hasList(listName))
 			for (String string : getList(listName))
@@ -244,7 +252,7 @@ class Exchanger
 		Element listElement = rootElement.getChild(listName);
 		if (listElement == null)
 			return false;
-		if(!containList(listName, text))
+		if(!containInList(listName, text))
 			return false;
 		ArrayList<Element> deleteList=new ArrayList<Element>();
 		for (Element element : listElement.getChildren())
@@ -256,39 +264,6 @@ class Exchanger
 	}
 
 	/**
-	 * 删除列表中的某个数据
-	 * 
-	 * @param listName 列表名称
-	 * @param index    索引
-	 * @return 返回是否删除了数据
-	 */
-	protected boolean deleteListItem(String listName, int index)
-	{
-		Element listElement = this.listElement.getChild(listName);
-		if (listElement == null)
-			return false;
-		List<Element> elements = listElement.getChildren();
-		if (elements.size() <= index)
-			return false;
-		return listElement.removeContent(elements.get(index));
-	}
-
-	/**
-	 * 删除列表中的某一种数据
-	 * 
-	 * @param listName 列表名称
-	 * @param itemName 数据名称
-	 * @return 返回是否删除了数据
-	 */
-	protected boolean deleteListItem(String listName, String itemName)
-	{
-		Element listElement = this.listElement.getChild(listName);
-		if (listElement == null)
-			return false;
-		return listElement.removeChildren(itemName);
-	}
-
-	/**
 	 * 删除整个列表
 	 * 
 	 * @param listName 列表名
@@ -296,7 +271,102 @@ class Exchanger
 	 */
 	protected boolean deleteList(String listName)
 	{
-		return listElement.removeChild(listName);
+		return rootElement.removeChild(listName, ElementType.LIST.namespace);
+	}
+	/**
+	 * 是否存在地图
+	 * @param name
+	 * @return
+	 */
+	protected boolean hasMap(String name)
+	{
+		return rootElement.getChild(name, ElementType.MAP.namespace)!=null;
+	}
+	/**
+	 * 创建地图
+	 * @param name
+	 * @return
+	 */
+	protected boolean creatMap(String name)
+	{
+		if(hasMap(name))
+			return false;
+		rootElement.addContent(new Element(name, ElementType.MAP.namespace));
+		return true;
+	}
+	/**
+	 * 获得整个地图
+	 * @param name
+	 * @return 如果不存在则会返回null
+	 */
+	protected Map<String,String> getMap(String name)
+	{
+		Element map=rootElement.getChild(name, ElementType.MAP.namespace);
+		if(map==null)
+			return null;
+		HashMap<String, String> hashMap=new HashMap<>();
+		for (Element element : map.getChildren())
+			hashMap.put(element.getName(), element.getText());
+		return hashMap;
+	}
+	/**
+	 * 获得地图内的一个数据
+	 * @param name 地图名称
+	 * @param key 键名称
+	 * @return 检索的数值，不存在则返回null
+	 */
+	protected String getMapData(String name,String key)
+	{
+		Map<String, String> map=getMap(name);
+		if(map!=null)
+			return map.get(key);
+		else
+			return null;
+	}
+	/**
+	 * 设置地图的数据，若已经有该数据则会覆盖原数据
+	 * @param name 地图名称
+	 * @param key 键值
+	 * @param text 值
+	 */
+	protected void setMapData(String name,String key,String text)
+	{
+		Element map=rootElement.getChild(name, ElementType.MAP.namespace);
+		if(map==null)
+		{
+			creatMap(name);
+			map=rootElement.getChild(name, ElementType.MAP.namespace);
+		}
+		Element sub=map.getChild(key);
+		if(sub==null)
+		{
+			sub=new Element(key).setText(text);
+			map.addContent(sub);
+		}
+		else
+			sub.setText(text);
+	}
+	/**
+	 * 删除地图中的一个数据
+	 * @param name 地图名称
+	 * @param key 键
+	 * @return
+	 */
+	protected boolean deleteMapData(String name,String key)
+	{
+		Element map=rootElement.getChild(name, ElementType.MAP.namespace);
+		if(map==null)
+			return false;
+		return map.removeChild(name);
+	}
+	/**
+	 * 删除整个地图
+	 * @param name 地图名称
+	 * @return
+	 */
+	protected boolean deleteMap(String name)
+	{
+		return rootElement.removeChild(name,ElementType.MAP.namespace);
 	}
 
 	/**

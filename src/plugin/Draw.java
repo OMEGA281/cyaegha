@@ -172,13 +172,6 @@ public class Draw extends Father
 		return string;
 	}
 
-	@Override
-	public void init()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 	private String advanceDraw(Document document, int num, IdentitySymbol symbol)
 	{
 		ArrayList<String> list = new ArrayList<>();
@@ -295,5 +288,47 @@ public class Draw extends Father
 			Element choose = elements.get(random.nextInt(elements.size()));
 			return choose.getText();
 		}
+	}
+
+	@Override
+	public void personDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void groupDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void discussDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initialize()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchOff()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAllDate()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

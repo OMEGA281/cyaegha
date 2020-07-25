@@ -2,6 +2,9 @@ package plugin;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +19,6 @@ import transceiver.event.MessageReceiveEvent;
 public class ERPG extends Father
 {
 	private final String SAME_STRING = "samestring";
-	private final String SAME_STRING_LINE = "string";
 	private final String[] ShortCrazy = { "失忆：发现自己只记得最后身处的安全地点，却没有任何来到这里的记忆", "假性残疾：陷入了心理性的失明，失聪或躯体缺失感中",
 			"暴力倾向：陷入了六亲不认的暴力行为中，对周围的敌人与友方进行着无差别的攻击", "偏执：陷入了严重的偏执妄想之中", "人际依赖：因为一些原因而降他人误认为了他重要的人并且努力的会与那个人保持那种关系",
 			"昏厥：当场昏倒", "逃避行为：会用任何的手段试图逃离现在所处的位置", "竭嘶底里：表现出大笑，哭泣，嘶吼，害怕等的极端情绪表现", "恐惧：获得了一种恐惧症状(由kp决定，或.draw 恐怖症状)",
@@ -147,7 +149,7 @@ public class ERPG extends Father
 		}
 	}
 
-	private static ArrayList<ArrayList<String>> SameStringList;
+	private static HashMap<String, String[]> SameStringList;
 
 	@RegistCommand(CommandString = "r",Help = "随机骰数字")
 	public void r(MessageReceiveEvent event)
@@ -1001,17 +1003,13 @@ public class ERPG extends Father
 	 */
 	private void loadSameString()
 	{
-		ArrayList<String[]> arrayList = getDataExchanger().getList(SAME_STRING);
+		Map<String, String> map = getDataExchanger().getMap(SAME_STRING);
 		if (SameStringList == null)
-			SameStringList = new ArrayList<>();
-		if (arrayList == null)
+			SameStringList = new HashMap<>();
+		if (map == null || map.size() == 0)
 			return;
-		for (String[] strings : arrayList)
-		{
-			ArrayList<String> sameList = new ArrayList<>();
-			Collections.addAll(sameList, strings[1].split(","));
-			SameStringList.add(sameList);
-		}
+		for (Entry<String, String> strings : map.entrySet())
+			SameStringList.put(strings.getKey(), strings.getValue().split(","));
 	}
 
 	/**
@@ -1020,14 +1018,12 @@ public class ERPG extends Father
 	private void savaSameString()
 	{
 		getDataExchanger().deleteList(SAME_STRING);
-		for (ArrayList<String> arrayList : SameStringList)
+		for (Entry<String, String[]> entry : SameStringList.entrySet())
 		{
 			StringBuilder stringBuilder = new StringBuilder();
-			for (String string : arrayList)
-			{
+			for (String string : entry.getValue())
 				stringBuilder.append(string + ",");
-			}
-			getDataExchanger().setListItem(SAME_STRING, SAME_STRING_LINE, stringBuilder.toString());
+			getDataExchanger().setMapData(SAME_STRING, entry.getKey(), stringBuilder.toString());
 		}
 	}
 
@@ -1036,88 +1032,61 @@ public class ERPG extends Father
 	 * 这一系列的字符串中没有一个已经存在则会新添加一个类别<br>
 	 * 新添加的类别的主要名字是{@code main}<br>
 	 * 如果发现一系列的名字中有两个及以上的同类词，这会返回false<br>
-	 * 如果已经存在某一种，则不会考虑主要和次要，全部按照已有的主要词<br>
+	 * 如果已经存在一个系列包含该词语，则不会将设定的主要词语更换<br>
 	 * 
-	 * @param main  主要名字
-	 * @param other 次要的名字
+	 * @param main  主要词语
+	 * @param other 次要的词语
 	 */
 	private boolean addSameString(String main, String... other)
 	{
-		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add(main);
-		Collections.addAll(arrayList, other);
+		String key = null;
 
-		ArrayList<String> aim = null;
-		for (String string : arrayList)
+		ArrayList<String> testList = new ArrayList<>();
+		testList.add(main);
+		Collections.addAll(testList, other);
+
+		for (Entry<String, String[]> entry : SameStringList.entrySet())
 		{
-			ArrayList<String> list = findSameString(string);
-			if (list != null)
-				if (aim == null)
-					aim = list;
-				else if (aim != list)
-					return false;
+			ArrayList<String> sourceList = new ArrayList<>();
+			sourceList.add(entry.getKey());
+			Collections.addAll(sourceList, entry.getValue());
 
+			for (String string : testList)
+				for (String text : sourceList)
+					if (string == text)
+						if (key != null)
+						{
+							if (key != entry.getKey())
+								return false;
+						} else
+							key = entry.getKey();
 		}
-
-		if (aim == null)
+		if (key == null)
 		{
-			SameStringList.add(arrayList);
+			SameStringList.put(main, other);
+			StringBuilder builder = new StringBuilder();
+			for (String string : other)
+				builder.append(string + ",");
+			getDataExchanger().setMapData(SAME_STRING, main, builder.toString());
 		} else
 		{
-			code_0: for (String string : arrayList)
+			String[] strings = SameStringList.get(key);
+			ArrayList<String> arrayList = new ArrayList<>();
+			Collections.addAll(arrayList, strings);
+			for (String string : testList)
 			{
-				for (String string2 : aim)
-				{
-					if (string.equals(string2))
-						continue code_0;
-				}
-				aim.add(string);
+				if (arrayList.contains(string) || string.equals(key))
+					continue;
+				else
+					arrayList.add(string);
 			}
+			StringBuilder builder = new StringBuilder();
+			for (String string : arrayList)
+				builder.append(string + ",");
+			SameStringList.put(key, arrayList.toArray(new String[arrayList.size()]));
+			getDataExchanger().setMapData(SAME_STRING, key, builder.toString());
 		}
 		return true;
-	}
-
-	/**
-	 * 寻找相同意义的字符串<br>
-	 * 注意！本方法返回的是指针，会对本身产生影响
-	 * 
-	 * @param aim 所寻找的字符串
-	 * @return 与{@code aim}意义相同的字符串<br>
-	 *         如果不存在则返回{@code null}
-	 */
-	private ArrayList<String> findSameString(String aim)
-	{
-		loadSameString();
-		for (ArrayList<String> arrayList : SameStringList)
-		{
-			for (String string : arrayList)
-			{
-				if (string.equals(aim))
-				{
-					return arrayList;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * 寻找相同意义的字符串
-	 * 
-	 * @param aim 所寻找的字符串
-	 * @return 与{@code aim}意义相同的字符串(不包括自身)<br>
-	 *         如果不存在则返回{@code null}
-	 */
-	private String[] getSameString(String aim)
-	{
-		ArrayList<String> arrayList = findSameString(aim);
-		if (arrayList == null)
-		{
-			return null;
-		}
-		arrayList = (ArrayList<String>) arrayList.clone();
-		arrayList.remove(aim);
-		return arrayList.toArray(new String[arrayList.size()]);
 	}
 
 	/**
@@ -1128,11 +1097,11 @@ public class ERPG extends Father
 	 */
 	private String transToMain(String string)
 	{
-		ArrayList<String> arrayList = findSameString(string);
-		if (arrayList == null)
-			return string;
-		else
-			return arrayList.get(0);
+		for (Entry<String, String[]> entry : SameStringList.entrySet())
+			for (String s : entry.getValue())
+				if (s.equals(string))
+					return entry.getKey();
+		return string;
 	}
 
 	/**
@@ -1184,8 +1153,7 @@ public class ERPG extends Father
 		default:
 			return;
 		}
-		getDataExchanger().deleteListItem(name, mark);
-		getDataExchanger().setListItem(name, mark, Integer.toString(num));
+		getDataExchanger().setMapData(name, mark, String.valueOf(num));
 	}
 
 	/**
@@ -1212,10 +1180,19 @@ public class ERPG extends Father
 		default:
 			return -1;
 		}
-		ArrayList<String> arrayList = getDataExchanger().getListItem(name, mark);
-		if (arrayList == null)
+		String string=getDataExchanger().getMapData(name, mark);
+		if(string!=null)
+		{
+			try
+			{
+				return Integer.parseInt(string);
+			} catch (NumberFormatException e)
+			{
+				return -1;
+			}
+		}
+		else
 			return -1;
-		return Integer.parseInt(arrayList.get(0));
 	}
 
 	/**
@@ -1242,54 +1219,47 @@ public class ERPG extends Father
 		default:
 			return;
 		}
-		getDataExchanger().deleteListItem(name, mark);
-	}
-
-	@Override
-	public void init()
-	{
-		// TODO Auto-generated method stub
-
+		getDataExchanger().deleteMapData(name, mark);
 	}
 
 	@Override
 	public void personDelete(long num)
 	{
-		
+
 	}
 
 	@Override
 	public void groupDelete(long num)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void discussDelete(long num)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void initialize()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void switchOff()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAllDate()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

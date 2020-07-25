@@ -1,6 +1,8 @@
 package plugin;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -20,16 +22,19 @@ public class PhraseListener extends Father
 	@MessageReceiveListener
 	public EventResult listener(MessageReceiveEvent event)
 	{
-		ArrayList<String[]> arrayList = getDataExchanger().getList(LISTNAME);
-		if (arrayList == null)
+		ArrayList<String> list = getDataExchanger().getList(LISTNAME);
+		if (list == null)
 			return EventResult.PASS;
-		for (String[] strings : arrayList)
+		for (String string : list)
 		{
-			String $patten = strings[1].split(Split, 2)[0];
-			Pattern pattern = Pattern.compile($patten);
+			String[] ss=string.split(Split,2);
+			if(ss.length<2)
+				continue;
+			String patternString=ss[0];
+			Pattern pattern = Pattern.compile(patternString);
 			if (pattern.matcher(event.getMsg()).matches())
 			{
-				String[] answer = strings[1].split(Split, 2)[1].split(Split);
+				String[] answer = ss[1].split(Split);
 				if (answer.length == 1)
 					sendMsg(event, answer[0]);
 				else
@@ -49,43 +54,45 @@ public class PhraseListener extends Father
 	{
 		String index1 = (String) object1;
 		String index2 = (String) object2;
-		ArrayList<String[]> texts = getDataExchanger().getList(LISTNAME);
+		ArrayList<String> texts = getDataExchanger().getList(LISTNAME);
 //		完全空的表
-		if (texts == null)
+		if (texts == null||texts.isEmpty())
 		{
-			getDataExchanger().setListItem(LISTNAME, HEAD, index1 + Split + index2);
+			getDataExchanger().addList(LISTNAME, index1 + Split + index2,false);
 			sendMsg(event, "成功添加了条目");
 			return;
 		}
 //		表中有了
 		for (int i = 0; i < texts.size(); i++)
 		{
-			String[] strings = texts.get(i);
-			String line = strings[1];
-			String patten = line.split(Split, 2)[0];
-			if (!patten.equals(index1))
-				continue;
-			String[] answer = line.split(Split, 2)[1].split(Split);
-			for (String string : answer)
+			String string=texts.get(i);
+			String[] ss = string.split(Split,2);
+			String pattern;
+			String[] answer;
+			if(ss.length<2)
 			{
-				if (string.equals(index2))
+				getDataExchanger().deleteList(LISTNAME, string);
+				continue;
+			}
+			else
+			{
+				pattern=ss[0];
+				answer=ss[1].split(Split);
+			}
+			if (!pattern.equals(index1))
+				continue;
+			for (String s : answer)
+				if (s.equals(index2))
 				{
 					sendMsg(event, "表中已有相同条目");
 					return;
 				}
-			}
-			StringBuffer buffer = new StringBuffer();
-			for (String string : answer)
-			{
-				buffer.append(string + Split);
-			}
-			buffer.append(index2);
-			getDataExchanger().deleteListItem(LISTNAME, i);
-			getDataExchanger().setListItem(LISTNAME, HEAD, patten + Split + buffer.toString());
+			getDataExchanger().deleteList(LISTNAME, string);
+			getDataExchanger().addList(LISTNAME, string+Split+answer,false);
 			sendMsg(event, "成功添加了条目");
 			return;
 		}
-		getDataExchanger().setListItem(LISTNAME, HEAD, index1 + Split + index2);
+		getDataExchanger().addList(LISTNAME,  index1 + Split + index2,false);
 		sendMsg(event, "成功添加了条目");
 	}
 
@@ -96,24 +103,36 @@ public class PhraseListener extends Father
 		String patten = (String) object1;
 		String aim = (String) object2;
 
-		ArrayList<String[]> list = getDataExchanger().getList(LISTNAME);
+		ArrayList<String> list = getDataExchanger().getList(LISTNAME);
 		boolean b = false;
 		for (int i = 0; i < list.size(); i++)
 		{
-			String text = list.get(i)[1];
-			String $patten = text.split(Split, 2)[0];
-			if (!$patten.equals(patten))
+			String text=list.get(i);
+			String[] source=text.split(Split, 2);
+			String pattern;
+			String[] answer;
+			if(source.length<2)
+			{
+				getDataExchanger().deleteList(LISTNAME, text);
 				continue;
-			String[] $answer = text.split(Split, 2)[1].split(Split);
-			if (aim != null)
+			}
+			else
+			{
+				pattern=source[0];
+				answer=source[1].split(Split);
+			}
+			
+			if (!pattern.equals(patten))
+				continue;
+			if (aim != null&&!aim.isEmpty())
 			{
 				boolean find = false;
-				for (int o = 0; o < $answer.length; o++)
+				for (int o = 0; o < answer.length; o++)
 				{
-					String string = $answer[o];
+					String string = answer[o];
 					if (string.equals(aim))
 					{
-						$answer[o] = "";
+						answer[o] = "";
 						find = true;
 						break;
 					}
@@ -121,16 +140,12 @@ public class PhraseListener extends Father
 				if (find)
 				{
 					StringBuffer buffer = new StringBuffer();
-					for (String string : $answer)
-					{
+					for (String string : answer)
 						if (!string.isEmpty())
-						{
 							buffer.append(string + Split);
-						}
-					}
-					b = getDataExchanger().deleteListItem(LISTNAME, i);
+					b = getDataExchanger().deleteList(LISTNAME, text);
 					if (buffer.length() > 0)
-						getDataExchanger().setListItem(LISTNAME, HEAD, $patten + Split + buffer.toString());
+						getDataExchanger().addList(LISTNAME,pattern + Split + buffer.toString());
 					sendMsg(event, b ? "成功删除了条目" : "没有这个条目");
 					return;
 				} else
@@ -140,7 +155,7 @@ public class PhraseListener extends Father
 				}
 			} else
 			{
-				b = getDataExchanger().deleteListItem(LISTNAME, i);
+				b = getDataExchanger().deleteList(LISTNAME, text);
 				break;
 			}
 		}
@@ -153,25 +168,60 @@ public class PhraseListener extends Father
 	{
 		String patten = (String) object1;
 
-		ArrayList<String[]> list = getDataExchanger().getList(LISTNAME);
+		ArrayList<String> list = getDataExchanger().getList(LISTNAME);
 		boolean b = false;
 		for (int i = 0; i < list.size(); i++)
 		{
-			String text = list.get(i)[1];
-			String $patten = text.split(Split, 2)[0];
-			if (!$patten.equals(patten))
+			String text = list.get(i);
+			String pattern = text.split(Split, 2)[0];
+			if (!pattern.equals(patten))
 				continue;
 
-			b = getDataExchanger().deleteListItem(LISTNAME, i);
+			b = getDataExchanger().deleteList(LISTNAME, text);
 			break;
 		}
 		sendMsg(event, b ? "成功删除了条目" : "没有这个条目");
 	}
 
 	@Override
-	public void init()
+	public void personDelete(long num)
 	{
 		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public void groupDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void discussDelete(long num)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initialize()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchOff()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAllDate()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

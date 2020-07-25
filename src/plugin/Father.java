@@ -115,4 +115,8 @@ public abstract class Father implements IndividualEvents
 			return AuthirizerUser.ALL;
 		}
 	}
+	public DataExchanger getDataExchanger()
+	{
+		return dataExchanger;
+	}
 }
