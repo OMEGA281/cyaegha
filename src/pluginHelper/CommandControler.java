@@ -95,13 +95,13 @@ public class CommandControler
 						regex.append("[ ]*");
 				}
 				if (class1 == String.class)
-					regex.append("(\\D+)");
+					regex.append("(\\D+?)");
 				else if (class1 == Integer.class || class1 == Long.class)
 					regex.append("(\\d+)");
 				else if (class1 == Boolean.class)
 					regex.append("((?i)false|(?i)true)");
 				else if (class1 == Object.class)
-					regex.append("(.+)");
+					regex.append("(.+?)");
 				lastClass = class1;
 			}
 
