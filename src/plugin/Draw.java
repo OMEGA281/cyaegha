@@ -181,6 +181,7 @@ public class Draw extends Father
 		Element ver = root.getChild("version");
 		Element e_limit = root.getChild("limit");
 		if (e_limit == null)
+//			这里后来加上受到默认值的影响
 			limit = 10;
 		try
 		{

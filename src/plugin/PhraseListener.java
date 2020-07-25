@@ -1,8 +1,6 @@
 package plugin;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -17,8 +15,6 @@ public class PhraseListener extends Father
 {
 	private static final String Split = "##";
 	private static final String LISTNAME = "return";
-	private static final String HEAD = "head";
-
 	@MessageReceiveListener
 	public EventResult listener(MessageReceiveEvent event)
 	{

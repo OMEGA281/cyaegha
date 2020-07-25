@@ -98,7 +98,7 @@ public abstract class Father implements IndividualEvents
 		case PERSON:
 			return AuthirizerUser.PERSON_CLIENT;
 		case GROUP:
-			switch (CQSender.getQQInfoInGroup(symbol.userNum, symbol.groupNum).getAuthority())
+			switch (CQSender.getGroupMember(symbol.userNum, symbol.groupNum).getAuthority())
 			{
 			case OWNER:
 				return AuthirizerUser.GROUP_OWNER;

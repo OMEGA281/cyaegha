@@ -42,7 +42,6 @@ public class ERPG extends Father
 
 		LevelStatus(String string)
 		{
-			// TODO Auto-generated constructor stub
 			this.string = string;
 		}
 	}
@@ -60,7 +59,6 @@ public class ERPG extends Father
 
 		SpecialStatus(String string)
 		{
-			// TODO Auto-generated constructor stub
 			this.string = string;
 		}
 	}
@@ -90,7 +88,6 @@ public class ERPG extends Father
 
 		SkillUBound(String string, int i)
 		{
-			// TODO Auto-generated constructor stub
 			effectNum = i;
 			effectSkill = string;
 		}
@@ -121,7 +118,6 @@ public class ERPG extends Father
 
 		SkillBBound(String string, int i)
 		{
-			// TODO Auto-generated constructor stub
 			effectNum = i;
 			effectSkill = string;
 		}
@@ -142,7 +138,6 @@ public class ERPG extends Father
 
 		public CheckStatus(LevelStatus levelStatus, SpecialStatus specialStatus, int randomNum)
 		{
-			// TODO Auto-generated constructor stub
 			this.levelStatus = levelStatus;
 			this.specialStatus = specialStatus;
 			this.randomNum = randomNum;
@@ -1180,8 +1175,8 @@ public class ERPG extends Father
 		default:
 			return -1;
 		}
-		String string=getDataExchanger().getMapData(name, mark);
-		if(string!=null)
+		String string = getDataExchanger().getMapData(name, mark);
+		if (string != null)
 		{
 			try
 			{
@@ -1190,8 +1185,7 @@ public class ERPG extends Father
 			{
 				return -1;
 			}
-		}
-		else
+		} else
 			return -1;
 	}
 
@@ -1245,8 +1239,36 @@ public class ERPG extends Father
 	@Override
 	public void initialize()
 	{
-		// TODO Auto-generated method stub
-
+		loadSameString();
+		if (SameStringList.isEmpty())
+		{
+			addSameString("力量", "str", "STR", "str", "力量值");
+			addSameString("敏捷", "dex", "DEX", "Dex", "敏捷值");
+			addSameString("理智", "san", "SAN", "San", "理智值", "san值");
+			addSameString("力量", "str", "STR", "Str", "力量值");
+			addSameString("敏捷", "dex", "DEX", "Dex", "敏捷值");
+			addSameString("智力", "int", "INT", "Int", "智力值", "灵感");
+			addSameString("体质", "con", "CON", "Con", "体质值");
+			addSameString("外貌", "app", "APP", "App", "外貌值");
+			addSameString("意志", "pow", "POW", "Pow", "意志值");
+			addSameString("体型", "siz", "SIZ", "Siz", "体型值");
+			addSameString("教育", "edu", "EDU", "Edu", "教育值");
+			addSameString("移动", "mov", "MOV", "Mov", "移动值");
+			addSameString("体力", "hp", "HP", "Hp", "体力值");
+			addSameString("魔力", "mp", "MP", "Mp", "魔力值", "魔法");
+			addSameString("幸运", "运气", "幸运值");
+			addSameString("计算机使用", "计算机", "电脑");
+			addSameString("信用评级", "信用", "信誉");
+			addSameString("克苏鲁神话", "克苏鲁", "cm", "CM", "Cm");
+			addSameString("汽车驾驶", "汽车", "驾驶");
+			addSameString("步霰","步枪/霰弹枪", "步枪", "霰弹枪");
+			addSameString("图书馆使用", "图书馆");
+			addSameString("锁匠", "开锁");
+			addSameString("博物学", "博物", "自然学", "自然");
+			addSameString("领航", "导航");
+			addSameString("操作重型机械", "重型机械", "重型操作", "重型", "重型机械操作");
+			loadSameString();
+		}
 	}
 
 	@Override

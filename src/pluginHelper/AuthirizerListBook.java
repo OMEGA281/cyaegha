@@ -79,7 +79,7 @@ public class AuthirizerListBook
 		case PERSON:
 			return AuthirizerUser.PERSON_CLIENT;
 		case GROUP:
-			switch (CQSender.getQQInfoInGroup(num, groupNum).getAuthority())
+			switch (CQSender.getGroupMember(num, groupNum).getAuthority())
 			{
 			case OWNER:
 				return AuthirizerUser.GROUP_OWNER;

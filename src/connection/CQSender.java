@@ -32,13 +32,8 @@ public class CQSender implements IRequest
 		return CQ.canSendRecord();
 	}
 
-	public static Member getQQInfoInGroup(long QQ, long GroupNum)
+	public static Member getGroupMember(long QQ, long GroupNum)
 	{
-		Member member = CQ.getGroupMemberInfo(GroupNum, QQ);
-		if (member.getCard() == null)
-			member = CQ.getGroupMemberInfo(GroupNum, QQ, true);
-		if (member.getCard().isEmpty())
-			member = CQ.getGroupMemberInfo(GroupNum, QQ, true);
 		return CQ.getGroupMemberInfo(GroupNum, QQ);
 	}
 
@@ -113,12 +108,24 @@ public class CQSender implements IRequest
 		{
 		case PERSON:
 		case DISCUSS:
-			return CQ.getStrangerInfo(symbol.userNum).getNick();
-		case GROUP:
-			String s = CQ.getGroupMemberInfo(symbol.groupNum, symbol.userNum).getCard();
-			if (s == null || s.isEmpty())
+			try
+			{
 				return CQ.getStrangerInfo(symbol.userNum).getNick();
-			return s;
+			}catch (Exception e) {
+				Log.e("获取陌生人失败");
+				return "";
+			}
+		case GROUP:
+			Member member = CQ.getGroupMemberInfo(symbol.groupNum, symbol.userNum);
+			if (member == null)
+			{
+				Log.e("不存在所选群成员");
+				return "";
+			}
+			String string=member.getCard();
+			if(string==null)
+				string=member.getNick();
+			return string;
 		default:
 			return null;
 		}

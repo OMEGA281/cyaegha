@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.Queue;
 
 import connection.CQSender;
-import pluginHelper.AuthirizerUser;
 import pluginHelper.AuthirizerListBook;
-import pluginHelper.MainAuthirizerList;
 import pluginHelper.SelfStartMethod;
 import pluginHelper.annotations.AuthirizerListNeed;
 import pluginHelper.annotations.MinimumAuthority;
